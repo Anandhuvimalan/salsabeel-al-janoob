@@ -1,7 +1,7 @@
 {
   "pageInfo": {
     "hero": {
-      "backgroundImage": "/Services/marriage-family.webp",
+      "backgroundImage": "/uploads/marriage/1f1e0998-7d11-4ab2-b9bf-fad588a899e3-family-therapy-header.jpg",
       "serviceType": "Marriage & Family Counseling",
       "title": "Strengthening Relationships",
       "underlineText": "Marriage & Family Counseling",
@@ -15,7 +15,7 @@
         "Our Marriage & Family Counseling services offer compassionate guidance for couples and families navigating life’s challenges. Through personalized sessions and proven therapeutic approaches, we help improve communication, rebuild trust, and foster emotional healing. Our experienced counselors create a safe space for open dialogue and mutual understanding, empowering clients to strengthen their bonds and overcome obstacles together. We deliver lasting support.",
         "Our expert team tailors each session to address individual needs, providing strategies for conflict resolution, stress management, and relationship enrichment. We utilize evidence-based methods combined with empathy and cultural sensitivity to promote growth and harmony. Our commitment is to help every family rediscover hope, resilience, and joy in their everyday lives. Transforming every challenge into abundant opportunities for lifelong connection."
       ],
-      "imageSrc": "/Services/marriage-family.webp",
+      "imageSrc": "/uploads/marriage/9d7287f0-1b4d-47a4-ba72-899ba2ded655-woman-talking-about-problems-with-psychologist-2023-02-14-03-53-47-utc-1024x683.webp",
       "imageAlt": "Couple in counseling session",
       "shutters": 5
     },
@@ -30,9 +30,18 @@
           "details": {
             "description": "Enhance relationship communication:\n\n• Personalized sessions\n• Empathy-driven discussions\n• Trust rebuilding exercises",
             "images": [
-              { "src": "/Projects/couples-1.webp", "alt": "Couples in counseling" },
-              { "src": "/Projects/couples-2.webp", "alt": "Interactive session" },
-              { "src": "/Projects/couples-3.webp", "alt": "Counselor with couple" }
+              {
+                "src": "/Projects/couples-1.webp",
+                "alt": "Couples in counseling"
+              },
+              {
+                "src": "/Projects/couples-2.webp",
+                "alt": "Interactive session"
+              },
+              {
+                "src": "/Projects/couples-3.webp",
+                "alt": "Counselor with couple"
+              }
             ]
           }
         },
@@ -43,9 +52,18 @@
           "details": {
             "description": "Strengthen family bonds through group sessions:\n\n• Interactive activities\n• Open dialogue facilitation\n• Collaborative problem solving",
             "images": [
-              { "src": "/Projects/family-1.webp", "alt": "Family workshop" },
-              { "src": "/Projects/family-2.webp", "alt": "Group family session" },
-              { "src": "/Projects/family-3.webp", "alt": "Family discussion" }
+              {
+                "src": "/Projects/family-1.webp",
+                "alt": "Family workshop"
+              },
+              {
+                "src": "/Projects/family-2.webp",
+                "alt": "Group family session"
+              },
+              {
+                "src": "/Projects/family-3.webp",
+                "alt": "Family discussion"
+              }
             ]
           }
         },
@@ -56,9 +74,18 @@
           "details": {
             "description": "Prepare for a successful union with pre-marital guidance:\n\n• Communication training\n• Conflict resolution strategies\n• Future planning guidance",
             "images": [
-              { "src": "/Projects/premarital-1.webp", "alt": "Pre-marital session" },
-              { "src": "/Projects/premarital-2.webp", "alt": "Couple planning" },
-              { "src": "/Projects/premarital-3.webp", "alt": "Counseling discussion" }
+              {
+                "src": "/Projects/premarital-1.webp",
+                "alt": "Pre-marital session"
+              },
+              {
+                "src": "/Projects/premarital-2.webp",
+                "alt": "Couple planning"
+              },
+              {
+                "src": "/Projects/premarital-3.webp",
+                "alt": "Counseling discussion"
+              }
             ]
           }
         },
@@ -69,9 +96,18 @@
           "details": {
             "description": "Resolve familial conflicts with structured programs:\n\n• Mediation sessions\n• Structured dialogue\n• Personalized action plans",
             "images": [
-              { "src": "/Projects/conflict-1.webp", "alt": "Mediation session" },
-              { "src": "/Projects/conflict-2.webp", "alt": "Family mediation" },
-              { "src": "/Projects/conflict-3.webp", "alt": "Counselor facilitating" }
+              {
+                "src": "/Projects/conflict-1.webp",
+                "alt": "Mediation session"
+              },
+              {
+                "src": "/Projects/conflict-2.webp",
+                "alt": "Family mediation"
+              },
+              {
+                "src": "/Projects/conflict-3.webp",
+                "alt": "Counselor facilitating"
+              }
             ]
           }
         }
@@ -108,6 +144,13 @@
         }
       ]
     },
-    "cta": {}
+    "cta": {
+      "title": "Ready to Build Your Vision?",
+      "description": "Contact us today to discuss your project and discover how our comprehensive civil contract services can bring your vision to life.",
+      "buttonText": "Schedule Consultation",
+      "buttonLink": "/contact",
+      "buttonColor": "bg-emerald-600",
+      "hoverButtonColor": "hover:bg-emerald-700"
+    }
   }
 }

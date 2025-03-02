@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
     // WARNING: This will ignore ESLint errors during production builds.
     ignoreDuringBuilds: true,
   },
+  images: {
+    domains: ["images.unsplash.com"],
+  },
   async headers() {
     return [
       {

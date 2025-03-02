@@ -287,7 +287,7 @@ export default function WasteManagementForm() {
     form.append("section", section);
   
     try {
-      const res = await fetch("/api/foriegn/retail", {
+      const res = await fetch("/api/retail/upload", {
         method: "POST",
         body: form,
       });

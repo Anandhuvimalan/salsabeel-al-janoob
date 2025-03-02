@@ -109,7 +109,7 @@ export default function WasteManagementForm() {
   const fetchWasteManagementData = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch("/api/vasthu")
+      const res = await fetch("/api/vasthu/")
       if (!res.ok) throw new Error("Failed to fetch waste management data")
       const data: WasteManagementData = await res.json()
       setFormData(data)
@@ -287,7 +287,7 @@ export default function WasteManagementForm() {
     form.append("section", section);
   
     try {
-      const res = await fetch("/api/vasthu/retail", {
+      const res = await fetch("/api/vasthu/upload", {
         method: "POST",
         body: form,
       });

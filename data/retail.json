@@ -1,7 +1,7 @@
 {
   "pageInfo": {
     "hero": {
-      "backgroundImage": "/Services/retail-image.webp",
+      "backgroundImage": "/uploads/retail/7ff51ed4-be7b-4d45-ab58-1d485858a5ec-retail2.jpg",
       "serviceType": "Retail Consultancy",
       "title": "Innovative Retail Solutions",
       "underlineText": "Retail Consultancy",
@@ -30,9 +30,18 @@
           "details": {
             "description": "Revamping a network of round-the-clock convenience stores:\n\n• Implemented advanced inventory systems\n• Enhanced digital marketing strategies\n• Achieved a 20% increase in revenue",
             "images": [
-              { "src": "/Projects/retail-convenience-1.webp", "alt": "Storefront" },
-              { "src": "/Projects/retail-convenience-2.webp", "alt": "Interior" },
-              { "src": "/Projects/retail-convenience-3.webp", "alt": "POS System" }
+              {
+                "src": "/Projects/retail-convenience-1.webp",
+                "alt": "Storefront"
+              },
+              {
+                "src": "/Projects/retail-convenience-2.webp",
+                "alt": "Interior"
+              },
+              {
+                "src": "/Projects/retail-convenience-3.webp",
+                "alt": "POS System"
+              }
             ]
           }
         },
@@ -43,9 +52,18 @@
           "details": {
             "description": "Transforming traditional cake shops and ice cream parlors:\n\n• Modernized brand identity\n• Streamlined operations\n• Boosted foot traffic by 30%",
             "images": [
-              { "src": "/Projects/retail-cake-shop-1.webp", "alt": "Branding" },
-              { "src": "/Projects/retail-cake-shop-2.webp", "alt": "Interior Design" },
-              { "src": "/Projects/retail-cake-shop-3.webp", "alt": "Product Display" }
+              {
+                "src": "/Projects/retail-cake-shop-1.webp",
+                "alt": "Branding"
+              },
+              {
+                "src": "/Projects/retail-cake-shop-2.webp",
+                "alt": "Interior Design"
+              },
+              {
+                "src": "/Projects/retail-cake-shop-3.webp",
+                "alt": "Product Display"
+              }
             ]
           }
         },
@@ -56,9 +74,18 @@
           "details": {
             "description": "Enhancing operational efficiency in fast food stalls, restaurants, and cafeterias:\n\n• Reduced waiting times by 25%\n• Optimized kitchen workflow\n• Elevated customer satisfaction",
             "images": [
-              { "src": "/Projects/retail-restaurant-1.webp", "alt": "Kitchen" },
-              { "src": "/Projects/retail-restaurant-2.webp", "alt": "Dining Area" },
-              { "src": "/Projects/retail-restaurant-3.webp", "alt": "Service" }
+              {
+                "src": "/Projects/retail-restaurant-1.webp",
+                "alt": "Kitchen"
+              },
+              {
+                "src": "/Projects/retail-restaurant-2.webp",
+                "alt": "Dining Area"
+              },
+              {
+                "src": "/Projects/retail-restaurant-3.webp",
+                "alt": "Service"
+              }
             ]
           }
         },
@@ -69,9 +96,18 @@
           "details": {
             "description": "Empowering supermarkets and hypermarkets with digital innovation:\n\n• Integrated inventory management\n• Launched loyalty programs and e-commerce platforms\n• Increased operational efficiency by 15%",
             "images": [
-              { "src": "/Projects/retail-supermarket-1.webp", "alt": "Digital Kiosk" },
-              { "src": "/Projects/retail-supermarket-2.webp", "alt": "Checkout System" },
-              { "src": "/Projects/retail-supermarket-3.webp", "alt": "Storefront" }
+              {
+                "src": "/Projects/retail-supermarket-1.webp",
+                "alt": "Digital Kiosk"
+              },
+              {
+                "src": "/Projects/retail-supermarket-2.webp",
+                "alt": "Checkout System"
+              },
+              {
+                "src": "/Projects/retail-supermarket-3.webp",
+                "alt": "Storefront"
+              }
             ]
           }
         }

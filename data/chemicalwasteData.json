@@ -15,100 +15,101 @@
         "Salsabeel Al Janoob provides responsible chemical waste management, transforming hazardous materials into environmental renewal. We prioritize community safety and regulatory compliance, offering solutions for industrial and household waste. Our focus is sustainable practices and resource conservation. Effective waste management is resource conservation and pollution reduction.",
         "We manage the complete chemical waste lifecycle, from collection to disposal, using advanced technology and expert professionals. We ensure regulatory adherence and transparency through detailed tracking. Committed to continuous improvement, we provide reliable, cost-effective services that protect the environment and public health, giving clients peace of mind."
       ],
-      "imageSrc": "/uploads/waste-management/explanation/22db4c9d-ba4f-4821-aa65-abd3c9710830.jpg",
+      "imageSrc": "/uploads/waste-management/81dc7f50-e9d1-4f24-af95-9f1163a37abd-Chemical-Waste-Disposal-Brisbane-–-How-To-Do-It-Effectively.jpg",
       "imageAlt": "Chemical Processing Flow Diagram",
       "shutters": 5
     },
-    "projects": {
-      "title": "Our Chemical Waste Projects",
-      "titleColor": "text-emerald-800",
-      "items": [
-        {
-          "category": "Industrial Partnership",
-          "title": "Industrial Petrochemical Waste Transformation",
-          "src": "/uploads/waste-management/projects/87886818-0c92-4226-8d76-64fda7f00d60.jpg",
-          "details": {
-            "description": "Partnering with leading refineries since 1998:\n\n• Over 2.5M tons of waste processed\n• 99.8% regulatory compliance\n• 45% reduction in landfill dependency\n.wuehdwuigdcwguye",
-            "images": [
-              {
-                "src": "/uploads/waste-management/projects/1a9a42d2-7cce-4f13-8618-f851a4176134.jpg",
-                "alt": "Control room"
-              },
-              {
-                "src": "/Projects/refinery-2.webp",
-                "alt": "Facility"
-              }
-            ]
+      "projects": {
+        "title": "Our Chemical Waste Projects",
+        "titleColor": "text-emerald-800",
+        "items": [
+          {
+            "category": "Industrial Partnership",
+            "title": "Industrial Petrochemical Waste Transformation",
+            "src": "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?q=80&w=2940&auto=format&fit=crop",
+            "details": {
+              "description": "Partnering with leading refineries since 1998:\n\n• Over 2.5M tons of waste processed\n• 99.8% regulatory compliance\n• 45% reduction in landfill dependency",
+              "images": [
+                {
+                  "src": "https://images.unsplash.com/photo-1581093806997-124204d9fa9d?q=80&w=2940&auto=format&fit=crop",
+                  "alt": "Control room"
+                },
+                {
+                  "src": "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?q=80&w=2831&auto=format&fit=crop",
+                  "alt": "Facility"
+                }
+              ]
+            }
+          },
+          {
+            "category": "Environmental Remediation",
+            "title": "Advanced PCB Remediation & Site Recovery",
+            "src": "https://images.unsplash.com/photo-1614928228254-a966fda9f3a5?q=80&w=2940&auto=format&fit=crop",
+            "details": {
+              "description": "Revitalizing contaminated sites with precision:\n\n• 45-acre site fully restored\n• Over 13,000 tons of pollutants neutralized\n• Winner of the 2023 Environmental Excellence Award",
+              "images": [
+                {
+                  "src": "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2940&auto=format&fit=crop",
+                  "alt": "Excavation"
+                },
+                {
+                  "src": "https://images.unsplash.com/photo-1583421543206-270c69aef136?q=80&w=2940&auto=format&fit=crop",
+                  "alt": "Treatment"
+                },
+                {
+                  "src": "https://images.unsplash.com/photo-1506459225024-1428097a7e18?q=80&w=2748&auto=format&fit=crop",
+                  "alt": "Aerial view"
+                }
+              ]
+            }
+          },
+          {
+            "category": "Advanced Recycling",
+            "title": "Innovative Pharmaceutical Solvent Recovery",
+            "src": "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=2940&auto=format&fit=crop",
+            "details": {
+              "description": "Maximizing resource efficiency with closed-loop recycling:\n\n• 93% solvent recovery efficiency\n• Over $1.3M in annual savings\n• ISO 14001 certified with 5,000+ tons capacity",
+              "images": [
+                {
+                  "src": "https://images.unsplash.com/photo-1581093458791-9f3c3hip159?q=80&w=2940&auto=format&fit=crop",
+                  "alt": "Distillation"
+                },
+                {
+                  "src": "https://images.unsplash.com/photo-1581093450021-4a7360e9a6b5?q=80&w=2940&auto=format&fit=crop",
+                  "alt": "Lab testing"
+                },
+                {
+                  "src": "https://images.unsplash.com/photo-1566542258954-32663e1dd9be?q=80&w=2940&auto=format&fit=crop",
+                  "alt": "Storage"
+                }
+              ]
+            }
+          },
+          {
+            "category": "Emergency Response",
+            "title": "Rapid Chlorine Gas Mitigation",
+            "src": "https://images.unsplash.com/photo-1629795588272-163dbf32ef73?q=80&w=2930&auto=format&fit=crop",
+            "details": {
+              "description": "Our emergency team responds swiftly to hazardous incidents:\n\n• Secured a 5-ton containment vessel\n• Neutralized 850 gallons of chlorine\n• Achieved zero incidents with NIMS-compliant protocols",
+              "images": [
+                {
+                  "src": "https://images.unsplash.com/photo-1624204883503-8ec0400a3c6c?q=80&w=2940&auto=format&fit=crop",
+                  "alt": "Hazmat team"
+                },
+                {
+                  "src": "https://images.unsplash.com/photo-1624204919356-42751a6c5cd9?q=80&w=2940&auto=format&fit=crop",
+                  "alt": "Containment"
+                },
+                {
+                  "src": "https://images.unsplash.com/photo-1606604830262-2e0732552864?q=80&w=2940&auto=format&fit=crop",
+                  "alt": "Review"
+                }
+              ]
+            }
           }
-        },
-        {
-          "category": "Environmental Remediation",
-          "title": "Advanced PCB Remediation & Site Recovery",
-          "src": "/uploads/waste-management/8b6c0d51-b6ea-4121-9f56-48a3b720ec09-11130258.jpg",
-          "details": {
-            "description": "Revitalizing contaminated sites with precision:\n\n• 45-acre site fully restored\n• Over 13,000 tons of pollutants neutralized\n• Winner of the 2023 Environmental Excellence Award",
-            "images": [
-              {
-                "src": "/Projects/remediation-1.webp",
-                "alt": "Excavation"
-              },
-              {
-                "src": "/Projects/remediation-2.webp",
-                "alt": "Treatment"
-              },
-              {
-                "src": "/Projects/remediation-3.webp",
-                "alt": "Aerial view"
-              }
-            ]
-          }
-        },
-        {
-          "category": "Advanced Recycling",
-          "title": "Innovative Pharmaceutical Solvent Recovery",
-          "src": "/Projects/solvent-recovery.webp",
-          "details": {
-            "description": "Maximizing resource efficiency with closed-loop recycling:\n\n• 93% solvent recovery efficiency\n• Over $1.3M in annual savings\n• ISO 14001 certified with 5,000+ tons capacity",
-            "images": [
-              {
-                "src": "/Projects/recycling-1.webp",
-                "alt": "Distillation"
-              },
-              {
-                "src": "/Projects/recycling-2.webp",
-                "alt": "Lab testing"
-              },
-              {
-                "src": "/Projects/recycling-3.webp",
-                "alt": "Storage"
-              }
-            ]
-          }
-        },
-        {
-          "category": "Emergency Response",
-          "title": "Rapid Chlorine Gas Mitigation",
-          "src": "/Projects/chlorine-response.webp",
-          "details": {
-            "description": "Our emergency team responds swiftly to hazardous incidents:\n\n• Secured a 5-ton containment vessel\n• Neutralized 850 gallons of chlorine\n• Achieved zero incidents with NIMS-compliant protocols",
-            "images": [
-              {
-                "src": "/Projects/emergency-1.webp",
-                "alt": "Hazmat team"
-              },
-              {
-                "src": "/Projects/emergency-2.webp",
-                "alt": "Containment"
-              },
-              {
-                "src": "/Projects/emergency-3.webp",
-                "alt": "Review"
-              }
-            ]
-          }
-        }
-      ]
-    },
+        ]
+      }
+    ,
     "faqs": {
       "title": "Chemical Waste FAQs",
       "highlightWord": "Solutions",

@@ -1,7 +1,7 @@
 {
   "pageInfo": {
     "hero": {
-      "backgroundImage": "/Services/foreign-language.webp",
+      "backgroundImage": "/uploads/foriegn/97c77210-b7b5-496b-88f3-16b06bea12d2-Interactive-Language-Center-and-its-academic-system.jpeg-1080x675.jpg",
       "serviceType": "Foreign Language Learning Centers",
       "title": "Unlock Global Communication",
       "underlineText": "Foreign Language Learning Centers",
@@ -15,7 +15,7 @@
         "Our Foreign Language Learning Centers offer immersive programs designed to break down communication barriers and foster global cultural understanding. Led by native-speaking instructors, our innovative courses cater to all proficiency levels, from beginners to advanced learners. We combine interactive lessons with real-world practice to ensure students gain confidence and fluency in their target language, achieving lasting communicative competence.",
         "Our centers feature modern classrooms, digital language labs, and cultural exchange events that enhance learning through immersive experiences. We provide personalized feedback, small group sessions, and continuous support to maximize progress. With a focus on practical application and cultural enrichment, our programs prepare students for international travel, academic success, and professional opportunities in a globalized world."
       ],
-      "imageSrc": "/Services/image8.webp",
+      "imageSrc": "/uploads/foriegn/c1d2e8e5-2531-4736-abb9-ff2c24e9823b-want-to-learn-a-new-language-try-learning-french.webp",
       "imageAlt": "Foreign language class",
       "shutters": 5
     },

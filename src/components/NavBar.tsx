@@ -110,7 +110,6 @@ const NavbarDesktop = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                   className="fixed left-0 right-0 w-full bg-gray-900/95 backdrop-blur-md text-white z-40 shadow-2xl border-t border-gray-800 mt-2"
                 >
@@ -124,7 +123,6 @@ const NavbarDesktop = () => {
                               key={hoveredServiceIndex}
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
-                              exit={{ opacity: 0 }}
                               transition={{ duration: 0.5 }}
                               className="absolute inset-0"
                             >
@@ -154,6 +152,7 @@ const NavbarDesktop = () => {
                                     </p>
                                     <Link
                                       href={`/${services[hoveredServiceIndex]?.title.toLowerCase().replace(/\s+/g, "-")}`}
+                                      onClick={() => setIsServicesOpen(false)}
                                       className="mt-6 inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-5 rounded-full transition-all"
                                     >
                                       Learn More
@@ -187,12 +186,13 @@ const NavbarDesktop = () => {
                                 scale: 1.02,
                                 transition: {
                                   duration: 0.4,
-                                  ease: [0.23, 1, 0.32, 1], // Custom cubic bezier for smooth easing
+                                  ease: [0.23, 1, 0.32, 1],
                                 },
                               }}
                             >
                               <Link
                                 href={`/${service.title.toLowerCase().replace(/\s+/g, "-")}`}
+                                onClick={() => setIsServicesOpen(false)}
                                 className="flex items-start p-4 h-full relative z-10 group"
                               >
                                 <div className="w-full transition-transform duration-500 ease-out transform-gpu group-hover:translate-y-[-2px]">
@@ -216,14 +216,10 @@ const NavbarDesktop = () => {
                                 </div>
                               </Link>
                               <div
-                                className={`absolute inset-0 bg-gradient-to-br ${
-                                  service.gradient
-                                } opacity-0 group-hover:opacity-10 transition-opacity duration-500 ease-out`}
+                                className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500 ease-out`}
                               />
                               <div
-                                className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${
-                                  service.gradient
-                                } transform origin-left transition-transform duration-500 ease-out scale-x-0 group-hover:scale-x-100`}
+                                className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r ${service.gradient} transform origin-left transition-transform duration-500 ease-out scale-x-0 group-hover:scale-x-100`}
                               />
                             </motion.div>
                           ))}
@@ -279,4 +275,3 @@ const Navbar = () => {
 }
 
 export default Navbar
-
