@@ -1,0 +1,156 @@
+{
+    "pageInfo": {
+      "hero": {
+        "backgroundImage": "/Services/all-waste-bg.webp",
+        "serviceType": "All Waste Management",
+        "title": "Comprehensive & Innovative Waste Solutions",
+        "underlineText": "All Waste Management",
+        "description": "Providing holistic, sustainable solutions for managing municipal, electronic, hazardous, and industrial waste.",
+        "buttonText": "Contact Us",
+        "buttonLink": "/contact"
+      },
+      "explanation": {
+        "header": "Waste Management Solutions",
+        "paragraphs": [
+          "Salsabeel Al Janoob provides comprehensive waste management solutions, handling all waste types from general refuse to specialized hazardous materials. We prioritize environmental protection and ensure responsible disposal, meeting the diverse needs of businesses, industries, and communities. Our focus is on sustainable practices.",
+          "Our services encompass collection, recycling, treatment, and disposal. We utilize advanced technologies and proven methods to minimize environmental impact. We are committed to reliable, efficient, and compliant waste management, contributing to a cleaner and healthier future. Clients can trust us for thorough and responsible waste handling."
+        ],
+        "imageSrc": "/Services/image2.webp",
+        "imageAlt": "Integrated Waste Management Diagram",
+        "shutters": 5
+      },
+      "projects": {
+        "title": "Our Waste Management Projects",
+        "titleColor": "text-emerald-800",
+        "items": [
+          {
+            "category": "Municipal Waste",
+            "title": "Smart Recycling Initiatives",
+            "src": "/Projects/smart-recycling.webp",
+            "details": {
+              "description": "Transforming urban waste into valuable resources:\n\n• 150+ community programs\n• 98% recycling efficiency\n• Dramatic reduction in landfill use",
+              "images": [
+                {
+                  "src": "/Projects/recycling1.webp",
+                  "alt": "Recycling center"
+                },
+                {
+                  "src": "/Projects/recycling2.webp",
+                  "alt": "Community bin"
+                },
+                {
+                  "src": "/Projects/recycling3.webp",
+                  "alt": "Recycled material"
+                }
+              ]
+            }
+          },
+          {
+            "category": "E-Waste Management",
+            "title": "Electronic Waste Recovery",
+            "src": "/Projects/e-waste.webp",
+            "details": {
+              "description": "Innovative e-waste processing for a greener future:\n\n• Secure data destruction\n• Over 500 tons processed annually\n• Environmentally certified recycling practices",
+              "images": [
+                {
+                  "src": "/Projects/ewaste1.webp",
+                  "alt": "E-waste sorting"
+                },
+                {
+                  "src": "/Projects/ewaste2.webp",
+                  "alt": "Component recovery"
+                },
+                {
+                  "src": "/Projects/ewaste3.webp",
+                  "alt": "Recycling facility"
+                }
+              ]
+            }
+          },
+          {
+            "category": "Hazardous Waste",
+            "title": "Comprehensive Hazardous Waste Solutions",
+            "src": "/Projects/hazardous-waste.webp",
+            "details": {
+              "description": "Safely managing hazardous waste through advanced processes:\n\n• 24/7 emergency response\n• Strict adherence to safety protocols\n• Zero incident record",
+              "images": [
+                {
+                  "src": "/Projects/hazardous1.webp",
+                  "alt": "Hazardous waste container"
+                },
+                {
+                  "src": "/Projects/hazardous2.webp",
+                  "alt": "Safety measures"
+                },
+                {
+                  "src": "/Projects/hazardous3.webp",
+                  "alt": "Containment facility"
+                }
+              ]
+            }
+          },
+          {
+            "category": "Industrial Solutions",
+            "title": "Integrated Industrial Waste Management",
+            "src": "/Projects/industrial-waste.webp",
+            "details": {
+              "description": "Tailored solutions for complex industrial waste challenges:\n\n• Comprehensive waste audits\n• 95% waste reduction success rate\n• Innovative recycling and disposal methods",
+              "images": [
+                {
+                  "src": "/Projects/industrial1.webp",
+                  "alt": "Industrial audit"
+                },
+                {
+                  "src": "/Projects/industrial2.webp",
+                  "alt": "Waste processing"
+                },
+                {
+                  "src": "/Projects/industrial3.webp",
+                  "alt": "Recycling plant"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "faqs": {
+        "title": "Waste Management FAQs",
+        "highlightWord": "Solutions",
+        "description": "Answers to frequently asked questions about our comprehensive waste management services.",
+        "items": [
+          {
+            "question": "What types of waste do you manage?",
+            "answer": "We handle a broad spectrum of waste including municipal, electronic, hazardous, and industrial waste."
+          },
+          {
+            "question": "How do you ensure environmental compliance?",
+            "answer": "Our processes strictly adhere to local, national, and international environmental regulations to ensure safe and compliant waste management."
+          },
+          {
+            "question": "What innovative solutions do you offer?",
+            "answer": "From smart recycling initiatives to advanced hazardous waste containment, we use cutting-edge technologies to maximize resource recovery and minimize environmental impact."
+          },
+          {
+            "question": "Can your solutions be tailored for my industry?",
+            "answer": "Absolutely. We work closely with businesses to develop customized waste management strategies that address your unique operational challenges."
+          },
+          {
+            "question": "How do you handle emergency waste situations?",
+            "answer": "Our 24/7 emergency response team is equipped to manage urgent waste challenges safely and efficiently."
+          },
+          {
+            "question": "How can I get started with your services?",
+            "answer": "Simply contact us through our website or call our dedicated support line to schedule a consultation and explore tailored waste management solutions."
+          }
+        ]
+      },
+      "cta": {
+        "title": "Ready for a Cleaner Future?",
+        "description": "Partner with us for integrated waste management solutions that drive sustainability and environmental excellence.",
+        "buttonText": "Schedule Consultation",
+        "buttonLink": "/contact",
+        "buttonColor": "bg-emerald-600",
+        "hoverButtonColor": "hover:bg-emerald-700"
+      }
+    }
+  }

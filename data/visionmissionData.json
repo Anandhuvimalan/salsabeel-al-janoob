@@ -1,0 +1,45 @@
+{
+  "inlineBanner": "Vision & Mission",
+  "mainHeading": "Defining Our Path, Shaping the Future",
+  "visionCard": {
+    "icon": "/icons/sparkles.svg",
+    "title": "Our Vision",
+    "description": "To be a globally recognized leader in integrated solutions, renowned for connecting businesses and individuals to opportunities worldwide. We aspire to be the preferred partner for clients seeking comprehensive and reliable services, setting the standard for excellence in international trade, diverse business solutions, and community enrichment. We envision a future where Salsabeel Al Janoob is synonymous with trust, innovation, and sustainable growth, contributing positively to the economic and social well-being of the communities we serve."
+  },
+  "missionCard": {
+    "icon": "/icons/scale.svg",
+    "title": "Our Mission",
+    "items": [
+      {
+        "icon": "/icons/GlobeAlt.svg",
+        "strongText": "Facilitating seamless international trade:",
+        "text": "Connecting businesses with global markets through efficient and reliable import and export solutions."
+      },
+      {
+        "icon": "/icons/LightBulb.svg",
+        "strongText": "Delivering comprehensive business solutions:",
+        "text": "Offering diverse services from waste management to retail consultancy, tailored to evolving client needs."
+      },
+      {
+        "icon": "/icons/UserGroup.svg",
+        "strongText": "Fostering personal and professional growth:",
+        "text": "Providing counseling and educational resources to empower individual potential."
+      },
+      {
+        "icon": "/icons/scale.svg",
+        "strongText": "Upholding ethical standards:",
+        "text": "Conducting business with integrity, transparency, and accountability."
+      },
+      {
+        "icon": "/icons/sparkles.svg",
+        "strongText": "Embracing innovation & sustainability:",
+        "text": "Developing sustainable solutions while minimizing environmental impact."
+      },
+      {
+        "icon": "/icons/HandThumbUp.svg",
+        "strongText": "Building strong relationships:",
+        "text": "Nurturing partnerships based on mutual respect and trust."
+      }
+    ]
+  }
+}

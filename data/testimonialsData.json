@@ -1,0 +1,85 @@
+{
+  "header": {
+    "banner": "Trusted Across Industries",
+    "title": "Voices of Success",
+    "subheading": "Testimonials from valued partners and clients worldwide"
+  },
+  "columns": {
+    "column1": [
+      {
+        "name": "Ahmed Al-Rashidi",
+        "role": "International Trade Partner",
+        "img": "https://i.pravatar.cc/150?img=10",
+        "alt": "Ahmed Al-Rashidi",
+        "text": "Salsabeel Al Janoob transformed our import/export operations with their seamless logistics and market expertise. A truly reliable global partner."
+      },
+      {
+        "name": "Karthik Subramanian",
+        "role": "Construction Project Manager",
+        "img": "https://i.pravatar.cc/150?img=11",
+        "alt": "Karthik Subramanian",
+        "text": "Our infrastructure development advanced remarkably under their innovative project management and timely execution."
+      },
+      {
+        "name": "Fatima Al-Harthi",
+        "role": "Waste Management Director",
+        "img": "https://i.pravatar.cc/150?img=12",
+        "alt": "Fatima Al-Harthi",
+        "text": "Remarkably efficient waste management"
+      }
+    ],
+    "column2": [
+      {
+        "name": "Priya Menon",
+        "role": "Retail Chain Owner",
+        "img": "/uploads/testimonials/c19ccc95-f6a1-4f9d-80b6-43b626b66590-10163132.jpg",
+        "alt": "Priya Menon",
+        "text": "The retail consultancy team revitalized our business model, boosting customer engagement and profitability significantly."
+      },
+      {
+        "name": "Sundar Rajan",
+        "role": "Corporate Trainer",
+        "img": "https://i.pravatar.cc/150?img=14",
+        "alt": "Sundar Rajan",
+        "text": "Their corporate training programs empowered our workforce, driving productivity and skill enhancement."
+      },
+      {
+        "name": "Rekha Iyer",
+        "role": "Global Trade CEO",
+        "img": "https://i.pravatar.cc/150?img=15",
+        "alt": "Rekha Iyer",
+        "text": "Global vision, exceptional leadership"
+      }
+    ],
+    "column3": [
+      {
+        "name": "Omar Abdullah",
+        "role": "Government Contracts",
+        "img": "https://i.pravatar.cc/150?img=16",
+        "alt": "Omar Abdullah",
+        "text": "Outstanding governmental collaboration"
+      },
+      {
+        "name": "Yousef Al-Khaldi",
+        "role": "Career Counseling Client",
+        "img": "https://i.pravatar.cc/150?img=17",
+        "alt": "Yousef Al-Khaldi",
+        "text": "Innovative logistics solutions"
+      },
+      {
+        "name": "Aisha Al-Maskari",
+        "role": "Educational Partner",
+        "img": "https://i.pravatar.cc/150?img=18",
+        "alt": "Aisha Al-Maskari",
+        "text": "Exemplary educational partnership"
+      },
+      {
+        "name": "Hamad Al-Nuaimi",
+        "role": "Logistics Partner",
+        "img": "https://i.pravatar.cc/150?img=19",
+        "alt": "Hamad Al-Nuaimi",
+        "text": "Seamless global logistics"
+      }
+    ]
+  }
+}

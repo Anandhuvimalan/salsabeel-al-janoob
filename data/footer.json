@@ -1,0 +1,80 @@
+{
+  "companyInfo": {
+    "logoSrc": "/uploads/footer/0132f45a-b842-4b4b-9778-40de29e43a84-logo.svg",
+    "heading": "Salsabeel Al Janoob Group",
+    "description": "Trusted import-export solutions since 1975, committed to excellence in India and Oman."
+  },
+  "quickLinks": [
+    {
+      "name": "Home",
+      "link": "/"
+    },
+    {
+      "name": "Services",
+      "link": "/services"
+    },
+    {
+      "name": "About",
+      "link": "/about"
+    },
+    {
+      "name": "Careers",
+      "link": "/careers"
+    },
+    {
+      "name": "Contact",
+      "link": "/contact"
+    }
+  ],
+  "newsletter": {
+    "heading": "Newsletter",
+    "placeholder": "Your email",
+    "buttonText": "Subscribe",
+    "buttonIcon": "/uploads/footer/780c77d2-4a7a-4b5b-8e07-4d40c3cb063f-send.svg"
+  },
+  "socialMedia": [
+    {
+      "iconSrc": "/uploads/footer/4289208f-a8a6-4f9b-bcdc-c313710492b2-instagram.svg",
+      "name": "Instagram",
+      "link": "https://instagram.com/demo"
+    },
+    {
+      "iconSrc": "/icons/linkedin.svg",
+      "name": "LinkedIn",
+      "link": "https://linkedin.com/demo"
+    },
+    {
+      "iconSrc": "/uploads/footer/4dca0c15-a19c-4ec1-ba69-38e6d09ef614-facebook.svg",
+      "name": "Facebook",
+      "link": "https://facebook.com/demo"
+    }
+  ],
+  "companyLocations": [
+    {
+      "name": "Salsabeel Al Janoob ImpExp",
+      "operation": "Indian Operation",
+      "address": "Jwala Complex, Marappalam, PO Madukarai 641105, Coimbatore, Tamilnadu",
+      "phoneNumbers": [
+        "0422-4547438",
+        "+91 93494 74746",
+        "+91 7550350680"
+      ],
+      "mapSrc": "https://g.co/kgs/qPtsq3s"
+    },
+    {
+      "name": "Salsabeel Al Janoob Trad & Cont. Est",
+      "operation": "Oman Operation",
+      "address": "PO Box xxxx PC xxx Salalah, Head Office at Barka, Sultanate of Oman",
+      "phoneNumbers": [
+        "+968 9171 8606"
+      ],
+      "mapSrc": "https://g.co/kgs/qPtsq3s"
+    }
+  ],
+  "legal": {
+    "terms": "/terms",
+    "privacy": "/privacy",
+    "copyright": "© Salsabeel Al Janoob Group. All rights reserved.",
+    "chevronIcon": "/uploads/footer/3f94a35b-bb38-4167-9947-649b4c978017-chevron-right.svg"
+  }
+}

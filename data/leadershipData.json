@@ -1,0 +1,52 @@
+{
+  "banner": "Meet Our Leaders",
+  "heading": "Our Leadership",
+  "profiles": [
+    {
+      "name": "Khalfan Abdullah Khalfan Al Mandhari",
+      "role": "Chairman",
+      "description": "Visionary leader with decades of experience driving business growth and development at Salsabeel Al Janoob.",
+      "image": {
+        "src": "/uploads/leadership/40fb8aae-0bd3-40a8-9c4f-d8b07605b2c2-allwaste.jpg",
+        "alt": "Khalfan Abdullah Khalfan Al Mandary"
+      },
+      "contacts": {
+        "phone": [
+          "+968 99 779771"
+        ],
+        "email": "pramodsh@salsabeelaljanoobimpexp.com"
+      }
+    },
+    {
+      "name": "Pramod Haridasan",
+      "role": "Managing Director & General Manager",
+      "description": "Seasoned professional with extensive expertise in international trade and strategic business management.",
+      "image": {
+        "src": "/uploads/leadership/428be164-146f-4ea0-b840-94b5c84a9e55-3.jpg",
+        "alt": "Pramod Haridasan"
+      },
+      "contacts": {
+        "phone": [
+          "+968 9171 8606",
+          "+91 93494 74746"
+        ],
+        "email": "pramodsh@salsabeelaljanoobimpexp.com"
+      }
+    },
+    {
+      "name": "Sasidharan Kunnath",
+      "role": "Director, Business Enhance",
+      "description": "Expert in business optimization and process improvement with a track record of driving operational excellence.",
+      "image": {
+        "src": "/uploads/leadership/ec41b6a4-4f83-4d60-934f-ddda1eb0d9a1-Sasi PDF.png",
+        "alt": "Sasidharan Kunnath"
+      },
+      "contacts": {
+        "phone": [
+          "+91 75503 50680"
+        ],
+        "email": "s.kunnath@salsabeelaljanoobimpexp.com"
+      }
+    }
+  ]
+}

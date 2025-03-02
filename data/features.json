@@ -1,0 +1,75 @@
+{
+  "heading": {
+    "title": "Global Trade Solutions",
+    "subtitle": "Transform your international trade operations with our comprehensive solutions"
+  },
+  "features": [
+    {
+      "title": "Global Logistics",
+      "description": "End-to-end supply chain solutions with real-time tracking",
+      "icon": "1740513874270-e1mk60ovujh.svg",
+      "details": [
+        "Multimodal Transport",
+        "Customs Clearance",
+        "Cargo Insurance"
+      ]
+    },
+    {
+      "title": "Trade Compliance",
+      "description": "Expert documentation and regulatory guidance",
+      "icon": "square-check-big.svg",
+      "details": [
+        "Export Controls",
+        "Tariff Management",
+        "Licensing"
+      ]
+    },
+    {
+      "title": "Market Strategy",
+      "description": "Data-driven international expansion planning",
+      "icon": "1740651491823-vszvi2rmdd.svg",
+      "details": [
+        "Competitive Analysis",
+        "Risk Assessment",
+        "Localization"
+      ]
+    },
+    {
+      "title": "Warehousing",
+      "description": "Global network of secure storage facilities",
+      "icon": "package.svg",
+      "details": [
+        "Bonded Storage",
+        "Inventory Systems",
+        "JIT Delivery"
+      ]
+    },
+    {
+      "title": "Trade Finance",
+      "description": "Secure global transaction solutions",
+      "icon": "truck.svg",
+      "details": [
+        "Letters of Credit",
+        "Export Credit",
+        "Currency Solutions"
+      ]
+    },
+    {
+      "title": "Digital Platform",
+      "description": "Modern tools for trade management",
+      "icon": "plane.svg",
+      "details": [
+        "Document Portal",
+        "Analytics Dashboard",
+        "API Integration"
+      ]
+    }
+  ],
+  "cta": {
+    "title": "Ready to Transform Your Trade Operations?",
+    "subtitle": "Start your global expansion journey with our expert team and cutting-edge solutions",
+    "linkText": "Get Started",
+    "linkUrl": "/contact",
+    "icon": "plane.svg"
+  }
+}

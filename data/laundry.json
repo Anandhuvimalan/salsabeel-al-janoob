@@ -1,0 +1,100 @@
+{
+  "pageInfo": {
+    "hero": {
+      "backgroundImage": "/Services/laundry-service.jpg",
+      "serviceType": "Laundry & Dry Cleaning",
+      "title": "Spotless & Sustainable Laundry",
+      "underlineText": "Laundry & Dry Cleaning",
+      "description": "Experience premium, eco-friendly laundry and dry cleaning services that refresh your wardrobe with care and efficiency.",
+      "buttonText": "Schedule Pickup",
+      "buttonLink": "/contact"
+    },
+    "explanation": {
+      "header": "Professional Laundry & Dry Cleaning Services",
+      "paragraphs": [
+        "Our laundry service delivers top-quality cleaning solutions tailored to your busy lifestyle. We combine modern technology with environmentally responsible practices to ensure your garments are impeccably cleaned, pressed, and returned in pristine condition.",
+        "From standard wash & fold to specialized dry cleaning for delicate fabrics, we provide a hassle-free experience with convenient pickup and delivery. Enjoy competitive pricing, fast turnaround times, and the confidence that your wardrobe is cared for by experts."
+      ],
+      "imageSrc": "/Services/laundry-service.jpg",
+      "imageAlt": "Laundry service illustration",
+      "shutters": 5
+    },
+    "projects": {
+      "title": "Our Laundry Service Solutions",
+      "titleColor": "text-blue-800",
+      "items": [
+        {
+          "category": "Wash & Fold",
+          "title": "Standard Wash & Fold Service",
+          "src": "/Projects/laundry-wash-fold.jpg",
+          "details": {
+            "description": "Our standard wash & fold service offers reliable cleaning for everyday garments:\n\n• Gentle wash cycles\n• Expert folding techniques\n• Quick turnaround",
+            "images": [
+              { "src": "/Projects/laundry-wash-fold-1.jpg", "alt": "Washed clothes" },
+              { "src": "/Projects/laundry-wash-fold-2.jpg", "alt": "Neatly folded laundry" }
+            ]
+          }
+        },
+        {
+          "category": "Dry Cleaning",
+          "title": "Premium Dry Cleaning",
+          "src": "/Projects/laundry-dry-cleaning.jpg",
+          "details": {
+            "description": "Our premium dry cleaning service treats your delicate fabrics with expert care:\n\n• Advanced stain removal\n• Fabric-safe cleaning agents\n• Professional finishing",
+            "images": [
+              { "src": "/Projects/laundry-dry-cleaning-1.jpg", "alt": "Dry cleaning process" },
+              { "src": "/Projects/laundry-dry-cleaning-2.jpg", "alt": "Clean garments" }
+            ]
+          }
+        },
+        {
+          "category": "Express Services",
+          "title": "Express Pickup & Delivery",
+          "src": "/Projects/laundry-express.jpg",
+          "details": {
+            "description": "Enjoy the convenience of our express pickup and delivery service:\n\n• Scheduled pickups\n• Timely delivery\n• Contactless service",
+            "images": [
+              { "src": "/Projects/laundry-express-1.jpg", "alt": "Pickup service" },
+              { "src": "/Projects/laundry-express-2.jpg", "alt": "Delivery service" }
+            ]
+          }
+        }
+      ]
+    },
+    "faqs": {
+      "title": "Laundry Service FAQs",
+      "highlightWord": "Laundry",
+      "description": "Find answers to common questions about our laundry and dry cleaning services.",
+      "items": [
+        {
+          "question": "What laundry services do you offer?",
+          "answer": "We offer wash & fold, premium dry cleaning, and express pickup & delivery services to meet all your laundry needs."
+        },
+        {
+          "question": "Are your cleaning products eco-friendly?",
+          "answer": "Yes, we use environmentally safe detergents and sustainable cleaning practices to protect both your garments and the planet."
+        },
+        {
+          "question": "How long does it take to process my laundry?",
+          "answer": "Our standard turnaround time is 24 hours, with express options available for urgent needs."
+        },
+        {
+          "question": "Do you provide pickup and delivery services?",
+          "answer": "Absolutely. We offer scheduled pickup and delivery to make your laundry experience hassle-free."
+        },
+        {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept major credit cards, debit cards, and online payment methods for your convenience."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready for Spotless Laundry?",
+      "description": "Schedule your pickup today and enjoy the convenience of professional, eco-friendly laundry services at your doorstep.",
+      "buttonText": "Schedule Pickup",
+      "buttonLink": "/contact",
+      "buttonColor": "bg-green-600",
+      "hoverButtonColor": "hover:bg-green-700"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom easing curve */
+@layer utilities {
+  .ease-\[cubic-bezier\(0\.4\,0\,0\.2\,1\)\] {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Scrollbar hiding */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  width:100vw;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  opacity: 0;
+  animation: none;
+}
+.animate-fade-in.visible {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}

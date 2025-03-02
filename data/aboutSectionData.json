@@ -1,0 +1,70 @@
+{
+  "hero": {
+    "title": {
+      "highlight": "Salsabeel Al Janoob",
+      "subtitle": "Pioneering Global Trade Since 1975"
+    },
+    "description": [
+      "For nearly five decades, we've been the backbone of international commerce, connecting Oman to global markets through innovative logistics solutions and trusted partnerships.",
+      "Our digital-first approach combines legacy expertise with cutting-edge technology to deliver seamless cross-border trade experiences."
+    ],
+    "button": {
+      "text": "Explore Our Network"
+    },
+    "image": {
+      "src": "/uploads/about/7f47f084-926e-43f9-b53a-ec25701d9c7a-transport-logistics-concept.webp",
+      "alt": "Global Trade Network"
+    },
+    "imageOverlay": {
+      "text": "48 Countries Connected",
+      "icon": "/uploads/about/074229e3-e966-4cd6-8dd1-e3497ac29777-globe.svg"
+    }
+  },
+  "achievements": [
+    {
+      "value": "49",
+      "suffix": "+",
+      "label": "Years in Global Trade",
+      "color": "text-blue-600"
+    },
+    {
+      "value": 1500,
+      "suffix": "+",
+      "label": "Successful Shipments",
+      "color": "text-teal-600"
+    },
+    {
+      "value": 95,
+      "suffix": "%",
+      "label": "On-Time Delivery Rate",
+      "color": "text-purple-600"
+    },
+    {
+      "value": 50,
+      "suffix": "+",
+      "label": "Global Partnerships",
+      "color": "text-orange-600"
+    }
+  ],
+  "values": {
+    "title": "Our Core Values",
+    "items": [
+      {
+        "icon": "/uploads/about/1a8161e1-7826-4b6a-b7a4-5133be847152-rocket.svg",
+        "title": "Innovation Driven",
+        "description": "Continuously evolving with AI-powered logistics and blockchain-enabled documentation systems.",
+        "iconColor": "text-blue-600"
+      },
+      {
+        "icon": "/smallaboutsection/icons/anchor.svg",
+        "title": "Reliability Assured",
+        "description": "99.7% on-time delivery rate backed by real-time tracking and predictive analytics.",
+        "iconColor": "text-teal-600"
+      }
+    ],
+    "image": {
+      "src": "/uploads/about/7370c69c-a66d-4432-a96a-8bfd591a074c-pexels-frans-van-heerden-201846-1624695.webp",
+      "alt": "Modern Warehouse"
+    }
+  }
+}

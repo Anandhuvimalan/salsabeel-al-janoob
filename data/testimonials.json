@@ -1,0 +1,28 @@
+{
+  "section": {
+    "heading": "Our Testimonials",
+    "descriptions": [
+      "At Salsabeel Al Janoob, we value our clients and strive to build lasting relationships based on trust and exceptional service."
+    ]
+  },
+  "testimonials": [
+    {
+      "name": "Aisha Al Hashmi",
+      "title": "CEO, Global Trade Solutions",
+      "message": "Salsabeel Al Janoob has been an exceptional partner in our export-import operations. Their professionalism have been key to our success.",
+      "image": "/uploads/testimonials/644216e8-1748-4dc7-83c5-7dbc24f6c950-testimonial1.webp"
+    },
+    {
+      "name": "Omar Abdullah",
+      "title": "Director, Waste Management Co.",
+      "message": "The team at Salsabeel Al Janoob excels in waste management solutions. Their attention to detail and commitment to compliance is unmatched.",
+      "image": "/uploads/testimonials/9282f846-2d3b-4eef-983e-2bda16b6dc7c-testimonial2.webp"
+    },
+    {
+      "name": "Fatima Noor",
+      "title": "Owner, Creative Retail Solutions",
+      "message": "Thanks to Salsabeel Al Janoob's retail consultancy services, our business has seen tremendous growth. Their insights are invaluable!",
+      "image": "/uploads/testimonials/538a403e-d003-40a1-bd49-dac420c45658-testimonial3.webp"
+    }
+  ]
+}

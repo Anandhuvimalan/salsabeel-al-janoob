@@ -1,0 +1,40 @@
+/* WebKit Browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 8px; /* Adjust width */
+    height: 8px; /* Adjust height for horizontal scrollbars */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Light background */
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6a11cb, #2575fc); /* Gradient color */
+    border-radius: 10px;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #4b0082, #1e90ff); /* Darker on hover */
+  }
+  
+  /* Firefox Scrollbar */
+  html {
+    scrollbar-width: thin; /* "auto" or "thin" */
+    scrollbar-color: #6a11cb #f1f1f1; /* thumb color, track color */
+  }
+  
+  /* Prevent Page Shift or White Glitch */
+  html, body {
+    overflow-x: hidden; /* Prevents horizontal scroll */
+    scroll-behavior: smooth; /* Enables smooth scrolling */
+    background-color: #fff; /* Ensures no white flash */
+  }
+  
+  /* Prevents White Flash on Scroll */
+  body {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+  

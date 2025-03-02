@@ -1,0 +1,113 @@
+{
+  "pageInfo": {
+    "hero": {
+      "backgroundImage": "/Services/civil-contracts-bg.webp",
+      "serviceType": "Civil Contracts",
+      "title": "Building the Future",
+      "underlineText": "Civil Contracts",
+      "description": "From innovative design and construction to demolition, landscaping, painting, electrical works, solar installations, and annual maintenance—we deliver comprehensive civil contract services tailored to your needs.",
+      "buttonText": "Get in Touch",
+      "buttonLink": "/contact"
+    },
+    "explanation": {
+      "header": "Comprehensive Civil Contracts",
+      "paragraphs": [
+        "Salsabeel Al Janoob provides diverse civil contract services, from design and construction to demolition and site preparation. We offer landscaping, fencing, and boulder laying to enhance property aesthetics and security. Our skilled teams handle painting and electrical works, ensuring projects are completed to the highest standards. We focus on delivering comprehensive solutions tailored to each client's unique needs.",
+        "We specialize in sustainable energy with solar panel installations for power, water heating, and air-conditioning. To guarantee long-term performance, we offer annual maintenance contracts. Our commitment is to provide reliable, high-quality civil contract services. Clients can trust us for expert execution and dedicated support throughout every project phase."
+      ],
+      "imageSrc": "/Services/image4.webp",
+      "imageAlt": "Civil Contracts Process",
+      "shutters": 5
+    },
+    "projects": {
+      "title": "Our Civil Contracts Projects",
+      "titleColor": "text-emerald-800",
+      "items": [
+        {
+          "category": "Design & Construction",
+          "title": "Innovative Build Solutions",
+          "src": "/Projects/design-construction.webp",
+          "details": {
+            "description": "From concept to completion:\n\n• Comprehensive design services\n• State-of-the-art construction techniques\n• Tailored solutions for your vision",
+            "images": []
+          }
+        },
+        {
+          "category": "Demolition",
+          "title": "Safe & Efficient Demolition",
+          "src": "/Projects/demolition.webp",
+          "details": {
+            "description": "Expert demolition of old structures:\n\n• Precision and safety-focused\n• Minimal disruption\n• Sustainable waste recycling",
+            "images": []
+          }
+        },
+        {
+          "category": "Exterior Works",
+          "title": "Landscaping & Hardscaping",
+          "src": "/uploads/civil/28ab5e8b-e52e-4874-997c-43a6cd4a866d-rangoku.jpg",
+          "details": {
+            "description": "Enhancing outdoor spaces with expert craftsmanship:\n\n• Professional landscaping\n• Durable fencing and boulder laying\n• Transformative curb appeal",
+            "images": []
+          }
+        },
+        {
+          "category": "Modern Upgrades",
+          "title": "Painting, Electrical & Solar Solutions",
+          "src": "/Projects/modern-upgrades.webp",
+          "details": {
+            "description": "Upgrading infrastructure with modern technology:\n\n• Professional painting and electrical works\n• Solar panel installations for power, water heating, and air-conditioning\n• Energy-efficient innovations",
+            "images": []
+          }
+        },
+        {
+          "category": "Maintenance",
+          "title": "Annual Maintenance Contracts",
+          "src": "/Projects/maintenance.webp",
+          "details": {
+            "description": "Ensuring longevity and performance:\n\n• Regular inspections and upkeep\n• Customized maintenance schedules\n• Proactive problem-solving",
+            "images": []
+          }
+        }
+      ]
+    },
+    "faqs": {
+      "title": "Civil Contracts FAQs",
+      "highlightWord": "Solutions",
+      "description": "Find answers to common questions about our comprehensive civil contract services.",
+      "items": [
+        {
+          "question": "What services are included in your Civil Contracts?",
+          "answer": "We offer a full range of services including design to construction, demolition, landscaping, painting, electrical works, solar panel installations, and annual maintenance contracts."
+        },
+        {
+          "question": "Do you handle both residential and commercial projects?",
+          "answer": "Yes, we cater to both residential and commercial projects, ensuring tailored solutions that meet the unique demands of each project."
+        },
+        {
+          "question": "How do you manage the design to construction process?",
+          "answer": "Our integrated approach ensures seamless coordination from initial design through construction, with rigorous quality controls at every stage."
+        },
+        {
+          "question": "Can you manage complex demolition projects?",
+          "answer": "Absolutely. Our experienced team specializes in safe and efficient demolition, focusing on precision, recycling, and minimal disruption."
+        },
+        {
+          "question": "What solar panel installations do you offer?",
+          "answer": "We install solar panels designed for power generation, water heating, and air-conditioning, providing sustainable energy solutions that reduce operational costs."
+        },
+        {
+          "question": "How do your annual maintenance contracts work?",
+          "answer": "Our annual maintenance contracts are customized to ensure regular upkeep, proactive problem-solving, and the longevity of your infrastructure."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to Build Your Vision?",
+      "description": "Contact us today to discuss your project and discover how our comprehensive civil contract services can bring your vision to life.",
+      "buttonText": "Schedule Consultation",
+      "buttonLink": "/contact",
+      "buttonColor": "bg-emerald-600",
+      "hoverButtonColor": "hover:bg-emerald-700"
+    }
+  }
+}

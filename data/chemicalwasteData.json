@@ -1,0 +1,152 @@
+{
+  "pageInfo": {
+    "hero": {
+      "backgroundImage": "/chemicalwaste.jpg",
+      "serviceType": "Chemical Waste Management",
+      "title": "Innovative & Sustainable",
+      "underlineText": "Chemical Waste Management",
+      "description": "Delivering cutting-edge, eco-friendly solutions for safe chemical waste handling and disposal.",
+      "buttonText": "Get in Touch",
+      "buttonLink": "/contact"
+    },
+    "explanation": {
+      "header": "Chemical Waste Management",
+      "paragraphs": [
+        "Salsabeel Al Janoob provides responsible chemical waste management, transforming hazardous materials into environmental renewal. We prioritize community safety and regulatory compliance, offering solutions for industrial and household waste. Our focus is sustainable practices and resource conservation. Effective waste management is resource conservation and pollution reduction.",
+        "We manage the complete chemical waste lifecycle, from collection to disposal, using advanced technology and expert professionals. We ensure regulatory adherence and transparency through detailed tracking. Committed to continuous improvement, we provide reliable, cost-effective services that protect the environment and public health, giving clients peace of mind."
+      ],
+      "imageSrc": "/uploads/waste-management/explanation/22db4c9d-ba4f-4821-aa65-abd3c9710830.jpg",
+      "imageAlt": "Chemical Processing Flow Diagram",
+      "shutters": 5
+    },
+    "projects": {
+      "title": "Our Chemical Waste Projects",
+      "titleColor": "text-emerald-800",
+      "items": [
+        {
+          "category": "Industrial Partnership",
+          "title": "Industrial Petrochemical Waste Transformation",
+          "src": "/uploads/waste-management/projects/87886818-0c92-4226-8d76-64fda7f00d60.jpg",
+          "details": {
+            "description": "Partnering with leading refineries since 1998:\n\n• Over 2.5M tons of waste processed\n• 99.8% regulatory compliance\n• 45% reduction in landfill dependency\n.wuehdwuigdcwguye",
+            "images": [
+              {
+                "src": "/uploads/waste-management/projects/1a9a42d2-7cce-4f13-8618-f851a4176134.jpg",
+                "alt": "Control room"
+              },
+              {
+                "src": "/Projects/refinery-2.webp",
+                "alt": "Facility"
+              }
+            ]
+          }
+        },
+        {
+          "category": "Environmental Remediation",
+          "title": "Advanced PCB Remediation & Site Recovery",
+          "src": "/uploads/waste-management/8b6c0d51-b6ea-4121-9f56-48a3b720ec09-11130258.jpg",
+          "details": {
+            "description": "Revitalizing contaminated sites with precision:\n\n• 45-acre site fully restored\n• Over 13,000 tons of pollutants neutralized\n• Winner of the 2023 Environmental Excellence Award",
+            "images": [
+              {
+                "src": "/Projects/remediation-1.webp",
+                "alt": "Excavation"
+              },
+              {
+                "src": "/Projects/remediation-2.webp",
+                "alt": "Treatment"
+              },
+              {
+                "src": "/Projects/remediation-3.webp",
+                "alt": "Aerial view"
+              }
+            ]
+          }
+        },
+        {
+          "category": "Advanced Recycling",
+          "title": "Innovative Pharmaceutical Solvent Recovery",
+          "src": "/Projects/solvent-recovery.webp",
+          "details": {
+            "description": "Maximizing resource efficiency with closed-loop recycling:\n\n• 93% solvent recovery efficiency\n• Over $1.3M in annual savings\n• ISO 14001 certified with 5,000+ tons capacity",
+            "images": [
+              {
+                "src": "/Projects/recycling-1.webp",
+                "alt": "Distillation"
+              },
+              {
+                "src": "/Projects/recycling-2.webp",
+                "alt": "Lab testing"
+              },
+              {
+                "src": "/Projects/recycling-3.webp",
+                "alt": "Storage"
+              }
+            ]
+          }
+        },
+        {
+          "category": "Emergency Response",
+          "title": "Rapid Chlorine Gas Mitigation",
+          "src": "/Projects/chlorine-response.webp",
+          "details": {
+            "description": "Our emergency team responds swiftly to hazardous incidents:\n\n• Secured a 5-ton containment vessel\n• Neutralized 850 gallons of chlorine\n• Achieved zero incidents with NIMS-compliant protocols",
+            "images": [
+              {
+                "src": "/Projects/emergency-1.webp",
+                "alt": "Hazmat team"
+              },
+              {
+                "src": "/Projects/emergency-2.webp",
+                "alt": "Containment"
+              },
+              {
+                "src": "/Projects/emergency-3.webp",
+                "alt": "Review"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "faqs": {
+      "title": "Chemical Waste FAQs",
+      "highlightWord": "Solutions",
+      "description": "Find answers to common questions about our specialized chemical waste processes.",
+      "items": [
+        {
+          "question": "What services do you offer?",
+          "answer": "We deliver comprehensive chemical waste management services—from safe handling to sustainable disposal—tailored to meet your unique needs."
+        },
+        {
+          "question": "Are you compliant with industry standards?",
+          "answer": "Absolutely. Our processes adhere to strict local and international regulatory standards, ensuring maximum safety and environmental protection."
+        },
+        {
+          "question": "How do you ensure environmental safety?",
+          "answer": "Our advanced treatment methods minimize environmental impact while optimizing resource recovery and ensuring strict adherence to safety protocols."
+        },
+        {
+          "question": "What industries do you serve?",
+          "answer": "We work with a diverse range of industries, including petrochemicals, pharmaceuticals, and emergency response sectors, adapting our solutions to their specific challenges."
+        },
+        {
+          "question": "What makes your service unique?",
+          "answer": "Our commitment to innovation, rigorous compliance, and eco-friendly practices sets us apart, providing measurable benefits and sustainable outcomes."
+        },
+        {
+          "question": "How can I get started with your services?",
+          "answer": "Simply reach out via our Contact page to schedule a consultation and discover how our tailored solutions can meet your chemical waste management needs."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Need Expert Waste Solutions?",
+      "description": "Reach out today for innovative and compliant chemical waste management that protects your business and the environment.",
+      "buttonText": "Schedule Consultation",
+      "buttonLink": "/contact",
+      "buttonColor": "bg-emerald-600",
+      "hoverButtonColor": "hover:bg-emerald-700"
+    }
+  }
+}

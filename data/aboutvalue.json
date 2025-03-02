@@ -1,0 +1,36 @@
+{
+  "banner": "Our Core Values",
+  "sectionHeading": "Our Guiding Principles",
+  "values": [
+    {
+      "icon": "/icons/trophy.svg",
+      "title": "Excellence",
+      "description": "We strive for excellence in everything we do, from the quality of our services to the level of customer service we provide."
+    },
+    {
+      "icon": "/icons/ShieldCheck.svg",
+      "title": "Integrity",
+      "description": "We conduct our business with the highest ethical standards, earning the trust of our clients and partners."
+    },
+    {
+      "icon": "/icons/UserGroup.svg",
+      "title": "Customer Focus",
+      "description": "We prioritize our clients' needs and are committed to exceeding their expectations."
+    },
+    {
+      "icon": "/icons/LightBulb.svg",
+      "title": "Innovation",
+      "description": "We embrace innovation and continuously seek new and better ways to serve our clients."
+    },
+    {
+      "icon": "/icons/GlobeAlt.svg",
+      "title": "Sustainability",
+      "description": "We are committed to sustainable practices and minimizing our environmental impact."
+    },
+    {
+      "icon": "/icons/Users-value.svg",
+      "title": "Collaboration",
+      "description": "We believe in the power of teamwork and building strong partnerships to achieve shared success."
+    }
+  ]
+}

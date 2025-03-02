@@ -1,0 +1,16 @@
+{
+  "background": {
+    "image": "/uploads/hero/93b24cea-8616-47eb-b248-31a100159d1a-rt.jpg",
+    "alt": "Hero background image"
+  },
+  "content": {
+    "badge": "SERVING OMAN AND INDIA",
+    "mainTitle": "Salsabeel Al Janoob:",
+    "highlightText": "Your Trusted Partner",
+    "description": "For nearly five decades, Salsabeel Al Janoob has been a cornerstone of trust and reliability. We offer a comprehensive range of services, from international trade to specialized consulting, tailored to meet your unique needs. Discover how we can help you achieve your goals.",
+    "button": {
+      "text": "Learn More About Us",
+      "link": "#company-about"
+    }
+  }
+}
