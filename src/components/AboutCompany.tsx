@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
-import Image from "next/image";
 
 const AboutSection = () => {
   const [aboutData, setAboutData] = useState<any>(null);

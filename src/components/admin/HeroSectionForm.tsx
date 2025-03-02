@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Trash2, Upload, RefreshCw, Save, AlertCircle, CheckCircle2, Plus, X, Replace } from "lucide-react";
+import { RefreshCw, Save, AlertCircle, CheckCircle2, Plus, X, Replace } from "lucide-react";
 
 // Define proper types for better type safety
 interface AnimationSettings {

@@ -346,7 +346,7 @@ export default function FeaturesSectionForm() {
       uploadResults.forEach(({ path, iconPath }) => {
         const keys = path.split(".")
         let current: any = updatedData
-        keys.forEach((key, i) => {
+        keys.forEach((key: string | number, i: number) => {
           if (i === keys.length - 1) current[key] = iconPath
           else current = current[key]
         })
@@ -509,7 +509,7 @@ export default function FeaturesSectionForm() {
                             Choose File
                           </Button>
                           <input
-                            ref={(el) => (fileInputRefs.current[`feature-${index}`] = el!)}
+                            ref={(el) => { fileInputRefs.current[`feature-${index}`] = el!; }}
                             id={`features.${index}.icon`}
                             type="file"
                             onChange={(e) => handleIconChange(e, `features.${index}.icon`, feature.icon)}
@@ -710,7 +710,7 @@ export default function FeaturesSectionForm() {
                   Choose File
                 </Button>
                 <input
-                  ref={(el) => (fileInputRefs.current["cta"] = el!)}
+                  ref={(el) => { fileInputRefs.current["cta"] = el!; }}
                   id="cta.icon"
                   type="file"
                   onChange={(e) => handleIconChange(e, "cta.icon", formData.cta.icon)}

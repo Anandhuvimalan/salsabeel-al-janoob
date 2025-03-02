@@ -6,7 +6,22 @@ import Image from "next/image";
 import { PhoneIcon, EnvelopeIcon } from "@heroicons/react/24/outline";
 
 const LeadershipSection = () => {
-  const [leadershipData, setLeadershipData] = useState(null);
+  interface LeadershipData {
+    banner: string;
+    heading: string;
+    profiles: {
+      image: { src: string; alt: string };
+      name: string;
+      role: string;
+      description: string;
+      contacts?: {
+        phone?: string[];
+        email?: string;
+      };
+    }[];
+  }
+  
+  const [leadershipData, setLeadershipData] = useState<LeadershipData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch leadership data from API on mount
@@ -113,7 +128,7 @@ const LeadershipSection = () => {
                               >
                                 {phone}
                               </a>
-                              {i < profile.contacts.phone.length - 1 && <span>,</span>}
+                              {i < ((profile.contacts?.phone?.length ?? 0) - 1) && <span>,</span>}
                             </span>
                           ))}
                         </div>

@@ -39,7 +39,7 @@ const Page: React.FC = () => {
     )
   }));
 
-  const { hero, explanation, faqs, cta } = serviceData.pageInfo;
+  const { hero, explanation, faqs } = serviceData.pageInfo;
 
   return (
     <>
