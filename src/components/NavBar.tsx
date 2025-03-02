@@ -73,7 +73,7 @@ const NavbarDesktop = () => {
               <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
                 Salsabeel Al Janoob Imp Exp
               </span>
-              <div className="text-sm text-gray-300">Your gateway to the international market</div>
+              <div className="tracking-wide text-sm text-gray-300">Your gateway to the international market</div>
             </div>
           </div>
         </div>

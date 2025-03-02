@@ -233,7 +233,7 @@ export default function HeroSection() {
           className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight"
         >
           {data.title}{" "}
-          <span className="relative inline-block">
+          <span className="tracking-extra-wider relative inline-block">
             {data.highlightedTitle}
             <motion.span
               initial={{ width: "0%" }}
