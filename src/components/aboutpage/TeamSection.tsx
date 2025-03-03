@@ -89,7 +89,7 @@ const LeadershipSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ margin: "-100px", once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+              className="flex flex-col bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
             >
               <div className="relative h-64 bg-zinc-100">
                 <motion.div
@@ -108,14 +108,20 @@ const LeadershipSection = () => {
                   priority={false}
                 />
               </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-zinc-800 mb-2">
-                  {profile.name}
-                </h3>
-                <p className="text-amber-600 font-medium mb-4">{profile.role}</p>
-                <p className="text-zinc-600 mb-4">{profile.description}</p>
+              <div className="p-6 flex flex-col flex-grow">
+                <div>
+                  <h3 className="text-xl font-bold text-zinc-800 mb-2">
+                    {profile.name}
+                  </h3>
+                  <p className="text-amber-600 font-medium mb-4">
+                    {profile.role}
+                  </p>
+                  <p className="text-zinc-600 mb-4">
+                    {profile.description}
+                  </p>
+                </div>
                 {profile.contacts && (
-                  <div className="space-y-3 text-zinc-600">
+                  <div className="mt-auto space-y-3 text-zinc-600">
                     {profile.contacts.phone && (
                       <div className="flex items-center gap-2">
                         <PhoneIcon className="w-5 h-5 text-amber-600" />

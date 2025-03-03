@@ -53,7 +53,8 @@ export default function MemorialSection() {
 
   if (!memorialData) return <div>Loading...</div>;
 
-  const { fullMessage, title, years, image } = memorialData;
+  // Destructure the new "name" property along with others
+  const { fullMessage, title, name, years, image } = memorialData;
 
   return (
     <section className="relative flex flex-col items-center justify-center py-16 px-4 min-h-[80vh] bg-gradient-to-b from-gray-50 to-white">
@@ -76,8 +77,9 @@ export default function MemorialSection() {
         </div>
       </div>
 
-      {/* Title and Years */}
+      {/* Title, Name, and Years */}
       <h2 className="font-serif text-3xl font-normal tracking-wide mb-1">{title}</h2>
+      <h3 className="font-serif text-2xl italic text-gray-700 mb-1">{name}</h3>
       <p className="text-lg italic text-gray-600 mb-12">{years}</p>
 
       {/* Animated Message */}

@@ -7,22 +7,22 @@
   },
   "testimonials": [
     {
-      "name": "Aisha Al Hashmi",
-      "title": "CEO, Global Trade Solutions",
-      "message": "Salsabeel Al Janoob has been an exceptional partner in our export-import operations. Their professionalism have been key to our success.",
-      "image": "/uploads/testimonials/8d94dccb-007a-4a38-b6f1-a04530bd5458-package-complete-deficiency.png"
+      "name": "Syed Ali",
+      "title": "Export-Import Specialist",
+      "message": "Salsabeel Al Janoob’s innovative import-export solutions have greatly enhanced our global trade capabilities. Their commitment to excellence and transparency truly sets them apart.",
+      "image": "/uploads/testimonials/syed-ali.webp"
     },
     {
-      "name": "Omar Abdullah",
-      "title": "Director, Waste Management Co.",
-      "message": "The team at Salsabeel Al Janoob excels in waste management solutions. Their attention to detail and commitment to compliance is unmatched.",
-      "image": "/uploads/testimonials/9282f846-2d3b-4eef-983e-2bda16b6dc7c-testimonial2.webp"
+      "name": "Sai Sudhakar",
+      "title": "Civil Contracts Consultant",
+      "message": "Their comprehensive civil contracts services from design to construction and maintenance have streamlined our projects. The precision and quality delivered are truly unmatched.",
+      "image": "/uploads/testimonials/sai-sudhakar.webp"
     },
     {
-      "name": "Fatima Noor",
-      "title": "Owner, Creative Retail Solutions",
-      "message": "Thanks to Salsabeel Al Janoob's retail consultancy services, our business has seen tremendous growth. Their insights are invaluable!",
-      "image": "/uploads/testimonials/538a403e-d003-40a1-bd49-dac420c45658-testimonial3.webp"
+      "name": "Rahul Ramesh",
+      "title": "Retail Consultancy Client",
+      "message": "Thanks to Salsabeel Al Janoob’s expert retail consultancy, our business has experienced remarkable growth. Their strategic market insights have unlocked new avenues for success.",
+      "image": "/uploads/testimonials/rahul-ramesh.webp"
     }
   ]
 }

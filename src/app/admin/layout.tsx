@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import "./varial.css";
+import "./varial.css"
 import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import { useRouter } from "next/navigation"
@@ -88,9 +88,9 @@ const NavItem = ({ href, icon, label, isActive, isSidebarOpen }: NavItemProps) =
               variant={isActive ? "secondary" : "ghost"}
               size="sm"
               className={cn(
-                "w-full justify-start gap-3 mb-1",
+                "w-full justify-start gap-3 mb-1 transition-colors duration-200 hover:bg-primary/5",
                 isActive ? "bg-primary/10 text-primary font-medium" : "",
-                !isSidebarOpen && "justify-center p-2",
+                !isSidebarOpen && "justify-center p-2"
               )}
             >
               {icon}
@@ -123,7 +123,10 @@ const NavDropdown = ({ label, icon, items, isSidebarOpen }: NavDropdownProps) =>
             <Button
               variant="ghost"
               size="sm"
-              className={cn("w-full justify-start gap-3", !isSidebarOpen && "justify-center p-2")}
+              className={cn(
+                "w-full justify-start gap-3 transition-colors duration-200 hover:bg-primary/5",
+                !isSidebarOpen && "justify-center p-2"
+              )}
               onClick={() => isSidebarOpen && setIsOpen(!isOpen)}
             >
               {icon}
@@ -143,7 +146,7 @@ const NavDropdown = ({ label, icon, items, isSidebarOpen }: NavDropdownProps) =>
         <div className="ml-8 mt-1 space-y-1">
           {items.map((item) => (
             <Link key={item.href} href={item.href}>
-              <Button variant="ghost" size="sm" className="w-full justify-start">
+              <Button variant="ghost" size="sm" className="w-full justify-start transition-colors duration-200 hover:bg-primary/5">
                 {item.label}
               </Button>
             </Link>
@@ -164,8 +167,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   return (
     <aside
       className={cn(
-        "bg-card h-screen border-r transition-all duration-300 flex flex-col",
-        isOpen ? "w-64" : "w-[70px]",
+        "bg-card h-screen sticky top-0 z-50 border-r shadow-md transition-all duration-300 flex flex-col overflow-x-hidden",
+        isOpen ? "w-64" : "w-[70px]"
       )}
     >
       <div className={cn("flex items-center h-16 border-b px-4", isOpen ? "justify-between" : "justify-center")}>
@@ -200,7 +203,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         </div>
 
         <div className="space-y-1">
-          <div className="text-xs font-semibold text-muted-foreground px-2 py-2">{isOpen && "CONTENT MANAGEMENT"}</div>
+          {isOpen && <div className="text-xs font-semibold text-muted-foreground px-2 py-2">CONTENT MANAGEMENT</div>}
           <NavDropdown
             label="Homepage"
             icon={<Home className="h-5 w-5" />}
@@ -254,6 +257,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     </aside>
   )
 }
+
 
 /** Header Component */
 interface HeaderProps {
@@ -369,4 +373,3 @@ export default function AdminLayout({
     </div>
   )
 }
-

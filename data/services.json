@@ -4,70 +4,70 @@
     {
       "id": 1,
       "title": "Chemical Waste Management",
-      "image": "/uploads/services/c02f05b2-b745-4f10-8ede-fd5d2290c0ad-coshh-awareness-training-cpd.jpg",
+      "image": "/uploads/services/chemical-waste-managment.webp",
       "description": "Safe and efficient management of chemical waste materials.",
       "gradient": "from-purple-500 to-pink-500"
     },
     {
       "id": 2,
       "title": "All Waste Management",
-      "image": "/uploads/services/d36dd619-bf1e-446e-81ba-15f7e5821a25-108_portfolio_2.jpg",
+      "image": "/uploads/services/all-waste-management.webp",
       "description": "End-to-end waste management solutions for all types of waste.",
       "gradient": "from-blue-500 to-green-500"
     },
     {
       "id": 3,
       "title": "Civil Contracts",
-      "image": "/uploads/services/ab264434-3997-47a7-a5bf-d8675b1c5529-pngtree-architectural-blueprint-of-a-house-with-caliper-and-hoisting-crane-in-image_3658425.jpg",
+      "image": "/uploads/services/civil-contracts.webp",
       "description": "From design to construction, landscaping, and maintenance.",
       "gradient": "from-red-500 to-yellow-500"
     },
     {
       "id": 4,
       "title": "Laundry Services",
-      "image": "/uploads/services/3ff5ca31-67a2-4ece-ad93-a28d9b979bc1-5kolonaki.jpg",
+      "image": "/uploads/services/laundry-services.webp",
       "description": "Professional laundry services for businesses and individuals.",
       "gradient": "from-teal-500 to-cyan-500"
     },
     {
       "id": 5,
       "title": "Retail Consultancy",
-      "image": "/Services/image6_128.webp",
+      "image": "/uploads/services/retail.webp",
       "description": "Expert advice for 24x7 stores, restaurants, and supermarkets.",
       "gradient": "from-indigo-500 to-purple-500"
     },
     {
       "id": 6,
       "title": "Educational & Career Guidance",
-      "image": "/uploads/services/59ca0b02-c3d3-4faa-8755-9f59f8b31dce-tourism-pg-3.jpg",
+      "image": "/uploads/services/career-guidance.webp",
       "description": "Guiding students toward the right educational and career paths.",
       "gradient": "from-green-500 to-lime-500"
     },
     {
       "id": 7,
       "title": "Foreign Language Learning Centers",
-      "image": "/uploads/services/4aa9cae0-28fe-43fe-8a18-7bd22678408d-shutterstock_1987418450-min-scaled.jpg",
+      "image": "/uploads/services/learn-a-language.webp",
       "description": "Learn foreign languages with expert trainers.",
       "gradient": "from-indigo-500 to-purple-500"
     },
     {
       "id": 8,
       "title": "Vasthu Consultancy",
-      "image": "/uploads/services/093d18b1-26ca-43d5-9b02-a101d26f2d35-aba220da665ce9010df8127f6bbf1334.jpg",
+      "image": "/uploads/services/vasthu-consultancy.webp",
       "description": "Traditional Vasthu advice for your home and workspace.",
       "gradient": "from-gray-500 to-zinc-500"
     },
     {
       "id": 9,
       "title": "Marriage & Family Counselling",
-      "image": "/Services/image10_128.webp",
+      "image": "/uploads/services/marriage.webp",
       "description": "Counseling for healthy relationships and family harmony.",
       "gradient": "from-yellow-500 to-orange-500"
     },
     {
       "id": 10,
       "title": "Drug Addiction Counseling",
-      "image": "/uploads/services/c2d81281-1990-4701-a013-8e98011da9d2-OIF.jpg",
+      "image": "/uploads/services/drug-addiction-counseling.webp",
       "description": "Helping individuals overcome addiction with professional guidance.",
       "gradient": "from-teal-500 to-cyan-500"
     }

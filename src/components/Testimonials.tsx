@@ -102,7 +102,7 @@ const Testimonial: React.FC = () => {
                 className="sticky top-0 h-screen flex items-center justify-center"
                 style={{ zIndex: index + 1 }}
               >
-                <div className="bg-white rounded-2xl shadow-xl border border-indigo-200 w-96 h-96 flex flex-col items-center justify-between p-10 mt-10 md:mt-0 lg:mt-0">
+                <div className="bg-white rounded-2xl shadow-xl border border-indigo-200 w-96 h-[430px] flex flex-col items-center justify-between p-10 mt-10 md:mt-0 lg:mt-0">
                   <div className="relative w-24 h-24 rounded-full overflow-hidden ring-4 ring-indigo-200 ring-offset-2">
                     <Image
                       src={testimonial.image}
@@ -112,13 +112,11 @@ const Testimonial: React.FC = () => {
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
-                  <div className="flex flex-col items-center flex-grow justify-center max-h-48 overflow-y-auto">
+                  {/* Removed max-h-48 and overflow-y-auto to eliminate scrolling */}
+                  <div className="flex flex-col items-center flex-grow justify-center">
                     <h3 className="text-xl font-semibold text-indigo-600">
                       {testimonial.name}
                     </h3>
-                    <p className="text-lg text-gray-600 italic mt-1">
-                      {testimonial.title}
-                    </p>
                     <blockquote className="text-base leading-relaxed text-gray-600 mt-4 text-center">
                       "{testimonial.message}"
                     </blockquote>

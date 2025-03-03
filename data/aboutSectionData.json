@@ -5,15 +5,15 @@
       "subtitle": "Pioneering Global Trade Since 1975"
     },
     "description": [
-      "For nearly five decades, we've been the backbone of international commerce, connecting Oman to global markets through innovative logistics solutions and trusted partnerships.",
-      "Our digital-first approach combines legacy expertise with cutting-edge technology to deliver seamless cross-border trade experiences."
+      "Established in 1975 in Oman, Salsabeel Al Janoob combines five decades of trading excellence with official approvals from Be'ah, PDO, and key ministries. Our expertise connects Oman to global markets while providing superior local services.",
+      "Our foundation of proven industry expertise combined with our commitment to cutting-edge technology sets us apart. Through our digital-first approach, we've revolutionized cross-border trade with efficient, secure, and transparent solutions. Now, we're proud to announce our expansion into the Indian market, extending our legacy of excellence to one of the world's most dynamic economies while maintaining our deep roots in Oman."
     ],
     "button": {
       "text": "Explore Our Network"
     },
     "image": {
-      "src": "/uploads/about/7f47f084-926e-43f9-b53a-ec25701d9c7a-transport-logistics-concept.webp",
-      "alt": "Global Trade Network"
+      "src": "/uploads/about/logistics-import&export.webp",
+      "alt": "Importing-&-Exporting-Trade"
     },
     "imageOverlay": {
       "text": "48 Countries Connected",
@@ -47,24 +47,24 @@
     }
   ],
   "values": {
-    "title": "Our Core Values",
+    "title": "Our Evolving Expertise",
     "items": [
       {
         "icon": "/uploads/about/1a8161e1-7826-4b6a-b7a4-5133be847152-rocket.svg",
-        "title": "Innovation Driven",
-        "description": "Continuously evolving with AI-powered logistics and blockchain-enabled documentation systems.",
+        "title": "Global Retail Consultancy",
+        "description": "Leveraging our deep-rooted expertise in global trade, our retail consultancy services empower businesses with strategic market insights and proven methodologies. We provide tailored guidance that enables retailers to navigate international markets confidently, ensuring they capitalize on emerging trends and global opportunities.",
         "iconColor": "text-blue-600"
       },
       {
         "icon": "/smallaboutsection/icons/anchor.svg",
-        "title": "Reliability Assured",
-        "description": "99.7% on-time delivery rate backed by real-time tracking and predictive analytics.",
+        "title": "Comprehensive Civil Construction & Community Development",
+        "description": "Our civil services cover the complete spectrum—from innovative design and full-scale construction to advanced solar and electrical installations, along with efficient waste recycling solutions. Complementing our technical expertise, we are committed to community enrichment through educational programs, career development initiatives, and comprehensive well-being support, driving sustainable progress across the region.",
         "iconColor": "text-teal-600"
       }
     ],
     "image": {
-      "src": "/uploads/about/7370c69c-a66d-4432-a96a-8bfd591a074c-pexels-frans-van-heerden-201846-1624695.webp",
-      "alt": "Modern Warehouse"
+      "src": "/uploads/about/logistics.webp",
+      "alt": "Global-Trade-Logistics"
     }
   }
 }

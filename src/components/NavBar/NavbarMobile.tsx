@@ -27,17 +27,7 @@ const menuVariants = {
       staggerChildren: 0.1,
     },
   },
-  exit: {
-    opacity: 0,
-    y: "-100%",
-    transition: {
-      duration: 0.5,
-      ease: [0.22, 1, 0.36, 1],
-      when: "afterChildren",
-      staggerChildren: 0.05,
-      staggerDirection: -1,
-    },
-  },
+  // Removed exit variant to eliminate delay on unmount
 }
 
 const menuItemVariants = {
@@ -47,11 +37,7 @@ const menuItemVariants = {
     y: 0,
     transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
   },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
-  },
+  // Removed exit variant
 }
 
 const serviceDropdownVariants = {
@@ -74,15 +60,7 @@ const serviceDropdownVariants = {
       staggerChildren: 0.08,
     },
   },
-  exit: {
-    opacity: 0,
-    height: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.22, 1, 0.36, 1],
-      when: "afterChildren",
-    },
-  },
+  // Removed exit variant
 }
 
 const serviceItemVariants = {
@@ -92,11 +70,7 @@ const serviceItemVariants = {
     scale: 1,
     transition: { duration: 0.3, ease: "easeOut" },
   },
-  exit: {
-    opacity: 0,
-    scale: 0.95,
-    transition: { duration: 0.25, ease: "easeIn" },
-  },
+  // Removed exit variant
 }
 
 const NavbarMobile = () => {
@@ -184,7 +158,7 @@ const NavbarMobile = () => {
             variants={menuVariants}
             initial="hidden"
             animate="visible"
-            exit="exit"
+            // Removed exit animation so the menu unmounts instantly
             className="fixed top-0 left-0 w-full h-[100vh] bg-gray-900/95 backdrop-blur-lg text-white z-40 flex flex-col overflow-y-auto"
           >
             <motion.div className="py-20 px-6 space-y-6 h-full flex flex-col">
@@ -231,11 +205,11 @@ const NavbarMobile = () => {
                     <motion.div
                       initial="hidden"
                       animate="visible"
-                      exit="exit"
+                      // Removed exit animation so the dropdown unmounts immediately
                       variants={serviceDropdownVariants}
                       className="mt-2 grid grid-cols-1 gap-3 overflow-hidden pl-2"
                     >
-                      {services.map((service, index) => (
+                      {services.map((service) => (
                         <motion.div key={service.id} variants={serviceItemVariants} layout className="w-full">
                           <Link
                             href={`/${service.title.toLowerCase().replace(/\s+/g, "-")}`}

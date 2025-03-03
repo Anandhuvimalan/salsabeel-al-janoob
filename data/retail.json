@@ -1,7 +1,7 @@
 {
   "pageInfo": {
     "hero": {
-      "backgroundImage": "/uploads/retail/7ff51ed4-be7b-4d45-ab58-1d485858a5ec-retail2.jpg",
+      "backgroundImage": "/uploads/retail/retail-consultancy.webp",
       "serviceType": "Retail Consultancy",
       "title": "Innovative Retail Solutions",
       "underlineText": "Retail Consultancy",
@@ -15,7 +15,7 @@
         "At our retail consultancy, we deliver tailored strategies and expert guidance to help businesses excel in today’s competitive market. With deep industry insight, we address challenges and unlock opportunities for a diverse range of retail segments—from small convenience stores to large supermarkets. We work closely with clients to streamline operations and enhance customer engagement.",
         "Our comprehensive services include strategic planning, operational optimization, and innovative marketing solutions. We develop custom approaches for 24/7 convenience stores, cake shops, ice cream parlors, fast food stalls, restaurants, cafeterias, supermarkets, and hypermarkets. By combining advanced analytics with proven practices, we boost profitability, improve efficiency, and drive lasting growth. Our dedicated team guarantees measurable improvements and consistently delivers exceptional results. Undoubtedly, your success is our priority."
       ],
-      "imageSrc": "/Services/image6.webp",
+      "imageSrc": "/uploads/retail/retail.webp",
       "imageAlt": "Retail Consultancy Illustration",
       "shutters": 5
     },

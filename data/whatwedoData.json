@@ -14,8 +14,8 @@
       "description": "Our expert team delivers complete project management, innovative design, efficient demolition, expert landscaping, and precision installations.",
       "features": [
         "Full-cycle project planning",
-        "Innovative construction techniques",
-        "Sustainable, energy-efficient solutions"
+        "Innovative construction design",
+        "Sustainable & energy-efficient"
       ]
     },
     {
@@ -41,11 +41,11 @@
     {
       "iconSrc": "/icons/users.svg",
       "title": "Holistic Consultancy & Counseling",
-      "description": "Our comprehensive advisory services cover career strategies, HR consulting, language training, and empathetic counseling.",
+      "description": "Our comprehensive advisory services thoroughly and effectively cover career strategies, HR consulting, language training, and empathetic counseling.",
       "features": [
         "Personalized career planning",
-        "Expert HR and language consulting",
-        "Compassionate counseling support"
+        "Expert HR consulting",
+        "Counseling support"
       ]
     }
   ]

@@ -7,77 +7,77 @@
   "columns": {
     "column1": [
       {
-        "name": "Ahmed Al-Rashidi",
+        "name": "Ahamed Ali",
         "role": "International Trade Partner",
-        "img": "https://i.pravatar.cc/150?img=10",
-        "alt": "Ahmed Al-Rashidi",
-        "text": "Salsabeel Al Janoob transformed our import/export operations with their seamless logistics and market expertise. A truly reliable global partner."
+        "img": "/uploads/testimonials/client-testimonial-trade.webp",
+        "alt": "Ahmed Ali",
+        "text": "Salsabeel Al Janoob demonstrates expertise in chemical specialization and waste management, ensuring innovative, safe, and reliable solutions for all challenges."
       },
       {
-        "name": "Karthik Subramanian",
+        "name": "Karthik K ",
         "role": "Construction Project Manager",
-        "img": "https://i.pravatar.cc/150?img=11",
-        "alt": "Karthik Subramanian",
-        "text": "Our infrastructure development advanced remarkably under their innovative project management and timely execution."
+        "img": "/uploads/testimonials/client-testimonial-construction.webp",
+        "alt": "Karthik K",
+        "text": "Karthik K’s project management expertise accelerated our infrastructure development through innovative planning, execution, and exceptional attention to detail throughout projects."
       },
       {
-        "name": "Fatima Al-Harthi",
+        "name": "Fatima k khan",
         "role": "Waste Management Director",
-        "img": "https://i.pravatar.cc/150?img=12",
-        "alt": "Fatima Al-Harthi",
-        "text": "Remarkably efficient waste management"
+        "img": "/uploads/testimonials/client-testimonial-waste-management.webp",
+        "alt": "Fatima K khan",
+        "text": "Fatima K khan commends the outstanding efficiency and innovative approach in waste management that consistently delivers sustainable, environmentally responsible outcomes."
       }
     ],
     "column2": [
       {
-        "name": "Priya Menon",
+        "name": "Priya S Nair",
         "role": "Retail Chain Owner",
-        "img": "/uploads/testimonials/c19ccc95-f6a1-4f9d-80b6-43b626b66590-10163132.jpg",
-        "alt": "Priya Menon",
-        "text": "The retail consultancy team revitalized our business model, boosting customer engagement and profitability significantly."
+        "img": "/uploads/testimonials/client-testimonial-retail.webp",
+        "alt": "Priya S Nair",
+        "text": "Our retail consultancy revitalized our business model, boosting engagement and significantly increasing profitability."
       },
       {
-        "name": "Sundar Rajan",
+        "name": "Arshita Aaron",
         "role": "Corporate Trainer",
-        "img": "https://i.pravatar.cc/150?img=14",
-        "alt": "Sundar Rajan",
-        "text": "Their corporate training programs empowered our workforce, driving productivity and skill enhancement."
+        "img": "/uploads/testimonials/client-testimonial-cooperate-training.webp",
+        "alt": "Arshita Aaron",
+        "text": "Corporate training programs empowered our workforce, driving productivity improvements and enhancing essential skills."
       },
       {
-        "name": "Rekha Iyer",
+        "name": "Roshan S",
         "role": "Global Trade CEO",
-        "img": "https://i.pravatar.cc/150?img=15",
-        "alt": "Rekha Iyer",
-        "text": "Global vision, exceptional leadership"
+        "img": "/uploads/testimonials/client-testimonial-global-trade.webp",
+        "alt": "Roshan S",
+        "text": "Roshan S provides a global vision with exceptional leadership, steering strategic market growth."
       }
     ],
     "column3": [
       {
-        "name": "Omar Abdullah",
+        "name": "Sujith S Sudharsan",
         "role": "Government Contracts",
-        "img": "https://i.pravatar.cc/150?img=16",
-        "alt": "Omar Abdullah",
-        "text": "Outstanding governmental collaboration"
+        "img": "/uploads/testimonials/client-testimonial-collabarations.webp",
+        "alt": "Sujith S Sudharsan",
+        "text": "Exceptional business partnership"
       },
       {
-        "name": "Yousef Al-Khaldi",
+        "name": "Aaliya Aleem",
         "role": "Career Counseling Client",
-        "img": "https://i.pravatar.cc/150?img=17",
-        "alt": "Yousef Al-Khaldi",
+        "img": "/uploads/testimonials/client-testimonial-logistic-solutions.webp",
+        "alt": "Aaliya Aleem",
         "text": "Innovative logistics solutions"
       },
       {
-        "name": "Aisha Al-Maskari",
+        "name": "Mohammed Shan ",
         "role": "Educational Partner",
-        "img": "https://i.pravatar.cc/150?img=18",
-        "alt": "Aisha Al-Maskari",
+        "img": "/uploads/testimonials/client-testimonial-educationa-partner.webp",
+        "alt": "Mohammed Shan ",
         "text": "Exemplary educational partnership"
       },
       {
-        "name": "Hamad Al-Nuaimi",
+        "name": "Thasni Thanseer",
         "role": "Logistics Partner",
-        "img": "https://i.pravatar.cc/150?img=19",
-        "alt": "Hamad Al-Nuaimi",
+        "img": "/uploads/testimonials/client-testimonial-logistics.webp",
+        "alt": "Thasni Thanseer",
         "text": "Seamless global logistics"
       }
     ]

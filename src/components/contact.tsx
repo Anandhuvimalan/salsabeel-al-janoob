@@ -1,11 +1,12 @@
-"use client";
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Loader2 } from "lucide-react";
+"use client"
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { toast } from "sonner"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Loader2 } from "lucide-react"
+import { supabase } from "@/lib/supabaseClient"
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -13,35 +14,53 @@ const formSchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters"),
   email: z.string().email("Invalid email address"),
   phone: z.string().optional(),
-});
+})
 
-type FormData = z.infer<typeof formSchema>;
+type FormData = z.infer<typeof formSchema>
 
 export default function ContactForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-  });
+  })
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    setIsMounted(true)
+  }, [])
 
   const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log("Form submitted:", data);
-      toast.success("Message sent successfully!");
-      reset();
+      // Insert the form data into Supabase
+      const { error } = await supabase.from("contact_submissions").insert([
+        {
+          name: data.name,
+          company: data.company || null,
+          message: data.message,
+          email: data.email,
+          phone: data.phone || null,
+        },
+      ])
+
+      if (error) throw error
+
+      setShowSuccessMessage(true)
+      reset()
     } catch (error) {
-      toast.error("Failed to send message. Please try again.");
+      console.error("Error submitting form:", error)
+      toast.error("Failed to send message. Please try again.")
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-gray-300">
@@ -52,7 +71,7 @@ export default function ContactForm() {
         transition={{
           duration: 1.2,
           ease: [0.22, 1, 0.36, 1],
-          delay: 0.2
+          delay: 0.2,
         }}
         style={{ originY: 0 }}
         className="fixed inset-0 bg-gray-900 z-50"
@@ -67,12 +86,8 @@ export default function ContactForm() {
           className="max-w-3xl mx-auto space-y-4 text-center"
         >
           <p className="text-sm uppercase tracking-wider text-gray-400">Get in Touch</p>
-          <h1 className="text-3xl font-light text-white sm:text-4xl">
-            Contact Salsabeel Al Janoob ImpExp
-          </h1>
-          <p className="text-lg text-gray-400">
-            We usually respond within 30 minutes during business hours.
-          </p>
+          <h1 className="text-3xl font-light text-white sm:text-4xl">Contact Salsabeel Al Janoob ImpExp</h1>
+          <p className="text-lg text-gray-400">We usually respond within 30 minutes during business hours.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-16 max-w-6xl mx-auto">
@@ -95,9 +110,7 @@ export default function ContactForm() {
                     placeholder="John Doe"
                     className="w-full h-12 px-4 bg-gray-800/50 rounded-lg border border-gray-700 text-white placeholder-gray-500 form-input-focus"
                   />
-                  {errors.name && (
-                    <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>
-                  )}
+                  {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="company" className="block text-sm font-medium text-gray-300">
@@ -121,9 +134,7 @@ export default function ContactForm() {
                   placeholder="Tell us about your requirements..."
                   className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700 text-white placeholder-gray-500 form-input-focus"
                 />
-                {errors.message && (
-                  <p className="text-red-400 text-sm mt-1">{errors.message.message}</p>
-                )}
+                {errors.message && <p className="text-red-400 text-sm mt-1">{errors.message.message}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -137,9 +148,7 @@ export default function ContactForm() {
                     placeholder="you@example.com"
                     className="w-full h-12 px-4 bg-gray-800/50 rounded-lg border border-gray-700 text-white placeholder-gray-500 form-input-focus"
                   />
-                  {errors.email && (
-                    <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
-                  )}
+                  {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-300">
@@ -181,8 +190,8 @@ export default function ContactForm() {
             <div className="space-y-6">
               <div className="space-y-3">
                 <h3 className="text-gray-400 text-sm font-medium">Email</h3>
-                <a 
-                  href="mailto:info@salsabeelaljanoobimpexp.com" 
+                <a
+                  href="mailto:info@salsabeelaljanoobimpexp.com"
                   className="block text-white hover:text-gray-300 transition-colors duration-300"
                 >
                   info@salsabeelaljanoobimpexp.com
@@ -192,14 +201,14 @@ export default function ContactForm() {
               <div className="space-y-3">
                 <h3 className="text-gray-400 text-sm font-medium">Phone</h3>
                 <div className="space-y-2">
-                  <a 
-                    href="tel:+96891718606" 
+                  <a
+                    href="tel:+96891718606"
                     className="block text-white hover:text-gray-300 transition-colors duration-300"
                   >
                     Oman: +968 9171 8606
                   </a>
-                  <a 
-                    href="tel:+919349474746" 
+                  <a
+                    href="tel:+919349474746"
                     className="block text-white hover:text-gray-300 transition-colors duration-300"
                   >
                     India: +91 93494 74746
@@ -209,12 +218,35 @@ export default function ContactForm() {
 
               <div className="space-y-3">
                 <h3 className="text-gray-400 text-sm font-medium">Business Hours</h3>
-                <p className="text-white">Monday - Friday: 9:30 - 19:00</p>
+                <p className="text-white">Monday - Friday: 9:00 - 18:00</p>
               </div>
             </div>
           </motion.div>
         </div>
+
+        {showSuccessMessage && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white text-black p-8 rounded-lg max-w-md w-full mx-4"
+            >
+              <h2 className="text-2xl font-bold mb-4">Thank You!</h2>
+              <p className="mb-6">
+                Your message has been successfully sent. We will get back to you shortly.
+              </p>
+              <button
+                onClick={() => setShowSuccessMessage(false)}
+                className="w-full py-2 bg-gray-900 text-white rounded hover:bg-gray-800 transition-colors"
+              >
+                Close
+              </button>
+            </motion.div>
+          </div>
+        )}
       </main>
     </div>
-  );
+  )
 }
+
