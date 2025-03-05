@@ -221,7 +221,7 @@ const NavbarMobile = () => {
                           >
                             <div className="w-12 h-12 rounded-md overflow-hidden relative flex-shrink-0 mr-3">
                               <Image
-                                src={service.image.replace('.webp', '_128.webp') || "/placeholder.svg"}
+                                src={service.image || "/placeholder.svg"}
                                 alt={service.title}
                                 width={48}
                                 height={48}
