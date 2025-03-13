@@ -105,7 +105,7 @@ export default async function Page() {
   const { pageInfo } = data
   const { hero, explanation, faqs, cta, projects } = pageInfo
 
-  const enhancedProjects = projects.items.map((project) => ({
+  const enhancedProjects = projects?.items?.map((project) => ({
     ...project,
     content: (
       <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">

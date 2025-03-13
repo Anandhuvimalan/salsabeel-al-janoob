@@ -90,8 +90,8 @@ export default function Frequent() {
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-[50vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-cyan-400"></div>
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
       </div>
     )
   }
@@ -99,25 +99,23 @@ export default function Frequent() {
   if (!data) return null
 
   return (
-    <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 w-full py-16 sm:py-20 md:py-24 relative overflow-hidden font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
+    <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 w-full py-20 lg:py-28 relative overflow-hidden font-sans">
       <div className="absolute inset-0 opacity-20 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
         <div className="absolute left-1/3 -top-40 h-96 w-96 rounded-full bg-gradient-to-r from-cyan-400/20 to-teal-500/20 blur-3xl" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
-        <div ref={(el) => (elementsRef.current[0] = el)} className="pb-8 sm:pb-10 md:pb-12 text-center animate-fade-in">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-white tracking-tight leading-tight">
+      <div className="container max-w-7xl mx-auto px-4 relative">
+        <div ref={(el) => (elementsRef.current[0] = el)} className="pb-12 text-center animate-fade-in">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
             {data.section.heading}{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
               {data.section.highlighted}
             </span>
           </h2>
-          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            {data.section.description}
-          </p>
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto">{data.section.description}</p>
         </div>
 
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-4">
           {data.faqs.map((faq, index) => (
             <div
               key={index}
@@ -126,10 +124,10 @@ export default function Frequent() {
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full flex justify-between items-center p-4 sm:p-6 text-left focus:outline-none group"
+                className="w-full flex justify-between items-center p-6 sm:p-7 text-left focus:outline-none group"
                 aria-expanded={openIndex === index}
               >
-                <span className="text-base sm:text-lg md:text-xl font-medium text-slate-100 group-hover:text-cyan-300 transition-colors duration-300 pr-4">
+                <span className="text-lg sm:text-xl font-medium text-slate-100 group-hover:text-cyan-300 transition-colors duration-300 pr-4">
                   {faq.question}
                 </span>
                 <span
@@ -137,7 +135,7 @@ export default function Frequent() {
                     openIndex === index ? "rotate-180" : ""
                   }`}
                 >
-                  <ChevronDown size={20} className="sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                  <ChevronDown size={24} />
                 </span>
               </button>
 
@@ -150,9 +148,7 @@ export default function Frequent() {
                   willChange: "max-height, opacity",
                 }}
               >
-                <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-0 text-sm sm:text-base text-slate-300 leading-relaxed">
-                  {faq.answer}
-                </div>
+                <div className="px-6 sm:px-7 pb-6 sm:pb-7 pt-0 text-slate-300 leading-relaxed">{faq.answer}</div>
               </div>
             </div>
           ))}

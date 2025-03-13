@@ -64,7 +64,7 @@ const HeroSection = () => {
 
   if (loading) {
     return (
-      <div className="relative h-screen overflow-hidden flex items-center justify-center font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
+      <div className="relative h-screen overflow-hidden flex items-center justify-center">
         <div className="animate-pulse bg-gray-200/50 w-full h-full" />
       </div>
     )
@@ -72,14 +72,14 @@ const HeroSection = () => {
 
   if (error || !heroData) {
     return (
-      <div className="relative h-screen overflow-hidden flex items-center justify-center text-red-500 font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
+      <div className="relative h-screen overflow-hidden flex items-center justify-center text-red-500">
         {error || "Failed to load hero section"}
       </div>
     )
   }
 
   return (
-    <section className="relative h-screen overflow-hidden font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
+    <section className="relative h-screen overflow-hidden">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -102,12 +102,12 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-black/50 z-10" />
 
       {/* Content Container */}
-      <div className="relative z-10 flex flex-col justify-center items-center h-full px-4 sm:px-6 text-center max-w-7xl mx-auto">
+      <div className="relative z-10 flex flex-col justify-center items-center h-full px-4 text-center max-w-7xl mx-auto">
         <motion.span
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.7 }}
-          className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 mb-4 sm:mb-6 text-xs sm:text-sm font-medium tracking-wider text-white/90 rounded-full bg-white/10 backdrop-blur-sm border border-white/10"
+          className="inline-block px-4 py-1.5 mb-6 text-sm font-medium tracking-wider text-white/90 rounded-full bg-white/10 backdrop-blur-sm border border-white/10"
         >
           {heroData.content.badge}
         </motion.span>
@@ -116,7 +116,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.9 }}
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-white tracking-tight leading-tight"
+          className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight"
         >
           {heroData.content.mainTitle}{" "}
           <span className="relative inline-block">
@@ -134,7 +134,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 2.1 }}
-          className="text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed"
+          className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed"
         >
           {heroData.content.description}
         </motion.p>
@@ -147,9 +147,9 @@ const HeroSection = () => {
         >
           <Link
             href={heroData.content.button.link}
-            className="group relative inline-flex items-center justify-center px-6 sm:px-8 py-2.5 sm:py-3 overflow-hidden rounded-full bg-white text-zinc-950 transition-transform duration-300 ease-out hover:scale-105 text-sm sm:text-base font-medium"
+            className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden rounded-full bg-white text-zinc-950 transition-transform duration-300 ease-out hover:scale-105"
           >
-            <span className="relative z-20">{heroData.content.button.text}</span>
+            <span className="relative z-20 font-medium tracking-wide">{heroData.content.button.text}</span>
             <motion.div
               initial={false}
               animate={{ scale: 2, opacity: 0 }}

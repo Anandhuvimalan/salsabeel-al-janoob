@@ -86,20 +86,20 @@ const LeadershipSection = () => {
 
   if (isLoading) {
     return (
-      <section className="relative py-16 sm:py-20 md:py-24 bg-zinc-50 font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="animate-pulse space-y-6 sm:space-y-8">
-            <div className="h-6 sm:h-8 bg-zinc-200 rounded w-1/4 mx-auto"></div>
-            <div className="h-8 sm:h-10 bg-zinc-200 rounded w-1/2 mx-auto"></div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+      <section className="relative py-20 bg-zinc-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="animate-pulse space-y-8">
+            <div className="h-8 bg-zinc-200 rounded w-1/4 mx-auto"></div>
+            <div className="h-10 bg-zinc-200 rounded w-1/2 mx-auto"></div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="flex flex-col bg-white rounded-xl shadow-lg overflow-hidden">
-                  <div className="h-56 sm:h-64 bg-zinc-200"></div>
-                  <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
-                    <div className="h-5 sm:h-6 bg-zinc-200 rounded w-3/4"></div>
-                    <div className="h-4 sm:h-5 bg-zinc-200 rounded w-1/2"></div>
-                    <div className="h-12 sm:h-16 bg-zinc-200 rounded"></div>
-                    <div className="h-4 sm:h-5 bg-zinc-200 rounded w-2/3"></div>
+                  <div className="h-64 bg-zinc-200"></div>
+                  <div className="p-6 space-y-4">
+                    <div className="h-6 bg-zinc-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-zinc-200 rounded w-1/2"></div>
+                    <div className="h-16 bg-zinc-200 rounded"></div>
+                    <div className="h-4 bg-zinc-200 rounded w-2/3"></div>
                   </div>
                 </div>
               ))}
@@ -119,17 +119,17 @@ const LeadershipSection = () => {
   }
 
   return (
-    <section className="relative py-16 sm:py-20 md:py-24 bg-zinc-50 font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="relative py-20 bg-zinc-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Inline Banner */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ margin: "-100px", once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center mb-3 sm:mb-4"
+          className="text-center mb-4"
         >
-          <div className="inline-block px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-semibold text-amber-600 bg-amber-100 rounded-full">
+          <div className="inline-block px-4 py-2 text-sm font-semibold text-amber-600 bg-amber-100 rounded-full">
             {leadershipData.banner}
           </div>
         </motion.div>
@@ -140,12 +140,12 @@ const LeadershipSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ margin: "-100px", once: true }}
           transition={{ duration: 0.6 }}
-          className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-800 text-center mb-8 sm:mb-10 md:mb-12 tracking-tight leading-tight"
+          className="text-3xl md:text-4xl font-bold text-zinc-800 text-center mb-12"
         >
           {leadershipData.heading}
         </motion.h2>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {leadershipData.profiles.map((profile, index) => (
             <motion.div
               key={index}
@@ -174,9 +174,9 @@ const LeadershipSection = () => {
               </div>
               <div className="p-6 flex flex-col flex-grow">
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-zinc-800 mb-1 sm:mb-2">{profile.name}</h3>
-                  <p className="text-sm sm:text-base text-amber-600 font-medium mb-3 sm:mb-4">{profile.role}</p>
-                  <p className="text-sm sm:text-base text-zinc-600 mb-3 sm:mb-4">{profile.description}</p>
+                  <h3 className="text-xl font-bold text-zinc-800 mb-2">{profile.name}</h3>
+                  <p className="text-amber-600 font-medium mb-4">{profile.role}</p>
+                  <p className="text-zinc-600 mb-4">{profile.description}</p>
                 </div>
                 {profile.contacts && (
                   <div className="mt-auto space-y-3 text-zinc-600">

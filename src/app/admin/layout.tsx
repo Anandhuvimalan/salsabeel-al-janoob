@@ -97,14 +97,14 @@ const NavItem = ({ href, icon, label, isActive, isSidebarOpen, onClick, showTool
                 backgroundColor: "rgba(var(--primary-rgb), 0.15)",
                 transition: { duration: 0.2 },
               }}
-              className="relative"
+              className="relative hover:text-foreground"
             >
               <Button
                 variant={isActive ? "secondary" : "ghost"}
                 size="sm"
                 className={cn(
                   "w-full justify-start gap-3 mb-1 transition-all duration-300 rounded-lg",
-                  isActive ? "nav-item-active" : "text-foreground hover:text-primary",
+                  isActive ? "nav-item-active" : "text-foreground hover:text-primary hover:bg-primary/10",
                   !isSidebarOpen && "justify-center p-2",
                 )}
               >
@@ -215,13 +215,13 @@ const NavDropdown = ({
                 backgroundColor: "rgba(var(--primary-rgb), 0.15)",
                 transition: { duration: 0.2 },
               }}
-              className="relative rounded-lg"
+              className="relative rounded-lg hover:text-foreground"
             >
               <Button
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "w-full justify-start gap-3 transition-all duration-300 text-foreground rounded-lg hover:text-primary",
+                  "w-full justify-start gap-3 transition-all duration-300 text-foreground rounded-lg hover:text-primary hover:bg-primary/10",
                   (isActive || hasActiveChild) && "text-primary font-medium",
                   !isSidebarOpen && "justify-center p-2",
                 )}
@@ -307,7 +307,7 @@ const NavDropdown = ({
                       color: "hsl(var(--primary))",
                       transition: { duration: 0.2 },
                     }}
-                    className="relative rounded-lg"
+                    className="relative rounded-lg hover:text-primary"
                   >
                     <Button
                       variant="ghost"

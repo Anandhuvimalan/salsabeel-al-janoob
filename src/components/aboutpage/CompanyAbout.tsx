@@ -88,15 +88,15 @@ const CompanyAbout = () => {
 
   if (loading) {
     return (
-      <div className="relative py-16 sm:py-20 md:py-24 bg-white font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="animate-pulse space-y-6 sm:space-y-8">
+      <div className="relative py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="animate-pulse space-y-8">
             {/* Loading skeleton */}
-            <div className="h-8 sm:h-12 bg-zinc-200 rounded w-1/2 mb-4 sm:mb-6" />
-            <div className="space-y-3 sm:space-y-4">
-              <div className="h-4 sm:h-5 bg-zinc-200 rounded w-3/4" />
-              <div className="h-4 sm:h-5 bg-zinc-200 rounded w-full" />
-              <div className="h-4 sm:h-5 bg-zinc-200 rounded w-2/3" />
+            <div className="h-12 bg-zinc-200 rounded w-1/2 mb-6" />
+            <div className="space-y-4">
+              <div className="h-4 bg-zinc-200 rounded w-3/4" />
+              <div className="h-4 bg-zinc-200 rounded w-full" />
+              <div className="h-4 bg-zinc-200 rounded w-2/3" />
             </div>
           </div>
         </div>
@@ -117,12 +117,9 @@ const CompanyAbout = () => {
   const rightColumn = data.right_column
 
   return (
-    <section
-      id="company-about"
-      className="relative py-16 sm:py-20 md:py-24 bg-white font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid md:grid-cols-2 gap-8 sm:gap-12 md:gap-16">
+    <section id="company-about" className="relative py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-2 gap-16">
           {/* Left Column */}
           <div className="space-y-8">
             {/* Intro Block */}
@@ -132,10 +129,8 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-800 mb-4 sm:mb-6 tracking-tight leading-tight">
-                {leftColumn.intro.title}
-              </h2>
-              <p className="text-sm sm:text-base text-zinc-600 leading-relaxed">{leftColumn.intro.description}</p>
+              <h2 className="text-3xl md:text-4xl font-bold text-zinc-800 mb-6">{leftColumn.intro.title}</h2>
+              <p className="text-zinc-600 leading-relaxed">{leftColumn.intro.description}</p>
             </motion.div>
 
             {/* Founder Block */}
@@ -145,11 +140,9 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="border-l-4 border-amber-500 pl-3 sm:pl-4">
-                <h3 className="text-base sm:text-lg font-semibold text-zinc-800 mb-1 sm:mb-2">
-                  {leftColumn.founder.title}
-                </h3>
-                <p className="text-sm sm:text-base text-zinc-600">
+              <div className="border-l-4 border-amber-500 pl-4">
+                <h3 className="text-lg font-semibold text-zinc-800 mb-2">{leftColumn.founder.title}</h3>
+                <p className="text-zinc-600">
                   {leftColumn.founder.descriptionBefore}
                   <span className="font-medium">{leftColumn.founder.founderName}</span>
                   {leftColumn.founder.descriptionAfter}
@@ -164,14 +157,12 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <h3 className="text-base sm:text-lg font-semibold text-zinc-800 mb-1 sm:mb-2">
-                {leftColumn.growth.title}
-              </h3>
-              <p className="text-sm sm:text-base text-zinc-600">{leftColumn.growth.description}</p>
+              <h3 className="text-lg font-semibold text-zinc-800 mb-2">{leftColumn.growth.title}</h3>
+              <p className="text-zinc-600">{leftColumn.growth.description}</p>
             </motion.div>
 
             {/* Timeline Section */}
-            <div className="space-y-6 sm:space-y-8 pt-6 sm:pt-8">
+            <div className="space-y-8 pt-8">
               {leftColumn.timeline.map((event, index) => (
                 <motion.div
                   key={index}
@@ -179,16 +170,16 @@ const CompanyAbout = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.2 * (index + 1) }}
-                  className="relative pl-6 sm:pl-8 border-l-2 border-amber-200"
+                  className="relative pl-8 border-l-2 border-amber-200"
                 >
-                  <div className="absolute left-[-8px] sm:left-[-9px] top-0 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-amber-600" />
-                  <p className="text-xs sm:text-sm text-amber-600 font-medium">{event.label}</p>
+                  <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-amber-600" />
+                  <p className="text-amber-600 text-sm font-medium">{event.label}</p>
                   {event.value ? (
-                    <p className="text-xl sm:text-2xl font-bold text-zinc-900">{event.value}</p>
+                    <p className="text-2xl font-bold text-zinc-900">{event.value}</p>
                   ) : (
                     <>
-                      <p className="text-base sm:text-xl font-bold text-zinc-900">{event.title}</p>
-                      <p className="text-sm sm:text-base text-zinc-600">{event.subtitle}</p>
+                      <p className="text-xl font-bold text-zinc-900">{event.title}</p>
+                      <p className="text-zinc-600">{event.subtitle}</p>
                     </>
                   )}
                 </motion.div>
@@ -205,11 +196,9 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              <div className="bg-zinc-50 p-4 sm:p-6 rounded-lg">
-                <h3 className="text-base sm:text-lg font-semibold text-zinc-800 mb-1 sm:mb-2">
-                  {rightColumn.globalExpansion.title}
-                </h3>
-                <p className="text-sm sm:text-base text-zinc-600">{rightColumn.globalExpansion.description}</p>
+              <div className="bg-zinc-50 p-6 rounded-lg">
+                <h3 className="text-lg font-semibold text-zinc-800 mb-2">{rightColumn.globalExpansion.title}</h3>
+                <p className="text-zinc-600">{rightColumn.globalExpansion.description}</p>
               </div>
             </motion.div>
 
@@ -249,11 +238,9 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 1 }}
             >
-              <div className="bg-amber-50 p-4 sm:p-6 rounded-lg border border-amber-100">
-                <h3 className="text-base sm:text-lg font-semibold text-zinc-800 mb-1 sm:mb-2">
-                  {rightColumn.legacy.title}
-                </h3>
-                <p className="text-sm sm:text-base text-zinc-600">{rightColumn.legacy.description}</p>
+              <div className="bg-amber-50 p-6 rounded-lg border border-amber-100">
+                <h3 className="text-lg font-semibold text-zinc-800 mb-2">{rightColumn.legacy.title}</h3>
+                <p className="text-zinc-600">{rightColumn.legacy.description}</p>
               </div>
             </motion.div>
           </div>

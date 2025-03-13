@@ -196,9 +196,9 @@ export default function HeroSection() {
       <div className="fixed top-0 left-0 right-0 bottom-0 z-[10000] overflow-hidden flex items-center justify-center bg-zinc-900">
         <div className="flex flex-col items-center">
           {/* Spinner */}
-          <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+          <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
           {/* Loading Text */}
-          <div className="text-white text-lg sm:text-2xl mt-4">Loading...</div>
+          <div className="text-white text-2xl mt-4">Loading...</div>
         </div>
       </div>
     )
@@ -209,11 +209,11 @@ export default function HeroSection() {
     return (
       <div className="fixed top-0 left-0 right-0 bottom-0 z-[10000] overflow-hidden flex items-center justify-center bg-zinc-900">
         <div className="flex flex-col items-center text-center px-4">
-          <div className="text-white text-xl sm:text-2xl mb-4">Something went wrong</div>
-          <div className="text-white/70 mb-6 text-sm sm:text-base">Unable to load hero section data</div>
+          <div className="text-white text-2xl mb-4">Something went wrong</div>
+          <div className="text-white/70 mb-6">Unable to load hero section data</div>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-white text-zinc-900 rounded-md hover:bg-white/90 transition-colors text-sm sm:text-base"
+            className="px-4 py-2 bg-white text-zinc-900 rounded-md hover:bg-white/90 transition-colors"
           >
             Refresh Page
           </button>
@@ -224,10 +224,7 @@ export default function HeroSection() {
 
   // Main render - only when data is loaded
   return (
-    <section
-      className="relative h-screen overflow-hidden font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]"
-      aria-label="Hero section showcasing global trade services"
-    >
+    <section className="relative h-screen overflow-hidden" aria-label="Hero section showcasing global trade services">
       {/* Initial curtain animation */}
       <AnimatePresence>
         {!initialRevealComplete && (
@@ -291,7 +288,7 @@ export default function HeroSection() {
           custom={1.7}
           initial="hidden"
           animate="visible"
-          className="inline-block px-4 py-1.5 mb-6 sm:mb-8 text-xs sm:text-sm font-medium tracking-widest uppercase text-white/90 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-white/15"
+          className="inline-block px-4 py-1.5 mb-6 text-sm font-medium tracking-wider text-white/90 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-white/15"
         >
           {data.tag}
         </motion.span>
@@ -301,16 +298,16 @@ export default function HeroSection() {
           custom={1.9}
           initial="hidden"
           animate="visible"
-          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 md:mb-8 text-white tracking-tight leading-[1.1]"
+          className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight"
         >
           {data.title}{" "}
-          <span className="tracking-tight relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-white to-white/80">
+          <span className="tracking-extra-wider relative inline-block">
             {data.highlighted_title}
             <motion.span
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}
-              transition={{ duration: 0.8, delay: 4.3 }}
-              className="absolute bottom-0 left-0 h-[0.125rem] bg-gradient-to-r from-white/10 via-white/60 to-white/10"
+              transition={{ duration: 0.8, delay: 4.3 }} // Increased delay
+              className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-white/10 via-white/60 to-white/10"
             />
           </span>
         </motion.h1>
@@ -320,7 +317,7 @@ export default function HeroSection() {
           custom={2.1}
           initial="hidden"
           animate="visible"
-          className="text-sm sm:text-base md:text-lg lg:text-xl text-white/80 mb-6 sm:mb-8 md:mb-10 max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto leading-relaxed font-light"
+          className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed"
         >
           {data.description}
         </motion.p>
@@ -328,13 +325,13 @@ export default function HeroSection() {
         <motion.div variants={textAnimationVariants} custom={2.3} initial="hidden" animate="visible">
           <a
             href={data.button_link}
-            className="group relative inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 overflow-hidden rounded-full bg-white text-zinc-950 transition-all duration-300 ease-out hover:bg-white/95 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent font-medium tracking-wide text-xs sm:text-sm"
+            className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden rounded-full bg-white text-zinc-950 transition-all duration-300 ease-out hover:bg-white/95 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
             aria-label={data.button_name}
           >
             <div className="absolute inset-0 scale-0 bg-white/10 opacity-0 transition-all duration-300 group-hover:scale-100 group-hover:opacity-100 transform-gpu" />
-            <span className="relative z-20">{data.button_name}</span>
+            <span className="relative z-20 font-medium tracking-wide">{data.button_name}</span>
             {!isHovering && (
               <motion.div
                 initial={false}
@@ -361,7 +358,7 @@ export default function HeroSection() {
             custom={2.5}
             initial="hidden"
             animate="visible"
-            className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-0 right-0 flex justify-center gap-2 sm:gap-3 z-30"
+            className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 z-30"
           >
             {data.images.map((_, index) => (
               <button

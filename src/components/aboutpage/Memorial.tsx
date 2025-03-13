@@ -83,13 +83,13 @@ export default function MemorialSection() {
 
   if (isLoading) {
     return (
-      <section className="relative flex flex-col items-center justify-center py-16 sm:py-20 md:py-24 px-4 sm:px-6 min-h-[80vh] bg-gradient-to-b from-gray-50 to-white font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
-        <div className="animate-pulse space-y-6 sm:space-y-8 flex flex-col items-center">
-          <div className="h-56 sm:h-64 w-40 sm:w-48 bg-gray-200 rounded"></div>
-          <div className="h-6 sm:h-8 w-40 sm:w-48 bg-gray-200 rounded"></div>
-          <div className="h-5 sm:h-6 w-32 bg-gray-200 rounded"></div>
-          <div className="h-5 sm:h-6 w-24 bg-gray-200 rounded"></div>
-          <div className="h-20 sm:h-24 w-full max-w-3xl bg-gray-200 rounded"></div>
+      <section className="relative flex flex-col items-center justify-center py-16 px-4 min-h-[80vh] bg-gradient-to-b from-gray-50 to-white">
+        <div className="animate-pulse space-y-8 flex flex-col items-center">
+          <div className="h-64 w-48 bg-gray-200 rounded"></div>
+          <div className="h-8 w-48 bg-gray-200 rounded"></div>
+          <div className="h-6 w-32 bg-gray-200 rounded"></div>
+          <div className="h-6 w-24 bg-gray-200 rounded"></div>
+          <div className="h-24 w-full max-w-3xl bg-gray-200 rounded"></div>
         </div>
       </section>
     )
@@ -104,13 +104,13 @@ export default function MemorialSection() {
   }
 
   return (
-    <section className="relative flex flex-col items-center justify-center py-16 sm:py-20 md:py-24 px-4 sm:px-6 min-h-[80vh] bg-gradient-to-b from-gray-50 to-white font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
+    <section className="relative flex flex-col items-center justify-center py-16 px-4 min-h-[80vh] bg-gradient-to-b from-gray-50 to-white">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
 
       {/* Memorial Image */}
-      <div className="relative mb-6 sm:mb-8">
+      <div className="relative mb-8">
         <div className="absolute inset-[-4px] bg-gradient-to-r from-gray-200 via-white to-gray-200 rounded-lg" />
         <div className="relative">
           <Image
@@ -125,14 +125,14 @@ export default function MemorialSection() {
       </div>
 
       {/* Title, Name, and Years */}
-      <h2 className="font-serif text-2xl sm:text-3xl font-normal tracking-wide mb-1 sm:mb-2">{memorialData.title}</h2>
-      <h3 className="font-serif text-xl sm:text-2xl italic text-gray-700 mb-1 sm:mb-2">{memorialData.name}</h3>
-      <p className="text-base sm:text-lg italic text-gray-600 mb-8 sm:mb-12">{memorialData.years}</p>
+      <h2 className="font-serif text-3xl font-normal tracking-wide mb-1">{memorialData.title}</h2>
+      <h3 className="font-serif text-2xl italic text-gray-700 mb-1">{memorialData.name}</h3>
+      <p className="text-lg italic text-gray-600 mb-12">{memorialData.years}</p>
 
       {/* Animated Message */}
       <div className="relative w-full max-w-3xl min-h-[6rem] flex items-center justify-center">
-        <div ref={containerRef} className="text-center p-3 sm:p-4 bg-white overflow-hidden">
-          <p className="text-lg sm:text-xl md:text-2xl text-gray-700 font-serif">
+        <div ref={containerRef} className="text-center p-4 bg-white overflow-hidden">
+          <p className="text-xl md:text-2xl text-gray-700 font-serif">
             {displayText}
             <span className="animate-pulse">|</span>
           </p>

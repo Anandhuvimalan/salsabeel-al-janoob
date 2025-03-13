@@ -50,13 +50,13 @@ const SocialLink = ({
     target="_blank"
     rel="noopener noreferrer"
   >
-    <img src={getImageUrl(iconSrc) || "/placeholder.svg"} alt={label} className="w-5 h-5 sm:w-6 sm:h-6" />
-    <span className="ml-2 text-sm sm:text-base">{label}</span>
+    <img src={getImageUrl(iconSrc) || "/placeholder.svg"} alt={label} className="w-6 h-6" />
+    <span className="ml-2">{label}</span>
   </a>
 )
 
 const LocationMap = ({ src, title }: { src: string; title: string }) => (
-  <div className="w-full h-48 sm:h-64 rounded-lg overflow-hidden">
+  <div className="w-full h-64 rounded-lg overflow-hidden">
     <iframe
       src={src}
       width="100%"
@@ -83,18 +83,18 @@ const CompanyLocation = ({
   phoneNumbers: string[]
   mapSrc: string
 }) => (
-  <div className="space-y-3 sm:space-y-4">
-    <h4 className="text-base sm:text-lg font-semibold text-purple-400">{name}</h4>
-    <p className="text-sm sm:text-base text-gray-300">{operation}</p>
-    <p className="text-xs sm:text-sm text-gray-400">{address}</p>
+  <div className="space-y-4">
+    <h4 className="text-lg font-semibold text-purple-400">{name}</h4>
+    <p className="text-gray-300">{operation}</p>
+    <p className="text-gray-400">{address}</p>
     <div className="flex items-start">
-      <img src="/icons/phone.svg" alt="Phone" className="w-4 h-4 sm:w-5 sm:h-5 mr-2 mt-1" />
+      <img src="/phone.svg" alt="Phone" className="w-5 h-5 mr-2 mt-1" />
       <div className="flex flex-wrap">
         {phoneNumbers.map((phone, index) => (
           <Fragment key={index}>
             <a
               href={`tel:${phone.replace(/\s+/g, "")}`}
-              className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors duration-300 whitespace-nowrap"
+              className="text-gray-300 hover:text-white transition-colors duration-300 whitespace-nowrap"
             >
               {phone}
             </a>
@@ -221,19 +221,13 @@ const Footer = () => {
   if (loading) {
     return (
       <div className="bg-gradient-to-b from-gray-900 to-black min-h-[500px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-purple-400"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400"></div>
       </div>
     )
   }
 
   if (error) {
-    return (
-      <div className="bg-gradient-to-b from-gray-900 to-black text-red-400 text-center py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <p className="text-base sm:text-lg">Error: {error}</p>
-        </div>
-      </div>
-    )
+    return <div className="bg-gradient-to-b from-gray-900 to-black text-red-400 text-center py-20">Error: {error}</div>
   }
 
   if (!data) return null
@@ -248,37 +242,33 @@ const Footer = () => {
   } = data
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-black text-white overflow-hidden font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 sm:gap-12">
+    <footer className="bg-gradient-to-b from-gray-900 to-black text-white overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
           {/* Company Info */}
-          <div className="space-y-4 sm:space-y-6 lg:col-span-2">
+          <div className="space-y-6 lg:col-span-2">
             <Image
               src={companyInfo.logoSrc || "/placeholder.svg"}
               alt="Company Logo"
-              width={100}
-              height={100}
+              width={120}
+              height={120}
               className="rounded-full"
             />
-            <h3 className="text-xl sm:text-2xl font-bold text-purple-400">{companyInfo.heading}</h3>
-            <p className="text-sm sm:text-base text-gray-400 leading-relaxed">{companyInfo.description}</p>
+            <h3 className="text-2xl font-bold text-purple-400">{companyInfo.heading}</h3>
+            <p className="text-gray-400">{companyInfo.description}</p>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-3 sm:space-y-4">
-            <h4 className="text-base sm:text-lg font-semibold text-purple-400">Quick Links</h4>
-            <nav className="flex flex-col space-y-1 sm:space-y-2">
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-purple-400">Quick Links</h4>
+            <nav className="flex flex-col space-y-2">
               {quickLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.link}
-                  className="text-xs sm:text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center"
+                  className="text-gray-300 hover:text-white transition-colors duration-300 flex items-center"
                 >
-                  <img
-                    src={legal.chevronIcon || "/placeholder.svg"}
-                    alt="Chevron"
-                    className="w-3 h-3 sm:w-4 sm:h-4 mr-2"
-                  />
+                  <img src={legal.chevronIcon || "/placeholder.svg"} alt="Chevron" className="w-4 h-4 mr-2" />
                   <span>{link.name}</span>
                 </Link>
               ))}
@@ -286,28 +276,28 @@ const Footer = () => {
           </div>
 
           {/* Newsletter */}
-          <div className="space-y-3 sm:space-y-4">
-            <h4 className="text-base sm:text-lg font-semibold text-purple-400">{newsletter.heading}</h4>
-            <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+          <div className="space-y-4">
+            <h4 className="text-lg font-semibold text-purple-400">{newsletter.heading}</h4>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <input
                 type="email"
                 placeholder={newsletter.placeholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 text-sm"
+                className="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
                 required
               />
               <button
                 type="submit"
-                className="px-3 sm:px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-500 transition-colors duration-300 flex items-center justify-center gap-2 text-xs sm:text-sm"
+                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-500 transition-colors duration-300 flex items-center justify-center gap-2"
               >
                 {newsletter.buttonText}
-                <img src={newsletter.buttonIcon || "/placeholder.svg"} alt="Send" className="w-3 h-3 sm:w-4 sm:h-4" />
+                <img src={newsletter.buttonIcon || "/placeholder.svg"} alt="Send" className="w-4 h-4" />
               </button>
 
               {subscriptionStatus && (
                 <div
-                  className={`mt-2 p-2 rounded text-xs sm:text-sm ${
+                  className={`mt-2 p-2 rounded text-sm ${
                     subscriptionStatus === "success"
                       ? "bg-green-900/50 text-green-300 border border-green-700"
                       : "bg-red-900/50 text-red-300 border border-red-700"
@@ -321,34 +311,31 @@ const Footer = () => {
         </div>
 
         {/* Company Locations */}
-        <div className="mt-8 sm:mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
           {companyLocations.map((location, index) => (
             <CompanyLocation key={index} {...location} />
           ))}
         </div>
 
         {/* Social Links */}
-        <div className="mt-8 sm:mt-12 flex justify-center space-x-4 sm:space-x-6">
+        <div className="mt-12 flex justify-center space-x-6">
           {socialMedia.map((social) => (
             <SocialLink key={social.name} href={social.link} iconSrc={social.iconSrc} label={social.name} />
           ))}
         </div>
 
         {/* Copyright & Legal */}
-        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-xs sm:text-sm text-gray-400">
+        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-400 text-sm">
             {legal.copyright.replace("{year}", new Date().getFullYear().toString())}
           </p>
-          <div className="flex space-x-4 mt-3 md:mt-0">
-            <Link
-              href={legal.terms}
-              className="text-xs sm:text-sm text-gray-400 hover:text-white transition-colors duration-300"
-            >
+          <div className="flex space-x-4 mt-4 md:mt-0">
+            <Link href={legal.terms} className="text-gray-400 hover:text-white text-sm transition-colors duration-300">
               Terms of Service
             </Link>
             <Link
               href={legal.privacy}
-              className="text-xs sm:text-sm text-gray-400 hover:text-white transition-colors duration-300"
+              className="text-gray-400 hover:text-white text-sm transition-colors duration-300"
             >
               Privacy Policy
             </Link>
