@@ -1,27 +1,23 @@
-"use client"
+import React, { useEffect } from "react";
 
-import { useEffect, useRef } from "react"
-
-export const useOutsideClick = (ref: any, callback: any) => {
-  const callbackRef = useRef(callback)
-
-  // Update the callback ref when the callback function changes
+export const useOutsideClick = (
+  ref: React.RefObject<HTMLDivElement>,
+  callback: Function
+) => {
   useEffect(() => {
-    callbackRef.current = callback
-  }, [callback])
-
-  useEffect(() => {
-    const handleClickOutside = (event: any) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        callbackRef.current()
+    const listener = (event: any) => {
+      if (!ref.current || ref.current.contains(event.target)) {
+        return;
       }
-    }
+      callback(event);
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", listener);
+    document.addEventListener("touchstart", listener);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [ref])
-}
-
+      document.removeEventListener("mousedown", listener);
+      document.removeEventListener("touchstart", listener);
+    };
+  }, [ref, callback]);
+};
