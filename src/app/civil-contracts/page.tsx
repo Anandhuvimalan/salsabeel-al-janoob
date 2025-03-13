@@ -41,91 +41,179 @@ export const metadata: Metadata = {
 }
 
 async function getServiceData() {
-  // Fetch data from Supabase
-  const { data, error } = await supabase
-    .from("civil")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single()
+  try {
+    // Fetch data from Supabase
+    const { data, error } = await supabase
+      .from("civil")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single()
 
-  if (error) {
-    console.error("Error fetching civil data:", error)
-    return { pageInfo: {} }
+    if (error) {
+      console.error("Error fetching civil data:", error)
+      throw new Error("Failed to fetch civil data")
+    }
+
+    // Parse the JSON string if needed
+    let pageInfo
+    if (typeof data.page_info === "string") {
+      try {
+        pageInfo = JSON.parse(data.page_info)
+      } catch (parseError) {
+        console.error("Error parsing page_info JSON:", parseError)
+        throw new Error("Failed to parse page_info data")
+      }
+    } else {
+      pageInfo = data.page_info
+    }
+
+    return pageInfo
+  } catch (error) {
+    console.error("Error in getServiceData:", error)
+    // Return default data structure in case of error
+    return {
+      pageInfo: {
+        hero: {
+          backgroundImage: "/civil.jpg",
+          serviceType: "Civil Contracts",
+          title: "Professional & Reliable",
+          underlineText: "Civil Construction Services",
+          description:
+            "Delivering high-quality civil construction and maintenance services with a focus on safety and sustainability.",
+          buttonText: "Get in Touch",
+          buttonLink: "/contact",
+        },
+        explanation: {
+          header: "Civil Construction Services",
+          paragraphs: [
+            "Salsabeel Al Janoob provides comprehensive civil construction services from design to completion, ensuring quality and timely delivery.",
+            "We handle all aspects of construction including structural work, electrical, plumbing, and finishing with expert project management.",
+          ],
+          imageSrc: "/placeholder.svg?height=400&width=600",
+          imageAlt: "Civil construction process flow",
+          shutters: 5,
+        },
+        projects: {
+          title: "Our Civil Construction Projects",
+          titleColor: "text-amber-800",
+          items: [],
+        },
+        faqs: {
+          title: "Civil Construction FAQs",
+          highlightWord: "Solutions",
+          description: "Find answers to common questions about our civil construction services.",
+          items: [],
+        },
+        cta: {
+          title: "Need Expert Construction Solutions?",
+          description:
+            "Reach out today for professional civil construction services that deliver quality, safety, and value.",
+          buttonText: "Schedule Consultation",
+          buttonLink: "/contact",
+          buttonColor: "bg-amber-600",
+          hoverButtonColor: "hover:bg-amber-700",
+        },
+      },
+    }
   }
-
-  return data.page_info
 }
 
 export default async function Page() {
-  const { pageInfo } = await getServiceData()
-  const { hero, explanation, faqs, cta, projects } = pageInfo
+  const data = await getServiceData()
 
-  const enhancedProjects =
-    projects?.items?.map((project) => ({
-      ...project,
-      content: (
-        <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
-          <p className="text-neutral-600 text-base md:text-2xl font-sans max-w-3xl mx-auto mb-10 whitespace-pre-line">
-            {project.details.description}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {project.details.images.map((image, index) => (
-              <Image
-                key={index}
-                src={image.src || "/placeholder.svg"}
-                alt={image.alt || `Civil project ${index + 1}`}
-                width={300}
-                height={200}
-                className="w-full h-auto object-cover rounded-lg"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            ))}
+  // Check if we have the expected structure and provide defaults if not
+  const pageInfo = data?.pageInfo || {}
+
+  // Destructure with default empty objects to prevent undefined errors
+  const hero = pageInfo.hero || {}
+  const explanation = pageInfo.explanation || {}
+  const faqs = pageInfo.faqs || { items: [] }
+  const cta = pageInfo.cta || {}
+  const projects = pageInfo.projects || { items: [] }
+
+  // Ensure projects.items exists before mapping
+  const enhancedProjects = projects.items
+    ? projects.items.map((project) => ({
+        ...project,
+        content: (
+          <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
+            <p className="text-neutral-600 text-base md:text-2xl font-sans max-w-3xl mx-auto mb-10 whitespace-pre-line">
+              {project.details?.description || "No description available"}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {(project.details?.images || []).map((image, index) => (
+                <Image
+                  key={index}
+                  src={image.src || "/placeholder.svg"}
+                  alt={image.alt || `Civil project ${index + 1}`}
+                  width={300}
+                  height={200}
+                  className="w-full h-auto object-cover rounded-lg"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      ),
-    })) || []
+        ),
+      }))
+    : []
 
   return (
     <>
       <Navbar />
       <HeroSection
-        backgroundImage={hero?.backgroundImage}
-        serviceType={hero?.serviceType}
-        title={hero?.title}
-        underlineText={hero?.underlineText}
-        description={hero?.description}
-        buttonText={hero?.buttonText}
-        buttonLink={hero?.buttonLink}
+        backgroundImage={hero.backgroundImage || "/civil.jpg"}
+        serviceType={hero.serviceType || "Civil Contracts"}
+        title={hero.title || "Professional & Reliable"}
+        underlineText={hero.underlineText || "Civil Construction Services"}
+        description={
+          hero.description ||
+          "Delivering high-quality civil construction and maintenance services with a focus on safety and sustainability."
+        }
+        buttonText={hero.buttonText || "Get in Touch"}
+        buttonLink={hero.buttonLink || "/contact"}
       />
 
       <Explanation
-        header={explanation?.header}
-        paragraphs={explanation?.paragraphs || []}
-        imageSrc={explanation?.imageSrc}
-        imageAlt={explanation?.imageAlt || "Civil construction process flow"}
-        shutters={explanation?.shutters}
+        header={explanation.header || "Civil Construction Services"}
+        paragraphs={
+          explanation.paragraphs || [
+            "Salsabeel Al Janoob provides comprehensive civil construction services from design to completion, ensuring quality and timely delivery.",
+            "We handle all aspects of construction including structural work, electrical, plumbing, and finishing with expert project management.",
+          ]
+        }
+        imageSrc={explanation.imageSrc || "/placeholder.svg?height=400&width=600"}
+        imageAlt={explanation.imageAlt || "Civil construction process flow"}
+        shutters={explanation.shutters || 5}
       />
 
       <WhatWeDo />
       <Benefits />
 
-      <ProjectsCarousel projects={enhancedProjects} title={projects?.title} titleColor={projects?.titleColor} />
+      <ProjectsCarousel
+        projects={enhancedProjects}
+        title={projects.title || "Our Civil Construction Projects"}
+        titleColor={projects.titleColor || "text-amber-800"}
+      />
 
       <Frequent
-        title={faqs?.title}
-        highlightWord={faqs?.highlightWord}
-        description={faqs?.description}
-        faqs={faqs?.items || []}
+        title={faqs.title || "Civil Construction FAQs"}
+        highlightWord={faqs.highlightWord || "Solutions"}
+        description={faqs.description || "Find answers to common questions about our civil construction services."}
+        faqs={faqs.items || []}
       />
 
       <CTASection
-        title={cta?.title}
-        description={cta?.description}
-        buttonText={cta?.buttonText}
-        buttonLink={cta?.buttonLink}
-        buttonColor={cta?.buttonColor}
-        hoverButtonColor={cta?.hoverButtonColor}
+        title={cta.title || "Need Expert Construction Solutions?"}
+        description={
+          cta.description ||
+          "Reach out today for professional civil construction services that deliver quality, safety, and value."
+        }
+        buttonText={cta.buttonText || "Schedule Consultation"}
+        buttonLink={cta.buttonLink || "/contact"}
+        buttonColor={cta.buttonColor || "bg-amber-600"}
+        hoverButtonColor={cta.hoverButtonColor || "hover:bg-amber-700"}
       />
 
       {/* Structured Data for Construction Services */}

@@ -1,25 +1,27 @@
 "use client"
 
-import type React from "react"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
-export const useOutsideClick = (ref: React.RefObject<HTMLDivElement>, callback: Function) => {
+export const useOutsideClick = (ref: any, callback: any) => {
+  const callbackRef = useRef(callback)
+
+  // Update the callback ref when the callback function changes
   useEffect(() => {
-    const listener = (event: any) => {
-      // DO NOTHING if the element being clicked is the target element or their children
-      if (!ref.current || ref.current.contains(event.target)) {
-        return
+    callbackRef.current = callback
+  }, [callback])
+
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        callbackRef.current()
       }
-      callback(event)
     }
 
-    document.addEventListener("mousedown", listener)
-    document.addEventListener("touchstart", listener)
+    document.addEventListener("mousedown", handleClickOutside)
 
     return () => {
-      document.removeEventListener("mousedown", listener)
-      document.removeEventListener("touchstart", listener)
+      document.removeEventListener("mousedown", handleClickOutside)
     }
-  }, [ref, callback])
+  }, [ref])
 }
 

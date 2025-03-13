@@ -13,27 +13,30 @@ import { supabase } from "@/lib/supabaseClient"
 
 export const metadata: Metadata = {
   title: "Vastu Shastra Consultation Services | Home & Office Energy Balancing",
-  description: "Professional Vastu consultancy for residential and commercial spaces. Harmony optimization, directional alignment, and positive energy flow solutions.",
+  description:
+    "Professional Vastu consultancy for residential and commercial spaces. Harmony optimization, directional alignment, and positive energy flow solutions.",
   keywords: [
     "vastu consultation",
     "home energy balancing",
     "commercial vastu shastra",
     "architectural alignment",
-    "positive space design"
+    "positive space design",
   ],
   openGraph: {
     title: "Vastu Shastra Experts | Salsabeel Al Janoob ImpExp",
     description: "Traditional Vastu consultations with modern implementation techniques for holistic living spaces",
-    images: [{
-      url: "/vastu-consultancy-og.jpg",
-      width: 1200,
-      height: 630,
-      alt: "Vastu Consultation Process",
-    }]
+    images: [
+      {
+        url: "/vastu-consultancy-og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Vastu Consultation Process",
+      },
+    ],
   },
   alternates: {
     canonical: "/vasthu-consultancy",
-  }
+  },
 }
 
 async function getServiceData() {
@@ -46,7 +49,20 @@ async function getServiceData() {
       throw new Error("Failed to fetch vasthu data")
     }
 
-    return data.page_info
+    // Parse the JSON string if needed
+    let pageInfo
+    if (typeof data.page_info === "string") {
+      try {
+        pageInfo = JSON.parse(data.page_info)
+      } catch (parseError) {
+        console.error("Error parsing page_info JSON:", parseError)
+        throw new Error("Failed to parse page_info data")
+      }
+    } else {
+      pageInfo = data.page_info
+    }
+
+    return pageInfo
   } catch (error) {
     console.error("Error in getServiceData:", error)
     // Return default data structure in case of error
@@ -57,7 +73,8 @@ async function getServiceData() {
           serviceType: "Vasthu Consultancy",
           title: "Harmonize Your Living Spaces",
           underlineText: "Vasthu Consultancy",
-          description: "Guiding you to design harmonious spaces aligned with ancient principles for well-being and prosperity.",
+          description:
+            "Guiding you to design harmonious spaces aligned with ancient principles for well-being and prosperity.",
           buttonText: "Book a Consultation",
           buttonLink: "/contact",
         },
@@ -65,7 +82,7 @@ async function getServiceData() {
           header: "Vasthu Consultancy",
           paragraphs: [
             "Our Vasthu Consultancy services blend ancient wisdom with modern design to create balanced and harmonious living and workspaces.",
-            "Our experienced consultants conduct comprehensive site evaluations, detailed reports, and practical recommendations."
+            "Our experienced consultants conduct comprehensive site evaluations, detailed reports, and practical recommendations.",
           ],
           imageSrc: "/placeholder.svg?height=400&width=600",
           imageAlt: "Vasthu consultation session",
@@ -84,7 +101,8 @@ async function getServiceData() {
         },
         cta: {
           title: "Ready to Harmonize Your Space?",
-          description: "Transform your surroundings with our expert vasthu consultancy services and experience balanced, positive energy.",
+          description:
+            "Transform your surroundings with our expert vasthu consultancy services and experience balanced, positive energy.",
           buttonText: "Book a Consultation",
           buttonLink: "/contact",
           buttonColor: "bg-purple-600",
@@ -97,52 +115,71 @@ async function getServiceData() {
 
 export default async function Page() {
   const data = await getServiceData()
-  const { pageInfo } = data
-  const { hero, explanation, faqs, cta, projects } = pageInfo
 
-  const enhancedProjects = projects.items.map((project) => ({
-    ...project,
-    content: (
-      <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
-        <p className="text-neutral-600 text-base md:text-2xl font-sans max-w-3xl mx-auto mb-10 whitespace-pre-line">
-          {project.details.description}
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {project.details.images.map((image, index) => (
-            <Image
-              key={index}
-              src={image.src || "/placeholder.svg"}
-              alt={image.alt || `Vasthu project ${index + 1}`}
-              width={300}
-              height={200}
-              className="w-full h-auto object-cover rounded-lg"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-          ))}
-        </div>
-      </div>
-    ),
-  }))
+  // Check if we have the expected structure and provide defaults if not
+  const pageInfo = data?.pageInfo || {}
+
+  // Destructure with default empty objects to prevent undefined errors
+  const hero = pageInfo.hero || {}
+  const explanation = pageInfo.explanation || {}
+  const faqs = pageInfo.faqs || { items: [] }
+  const cta = pageInfo.cta || {}
+  const projects = pageInfo.projects || { items: [] }
+
+  // Ensure projects.items exists before mapping
+  const enhancedProjects = projects.items
+    ? projects.items.map((project) => ({
+        ...project,
+        content: (
+          <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
+            <p className="text-neutral-600 text-base md:text-2xl font-sans max-w-3xl mx-auto mb-10 whitespace-pre-line">
+              {project.details?.description || "No description available"}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {(project.details?.images || []).map((image, index) => (
+                <Image
+                  key={index}
+                  src={image.src || "/placeholder.svg"}
+                  alt={image.alt || `Vasthu project ${index + 1}`}
+                  width={300}
+                  height={200}
+                  className="w-full h-auto object-cover rounded-lg"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              ))}
+            </div>
+          </div>
+        ),
+      }))
+    : []
 
   return (
     <>
       <Navbar />
       <HeroSection
-        backgroundImage={hero.backgroundImage}
-        serviceType={hero.serviceType}
-        title={hero.title}
-        underlineText={hero.underlineText}
-        description={hero.description}
-        buttonText={hero.buttonText}
-        buttonLink={hero.buttonLink}
+        backgroundImage={hero.backgroundImage || "/vasthu-consultancy.webp"}
+        serviceType={hero.serviceType || "Vasthu Consultancy"}
+        title={hero.title || "Harmonize Your Living Spaces"}
+        underlineText={hero.underlineText || "Vasthu Consultancy"}
+        description={
+          hero.description ||
+          "Guiding you to design harmonious spaces aligned with ancient principles for well-being and prosperity."
+        }
+        buttonText={hero.buttonText || "Book a Consultation"}
+        buttonLink={hero.buttonLink || "/contact"}
       />
 
       <Explanation
-        header={explanation.header}
-        paragraphs={explanation.paragraphs}
-        imageSrc={explanation.imageSrc}
+        header={explanation.header || "Vasthu Consultancy"}
+        paragraphs={
+          explanation.paragraphs || [
+            "Our Vasthu Consultancy services blend ancient wisdom with modern design to create balanced and harmonious living and workspaces.",
+            "Our experienced consultants conduct comprehensive site evaluations, detailed reports, and practical recommendations.",
+          ]
+        }
+        imageSrc={explanation.imageSrc || "/placeholder.svg?height=400&width=600"}
         imageAlt={explanation.imageAlt || "Vasthu principles diagram"}
-        shutters={explanation.shutters}
+        shutters={explanation.shutters || 5}
       />
 
       <WhatWeDo />
@@ -150,24 +187,27 @@ export default async function Page() {
 
       <ProjectsCarousel
         projects={enhancedProjects}
-        title={projects.title}
-        titleColor={projects.titleColor}
+        title={projects.title || "Our Vasthu Initiatives"}
+        titleColor={projects.titleColor || "text-purple-800"}
       />
 
       <Frequent
-        title={faqs.title}
-        highlightWord={faqs.highlightWord}
-        description={faqs.description}
-        faqs={faqs.items}
+        title={faqs.title || "Vasthu Consultancy FAQs"}
+        highlightWord={faqs.highlightWord || "Vasthu"}
+        description={faqs.description || "Find answers to common questions about our vasthu consultancy services."}
+        faqs={faqs.items || []}
       />
 
       <CTASection
-        title={cta.title}
-        description={cta.description}
-        buttonText={cta.buttonText}
-        buttonLink={cta.buttonLink}
-        buttonColor={cta.buttonColor}
-        hoverButtonColor={cta.hoverButtonColor}
+        title={cta.title || "Ready to Harmonize Your Space?"}
+        description={
+          cta.description ||
+          "Transform your surroundings with our expert vasthu consultancy services and experience balanced, positive energy."
+        }
+        buttonText={cta.buttonText || "Book a Consultation"}
+        buttonLink={cta.buttonLink || "/contact"}
+        buttonColor={cta.buttonColor || "bg-purple-600"}
+        hoverButtonColor={cta.hoverButtonColor || "hover:bg-purple-700"}
       />
 
       {/* Structured Data for Vasthu Services */}
@@ -175,39 +215,35 @@ export default async function Page() {
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": ["LocalBusiness", "ProfessionalService"],
-          "name": "Salsabeel Al Janoob ImpExp Vasthu Consultancy",
-          "description": "Traditional Vasthu Shastra consultation services",
-          "serviceType": "VasthuConsultancy",
-          "provider": {
+          name: "Salsabeel Al Janoob ImpExp Vasthu Consultancy",
+          description: "Traditional Vasthu Shastra consultation services",
+          serviceType: "VasthuConsultancy",
+          provider: {
             "@type": "Organization",
-            "name": "Salsabeel Al Janoob ImpExp",
-            "address": {
+            name: "Salsabeel Al Janoob ImpExp",
+            address: {
               "@type": "PostalAddress",
-              "addressCountry": "IN"
-            }
+              addressCountry: "IN",
+            },
           },
-          "offers": {
+          offers: {
             "@type": "Offer",
-            "category": "ArchitecturalConsulting",
-            "availability": "https://schema.org/InStock",
-            "priceSpecification": {
+            category: "ArchitecturalConsulting",
+            availability: "https://schema.org/InStock",
+            priceSpecification: {
               "@type": "PriceSpecification",
-              "priceCurrency": "INR"
-            }
+              priceCurrency: "INR",
+            },
           },
-          "areaServed": {
+          areaServed: {
             "@type": "Country",
-            "name": "India"
+            name: "India",
           },
-          "knowsAbout": [
-            "Vasthu Shastra",
-            "Space Energy Balancing",
-            "Directional Alignment",
-            "Traditional Architecture"
-          ]
+          knowsAbout: ["Vasthu Shastra", "Space Energy Balancing", "Directional Alignment", "Traditional Architecture"],
         })}
       </script>
       <Footer />
     </>
   )
 }
+

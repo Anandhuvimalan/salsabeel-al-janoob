@@ -40,91 +40,181 @@ export const metadata: Metadata = {
 }
 
 async function getServiceData() {
-  // Fetch data from Supabase
-  const { data, error } = await supabase
-    .from("language")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .single()
+  try {
+    // Fetch data from Supabase
+    const { data, error } = await supabase
+      .from("language")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single()
 
-  if (error) {
-    console.error("Error fetching language data:", error)
-    return { pageInfo: {} }
+    if (error) {
+      console.error("Error fetching language data:", error)
+      throw new Error("Failed to fetch language data")
+    }
+
+    // Parse the JSON string if needed
+    let pageInfo
+    if (typeof data.page_info === "string") {
+      try {
+        pageInfo = JSON.parse(data.page_info)
+      } catch (parseError) {
+        console.error("Error parsing page_info JSON:", parseError)
+        throw new Error("Failed to parse page_info data")
+      }
+    } else {
+      pageInfo = data.page_info
+    }
+
+    return pageInfo
+  } catch (error) {
+    console.error("Error in getServiceData:", error)
+    // Return default data structure in case of error
+    return {
+      pageInfo: {
+        hero: {
+          backgroundImage: "/language-learning.jpg",
+          serviceType: "Foreign Language Learning",
+          title: "Immersive & Effective",
+          underlineText: "Language Training Programs",
+          description:
+            "Comprehensive language courses with certified instructors for personal and professional development.",
+          buttonText: "Explore Courses",
+          buttonLink: "/contact",
+        },
+        explanation: {
+          header: "Foreign Language Learning Centers",
+          paragraphs: [
+            "Salsabeel Al Janoob provides professional language training programs with a focus on practical communication skills and cultural understanding.",
+            "Our certified instructors use immersive teaching methods to help students achieve fluency in their chosen language quickly and effectively.",
+          ],
+          imageSrc: "/placeholder.svg?height=400&width=600",
+          imageAlt: "Language learning methodology diagram",
+          shutters: 5,
+        },
+        projects: {
+          title: "Our Language Programs",
+          titleColor: "text-teal-800",
+          items: [],
+        },
+        faqs: {
+          title: "Language Learning FAQs",
+          highlightWord: "Fluency",
+          description: "Find answers to common questions about our language courses and teaching methodology.",
+          items: [],
+        },
+        cta: {
+          title: "Ready to Learn a New Language?",
+          description:
+            "Reach out today to enroll in our language courses and start your journey to multilingual fluency.",
+          buttonText: "Enroll Now",
+          buttonLink: "/contact",
+          buttonColor: "bg-teal-600",
+          hoverButtonColor: "hover:bg-teal-700",
+        },
+      },
+    }
   }
-
-  return data.page_info
 }
 
 export default async function Page() {
-  const { pageInfo } = await getServiceData()
-  const { hero, explanation, faqs, cta, projects } = pageInfo
+  const data = await getServiceData()
 
-  const enhancedProjects =
-    projects?.items?.map((project) => ({
-      ...project,
-      content: (
-        <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
-          <p className="text-neutral-600 text-base md:text-2xl font-sans max-w-3xl mx-auto mb-10 whitespace-pre-line">
-            {project.details.description}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {project.details.images.map((image, index) => (
-              <Image
-                key={index}
-                src={image.src || "/placeholder.svg"}
-                alt={image.alt || `Language course session ${index + 1}`}
-                width={300}
-                height={200}
-                className="w-full h-auto object-cover rounded-lg"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            ))}
+  // Check if we have the expected structure and provide defaults if not
+  const pageInfo = data?.pageInfo || {}
+
+  // Destructure with default empty objects to prevent undefined errors
+  const hero = pageInfo.hero || {}
+  const explanation = pageInfo.explanation || {}
+  const faqs = pageInfo.faqs || { items: [] }
+  const cta = pageInfo.cta || {}
+  const projects = pageInfo.projects || { items: [] }
+
+  // Ensure projects.items exists before mapping
+  const enhancedProjects = projects.items
+    ? projects.items.map((project) => ({
+        ...project,
+        content: (
+          <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
+            <p className="text-neutral-600 text-base md:text-2xl font-sans max-w-3xl mx-auto mb-10 whitespace-pre-line">
+              {project.details?.description || "No description available"}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {(project.details?.images || []).map((image, index) => (
+                <Image
+                  key={index}
+                  src={image.src || "/placeholder.svg"}
+                  alt={image.alt || `Language course session ${index + 1}`}
+                  width={300}
+                  height={200}
+                  className="w-full h-auto object-cover rounded-lg"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      ),
-    })) || []
+        ),
+      }))
+    : []
 
   return (
     <>
       <Navbar />
       <HeroSection
-        backgroundImage={hero?.backgroundImage}
-        serviceType={hero?.serviceType}
-        title={hero?.title}
-        underlineText={hero?.underlineText}
-        description={hero?.description}
-        buttonText={hero?.buttonText}
-        buttonLink={hero?.buttonLink}
+        backgroundImage={hero.backgroundImage || "/language-learning.jpg"}
+        serviceType={hero.serviceType || "Foreign Language Learning"}
+        title={hero.title || "Immersive & Effective"}
+        underlineText={hero.underlineText || "Language Training Programs"}
+        description={
+          hero.description ||
+          "Comprehensive language courses with certified instructors for personal and professional development."
+        }
+        buttonText={hero.buttonText || "Explore Courses"}
+        buttonLink={hero.buttonLink || "/contact"}
       />
 
       <Explanation
-        header={explanation?.header}
-        paragraphs={explanation?.paragraphs || []}
-        imageSrc={explanation?.imageSrc}
-        imageAlt={explanation?.imageAlt || "Language learning methodology diagram"}
-        shutters={explanation?.shutters}
+        header={explanation.header || "Foreign Language Learning Centers"}
+        paragraphs={
+          explanation.paragraphs || [
+            "Salsabeel Al Janoob provides professional language training programs with a focus on practical communication skills and cultural understanding.",
+            "Our certified instructors use immersive teaching methods to help students achieve fluency in their chosen language quickly and effectively.",
+          ]
+        }
+        imageSrc={explanation.imageSrc || "/placeholder.svg?height=400&width=600"}
+        imageAlt={explanation.imageAlt || "Language learning methodology diagram"}
+        shutters={explanation.shutters || 5}
       />
 
       <WhatWeDo />
       <Benefits />
 
-      <ProjectsCarousel projects={enhancedProjects} title={projects?.title} titleColor={projects?.titleColor} />
+      <ProjectsCarousel
+        projects={enhancedProjects}
+        title={projects.title || "Our Language Programs"}
+        titleColor={projects.titleColor || "text-teal-800"}
+      />
 
       <Frequent
-        title={faqs?.title}
-        highlightWord={faqs?.highlightWord}
-        description={faqs?.description}
-        faqs={faqs?.items || []}
+        title={faqs.title || "Language Learning FAQs"}
+        highlightWord={faqs.highlightWord || "Fluency"}
+        description={
+          faqs.description || "Find answers to common questions about our language courses and teaching methodology."
+        }
+        faqs={faqs.items || []}
       />
 
       <CTASection
-        title={cta?.title}
-        description={cta?.description}
-        buttonText={cta?.buttonText}
-        buttonLink={cta?.buttonLink}
-        buttonColor={cta?.buttonColor}
-        hoverButtonColor={cta?.hoverButtonColor}
+        title={cta.title || "Ready to Learn a New Language?"}
+        description={
+          cta.description ||
+          "Reach out today to enroll in our language courses and start your journey to multilingual fluency."
+        }
+        buttonText={cta.buttonText || "Enroll Now"}
+        buttonLink={cta.buttonLink || "/contact"}
+        buttonColor={cta.buttonColor || "bg-teal-600"}
+        hoverButtonColor={cta.hoverButtonColor || "hover:bg-teal-700"}
       />
 
       {/* Structured Data for Language Courses */}
