@@ -1,15 +1,15 @@
-import { Metadata } from "next";
-import Navbar from "@/components/NavBar";
-import Footer from "@/components/Footer";
-import HeroSection from "@/components/servicedetailpage/HeroSection";
-import Explanation from "@/components/servicedetailpage/Explanation";
-import WhatWeDo from "@/components/srvicepagesections/WhatWeDoMarriage";
-import Benefits from "@/components/srvicepagesections/BenefitsMarriage";
-import Frequent from "@/components/servicedetailpage/FAQ";
-import CTASection from "@/components/servicedetailpage/cta";
-import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carousel-demo-2";
-import Image from "next/image";
-import serviceData from "../../../data/marriage.json";
+import type { Metadata } from "next"
+import Navbar from "@/components/NavBar"
+import Footer from "@/components/Footer"
+import HeroSection from "@/components/servicedetailpage/HeroSection"
+import Explanation from "@/components/servicedetailpage/Explanation"
+import WhatWeDo from "@/components/srvicepagesections/WhatWeDoMarriage"
+import Benefits from "@/components/srvicepagesections/BenefitsMarriage"
+import Frequent from "@/components/servicedetailpage/FAQ"
+import CTASection from "@/components/servicedetailpage/cta"
+import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carousel-demo-2"
+import Image from "next/image"
+import { supabase } from "@/lib/supabaseClient"
 
 export const metadata: Metadata = {
   title: "Marriage Counseling & Family Therapy Services | Relationship Experts",
@@ -34,17 +34,73 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/marriage-&-family-counseling",
   }
-};
+}
 
 async function getServiceData() {
-  return await Promise.resolve(serviceData);
+  try {
+    // Fetch the data
+    const { data, error } = await supabase.from("marriage").select("page_info").single()
+
+    if (error) {
+      console.error("Error fetching marriage data:", error)
+      throw new Error("Failed to fetch marriage data")
+    }
+
+    return data.page_info
+  } catch (error) {
+    console.error("Error in getServiceData:", error)
+    // Return default data structure in case of error
+    return {
+      pageInfo: {
+        hero: {
+          backgroundImage: "/uploads/marriage/marriage-counseling.webp",
+          serviceType: "Marriage & Family Counseling",
+          title: "Strengthening Relationships",
+          underlineText: "Marriage & Family Counseling",
+          description: "Providing expert guidance and support to nurture and heal relationships within couples and families.",
+          buttonText: "Get Started",
+          buttonLink: "/contact",
+        },
+        explanation: {
+          header: "Marriage & Family Counseling",
+          paragraphs: [
+            "Our Marriage & Family Counseling services offer compassionate guidance for couples and families navigating life's challenges.",
+            "Our expert team tailors each session to address individual needs, providing strategies for conflict resolution, stress management, and relationship enrichment."
+          ],
+          imageSrc: "/uploads/marriage/counseling.webp",
+          imageAlt: "Couple in counseling session",
+          shutters: 5,
+        },
+        projects: {
+          title: "Our Counseling Initiatives",
+          titleColor: "text-teal-800",
+          items: [],
+        },
+        faqs: {
+          title: "Marriage & Family Counseling FAQs",
+          highlightWord: "Counseling",
+          description: "Find answers to common questions about our counseling services.",
+          items: [],
+        },
+        cta: {
+          title: "Ready to Build Your Vision?",
+          description: "Contact us today to discuss your project and discover how our comprehensive civil contract services can bring your vision to life.",
+          buttonText: "Schedule Consultation",
+          buttonLink: "/contact",
+          buttonColor: "bg-emerald-600",
+          hoverButtonColor: "hover:bg-emerald-700",
+        },
+      },
+    }
+  }
 }
 
 export default async function Page() {
-  const { pageInfo } = await getServiceData();
-  const { hero, explanation, faqs, cta, projects } = pageInfo;
+  const data = await getServiceData()
+  const { pageInfo } = data
+  const { hero, explanation, faqs, cta, projects } = pageInfo
 
-  const enhancedProjects = projects.items.map(project => ({
+  const enhancedProjects = projects.items.map((project) => ({
     ...project,
     content: (
       <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -52,10 +108,10 @@ export default async function Page() {
           {project.details.description}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {project.details.images.map((image: { src: string; alt: string }, index: number) => (
+          {project.details.images.map((image, index) => (
             <Image
               key={index}
-              src={image.src}
+              src={image.src || "/placeholder.svg"}
               alt={image.alt || `Counseling session ${index + 1}`}
               width={300}
               height={200}
@@ -65,8 +121,8 @@ export default async function Page() {
           ))}
         </div>
       </div>
-    )
-  }));
+    ),
+  }))
 
   return (
     <>
@@ -89,8 +145,8 @@ export default async function Page() {
         shutters={explanation.shutters}
       />
 
-        <WhatWeDo />
-        <Benefits />
+      <WhatWeDo />
+      <Benefits />
 
       <ProjectsCarousel
         projects={enhancedProjects}
@@ -147,5 +203,5 @@ export default async function Page() {
       </script>
       <Footer />
     </>
-  );
+  )
 }

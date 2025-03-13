@@ -1,0 +1,37 @@
+"use client"
+import { ArrowLeft, ExternalLink } from "lucide-react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import RetailConsultancyForm from "@/components/admin/newsletter"
+
+export default function RetailConsultancyPage() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Link href="/admin">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </Link>
+            <h1 className="text-2xl font-bold tracking-tight gradient-text">News Letters Section</h1>
+            <div className="rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">newsletters</div>
+          </div>
+          <p className="text-muted-foreground">Manage the newsletters.</p>
+        </div>
+      </div>
+
+      <Separator className="bg-border/3" />
+
+      <Card className="border-[0.5px] border-white/10 bg-card text-white">
+        <CardContent>
+          <RetailConsultancyForm />
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+

@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
 import { Trash2, Upload, RefreshCw, Save, Plus, AlertCircle, CheckCircle2 } from "lucide-react"
 import Image from "next/image"
@@ -12,7 +11,15 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { cn } from "@/lib/utils"
+import { supabase } from "@/lib/supabaseClient"
+import { v4 as uuidv4 } from "uuid"
+
+// Add these CSS classes for consistent styling
+const inputStyles =
+  "bg-background !border-[0.5px] !border-white/10 text-foreground focus-visible:!ring-opacity-20 focus-visible:!ring-primary/30 focus-visible:!border-primary/20"
+const buttonStyles = "!border-[0.5px] !border-white/10 hover:!border-white/15"
+const cardStyles = "!border-[0.5px] !border-white/10 hover:!border-primary/30 bg-background"
 
 type HeroSection = {
   backgroundImage: string
@@ -84,17 +91,18 @@ type PageInfo = {
   cta: CtaSection
 }
 
-type WasteManagementData = {
+type RetailData = {
   pageInfo: PageInfo
 }
 
-export default function WasteManagementForm() {
-  const [formData, setFormData] = useState<WasteManagementData | null>(null)
+export default function RetailForm() {
+  const [formData, setFormData] = useState<RetailData | null>(null)
   const [message, setMessage] = useState({ text: "", type: "" })
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [activeAccordion, setActiveAccordion] = useState<string[]>(["hero"])
+  const [activeTab, setActiveTab] = useState("hero")
+  const [recordId, setRecordId] = useState<string | null>(null)
 
   // Refs for file inputs
   const heroImageRef = useRef<HTMLInputElement>(null)
@@ -102,20 +110,39 @@ export default function WasteManagementForm() {
   const projectImageRefs = useRef<(HTMLInputElement | null)[]>([])
   const projectDetailImageRefs = useRef<{ [key: string]: HTMLInputElement | null }>({})
 
+  // Clear message after 5 seconds
   useEffect(() => {
-    fetchWasteManagementData()
+    if (message.text) {
+      const timer = setTimeout(() => {
+        setMessage({ text: "", type: "" })
+      }, 5000)
+      return () => clearTimeout(timer)
+    }
+  }, [message])
+
+  useEffect(() => {
+    fetchRetailData()
   }, [])
 
-  const fetchWasteManagementData = async () => {
+  const fetchRetailData = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch("/api/retail")
-      if (!res.ok) throw new Error("Failed to fetch waste management data")
-      const data: WasteManagementData = await res.json()
-      setFormData(data)
+      const { data, error } = await supabase
+        .from("retail")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single()
+
+      if (error) throw error
+
+      if (data) {
+        setFormData(data.page_info as RetailData)
+        setRecordId(data.id)
+      }
     } catch (error) {
-      console.error("Error fetching waste management data:", error)
-      setMessage({ text: "Failed to load waste management data. Please refresh the page.", type: "error" })
+      console.error("Error fetching retail data:", error)
+      setMessage({ text: "Failed to load retail consultancy data. Please refresh the page.", type: "error" })
     } finally {
       setIsLoading(false)
     }
@@ -281,113 +308,125 @@ export default function WasteManagementForm() {
   }
 
   const handleImageUpload = async (file: File, section: string, oldPath = "") => {
-    const form = new FormData();
-    form.append("image", file);
-    form.append("oldImagePath", oldPath);
-    form.append("section", section);
-  
     try {
-      const res = await fetch("/api/retail/upload", {
-        method: "POST",
-        body: form,
-      });
-  
-      if (!res.ok) throw new Error("Upload failed");
-      const { imagePath } = await res.json();
-  
+      // If there's an old image, delete it first
+      if (oldPath && !oldPath.startsWith("/")) {
+        const oldPathParts = oldPath.split("/")
+        const oldFileName = oldPathParts[oldPathParts.length - 1]
+
+        await supabase.storage.from("retail-images").remove([oldFileName])
+      }
+
+      // Generate a unique file name
+      const fileExt = file.name.split(".").pop()
+      const fileName = `${uuidv4()}.${fileExt}`
+
+      // Upload the new file
+      const { error: uploadError } = await supabase.storage.from("retail-images").upload(fileName, file)
+
+      if (uploadError) throw uploadError
+
+      // Get the public URL
+      const { data: publicUrlData } = supabase.storage.from("retail-images").getPublicUrl(fileName)
+
+      const imagePath = publicUrlData.publicUrl
+
       setFormData((prevData) => {
-        if (!prevData) return prevData;
-        
+        if (!prevData) return prevData
+
         // Create a deep clone of the state
-        const updatedData = structuredClone(prevData);
-  
+        const updatedData = structuredClone(prevData)
+
         // Handle different section types
-        const sectionParts = section.split("-");
+        const sectionParts = section.split("-")
         switch (sectionParts[0]) {
           case "hero":
-            updatedData.pageInfo.hero.backgroundImage = imagePath;
-            break;
-            
+            updatedData.pageInfo.hero.backgroundImage = imagePath
+            break
+
           case "explanation":
-            updatedData.pageInfo.explanation.imageSrc = imagePath;
-            break;
-  
+            updatedData.pageInfo.explanation.imageSrc = imagePath
+            break
+
           case "project":
             if (sectionParts[1] === "detail") {
               // Handle project detail images: project-detail-0-1
-              const projectIndex = parseInt(sectionParts[2]);
-              const imageIndex = parseInt(sectionParts[3]);
-              updatedData.pageInfo.projects.items[projectIndex].details.images[imageIndex].src = imagePath;
+              const projectIndex = Number.parseInt(sectionParts[2])
+              const imageIndex = Number.parseInt(sectionParts[3])
+              updatedData.pageInfo.projects.items[projectIndex].details.images[imageIndex].src = imagePath
             } else {
               // Handle main project images: project-0
-              const projectIndex = parseInt(sectionParts[1]);
-              updatedData.pageInfo.projects.items[projectIndex].src = imagePath;
+              const projectIndex = Number.parseInt(sectionParts[1])
+              updatedData.pageInfo.projects.items[projectIndex].src = imagePath
             }
-            break;
+            break
         }
-  
-        return updatedData;
-      });
-  
-      return imagePath;
+
+        return updatedData
+      })
+
+      return imagePath
     } catch (error) {
-      console.error("Image upload failed:", error);
-      setMessage({ text: "Image upload failed. Please try again.", type: "error" });
-      return null;
+      console.error("Image upload failed:", error)
+      setMessage({ text: "Image upload failed. Please try again.", type: "error" })
+      return null
     }
-  };
-  
+  }
+
   const handleDeleteImage = async (imagePath: string, section: string) => {
-    if (!imagePath || !formData) return;
-  
+    if (!imagePath || !formData) return
+
     try {
-      const res = await fetch("/api/retail/delete-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imagePath }),
-      });
-  
-      if (!res.ok) throw new Error("Delete failed");
-  
+      // Extract the file name from the URL
+      if (!imagePath.startsWith("/")) {
+        const pathParts = imagePath.split("/")
+        const fileName = pathParts[pathParts.length - 1]
+
+        // Delete the file from storage
+        const { error } = await supabase.storage.from("retail-images").remove([fileName])
+
+        if (error) throw error
+      }
+
       setFormData((prevData) => {
-        if (!prevData) return prevData;
-        
-        const updatedData = structuredClone(prevData);
-        const sectionParts = section.split("-");
-  
+        if (!prevData) return prevData
+
+        const updatedData = structuredClone(prevData)
+        const sectionParts = section.split("-")
+
         switch (sectionParts[0]) {
           case "hero":
-            updatedData.pageInfo.hero.backgroundImage = "";
-            break;
-  
+            updatedData.pageInfo.hero.backgroundImage = ""
+            break
+
           case "explanation":
-            updatedData.pageInfo.explanation.imageSrc = "";
-            break;
-  
+            updatedData.pageInfo.explanation.imageSrc = ""
+            break
+
           case "project":
             if (sectionParts[1] === "detail") {
               // Handle project detail images: project-detail-0-1
-              const projectIndex = parseInt(sectionParts[2]);
-              const imageIndex = parseInt(sectionParts[3]);
-              updatedData.pageInfo.projects.items[projectIndex].details.images[imageIndex].src = "";
+              const projectIndex = Number.parseInt(sectionParts[2])
+              const imageIndex = Number.parseInt(sectionParts[3])
+              updatedData.pageInfo.projects.items[projectIndex].details.images[imageIndex].src = ""
             } else {
               // Handle main project images: project-0
-              const projectIndex = parseInt(sectionParts[1]);
-              updatedData.pageInfo.projects.items[projectIndex].src = "";
+              const projectIndex = Number.parseInt(sectionParts[1])
+              updatedData.pageInfo.projects.items[projectIndex].src = ""
             }
-            break;
+            break
         }
-  
-        return updatedData;
-      });
-  
-      return true;
+
+        return updatedData
+      })
+
+      return true
     } catch (error) {
-      console.error("Image deletion failed:", error);
-      setMessage({ text: "Image deletion failed. Please try again.", type: "error" });
-      return false;
+      console.error("Image deletion failed:", error)
+      setMessage({ text: "Image deletion failed. Please try again.", type: "error" })
+      return false
     }
-  };
+  }
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
@@ -462,21 +501,16 @@ export default function WasteManagementForm() {
     setMessage({ text: "", type: "" })
 
     try {
-      const res = await fetch("/api/retail", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
+      // Update the record in Supabase
+      const { error } = await supabase.from("retail").update({ page_info: formData }).eq("id", recordId)
 
-      if (!res.ok) {
-        throw new Error("Failed to save waste management data")
-      }
+      if (error) throw error
 
-      setMessage({ text: "Waste management section updated successfully!", type: "success" })
-      await fetchWasteManagementData()
+      setMessage({ text: "Retail consultancy section updated successfully!", type: "success" })
+      await fetchRetailData()
     } catch (error) {
-      console.error("Error saving waste management data:", error)
-      setMessage({ text: "Failed to save waste management data. Please try again.", type: "error" })
+      console.error("Error saving retail data:", error)
+      setMessage({ text: "Failed to save retail consultancy data. Please try again.", type: "error" })
     } finally {
       setIsSaving(false)
     }
@@ -484,587 +518,656 @@ export default function WasteManagementForm() {
 
   if (isLoading || !formData) {
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 gap-6">
+      <div className="space-y-6 animate-pulse">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="space-y-4">
-            <Skeleton className="h-8 w-24" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-8 w-24" />
-            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-8 w-24 bg-white/5" />
+            <Skeleton className="h-10 w-full bg-white/5" />
+            <Skeleton className="h-8 w-24 bg-white/5" />
+            <Skeleton className="h-10 w-full bg-white/5" />
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-24 bg-white/5" />
+            <Skeleton className="h-32 w-full bg-white/5" />
           </div>
         </div>
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-40 w-full bg-white/5" />
       </div>
     )
   }
 
   return (
     <div>
-      {message.text && (
-        <Alert variant={message.type === "success" ? "default" : "destructive"} className="mb-6">
-          {message.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
-          <AlertTitle>{message.type === "success" ? "Success" : "Error"}</AlertTitle>
-          <AlertDescription>{message.text}</AlertDescription>
-        </Alert>
-      )}
+      {/* Content Tabs */}
+      <div className="mb-8">
+        <div className="flex justify-center w-full">
+          <div className="w-full bg-white/5 backdrop-blur-sm rounded-lg p-1 flex flex-wrap justify-between">
+            <button
+              type="button"
+              onClick={() => setActiveTab("hero")}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === "hero"
+                  ? "bg-white/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              }`}
+            >
+              Hero
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("explanation")}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === "explanation"
+                  ? "bg-white/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              }`}
+            >
+              Explanation
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("projects")}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === "projects"
+                  ? "bg-white/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              }`}
+            >
+              Projects
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("faqs")}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === "faqs"
+                  ? "bg-white/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              }`}
+            >
+              FAQs
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("cta")}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                activeTab === "cta"
+                  ? "bg-white/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              }`}
+            >
+              CTA
+            </button>
+          </div>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <Accordion type="multiple" value={activeAccordion} onValueChange={setActiveAccordion} className="space-y-4">
-          {/* Hero Section */}
-          <AccordionItem value="hero" className="border rounded-lg">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <h2 className="text-xl font-semibold">Hero Section</h2>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.hero.serviceType" className="flex items-center gap-1">
-                    Service Type <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="pageInfo.hero.serviceType"
-                    value={formData.pageInfo.hero.serviceType}
-                    onChange={(e) => handleTextChange("pageInfo.hero.serviceType", e.target.value)}
-                    className={errors["pageInfo.hero.serviceType"] ? "border-destructive" : ""}
-                    placeholder="Enter service type"
+        {/* Hero Section */}
+        {activeTab === "hero" && (
+          <div className={`space-y-6 p-6 rounded-lg ${cardStyles}`}>
+            <h2 className="text-xl font-semibold">Hero Section</h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.hero.serviceType" className="flex items-center gap-1">
+                  Service Type <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="pageInfo.hero.serviceType"
+                  value={formData.pageInfo.hero.serviceType}
+                  onChange={(e) => handleTextChange("pageInfo.hero.serviceType", e.target.value)}
+                  className={cn(inputStyles, errors["pageInfo.hero.serviceType"] ? "border-destructive" : "")}
+                  placeholder="Enter service type"
+                />
+                {errors["pageInfo.hero.serviceType"] && (
+                  <p className="text-sm text-destructive">{errors["pageInfo.hero.serviceType"]}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.hero.title" className="flex items-center gap-1">
+                  Title <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="pageInfo.hero.title"
+                  value={formData.pageInfo.hero.title}
+                  onChange={(e) => handleTextChange("pageInfo.hero.title", e.target.value)}
+                  className={cn(inputStyles, errors["pageInfo.hero.title"] ? "border-destructive" : "")}
+                  placeholder="Enter title"
+                />
+                {errors["pageInfo.hero.title"] && (
+                  <p className="text-sm text-destructive">{errors["pageInfo.hero.title"]}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.hero.underlineText" className="flex items-center gap-1">
+                  Underline Text <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="pageInfo.hero.underlineText"
+                  value={formData.pageInfo.hero.underlineText}
+                  onChange={(e) => handleTextChange("pageInfo.hero.underlineText", e.target.value)}
+                  className={cn(inputStyles, errors["pageInfo.hero.underlineText"] ? "border-destructive" : "")}
+                  placeholder="Enter underline text"
+                />
+                {errors["pageInfo.hero.underlineText"] && (
+                  <p className="text-sm text-destructive">{errors["pageInfo.hero.underlineText"]}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.hero.description" className="flex items-center gap-1">
+                  Description <span className="text-destructive">*</span>
+                </Label>
+                <Textarea
+                  id="pageInfo.hero.description"
+                  value={formData.pageInfo.hero.description}
+                  onChange={(e) => handleTextChange("pageInfo.hero.description", e.target.value)}
+                  className={cn(
+                    inputStyles,
+                    errors["pageInfo.hero.description"] ? "border-destructive" : "",
+                    "resize-y min-h-[100px] !h-auto",
+                  )}
+                  style={{ resize: "vertical" }}
+                  placeholder="Enter description"
+                />
+                {errors["pageInfo.hero.description"] && (
+                  <p className="text-sm text-destructive">{errors["pageInfo.hero.description"]}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.hero.buttonText">Button Text</Label>
+                <Input
+                  id="pageInfo.hero.buttonText"
+                  value={formData.pageInfo.hero.buttonText}
+                  onChange={(e) => handleTextChange("pageInfo.hero.buttonText", e.target.value)}
+                  className={inputStyles}
+                  placeholder="Enter button text"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.hero.buttonLink">Button Link</Label>
+                <Input
+                  id="pageInfo.hero.buttonLink"
+                  value={formData.pageInfo.hero.buttonLink}
+                  onChange={(e) => handleTextChange("pageInfo.hero.buttonLink", e.target.value)}
+                  className={inputStyles}
+                  placeholder="Enter button link URL"
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="pageInfo.hero.backgroundImage">Background Image</Label>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => heroImageRef.current?.click()}
+                    className={`gap-2 hover:bg-background/80 hover:text-foreground bg-background text-foreground ${buttonStyles}`}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Choose File
+                  </Button>
+                  <input
+                    ref={heroImageRef}
+                    id="pageInfo.hero.backgroundImage"
+                    type="file"
+                    onChange={async (e) => {
+                      if (e.target.files?.[0]) {
+                        await handleImageUpload(e.target.files[0], "hero", formData.pageInfo.hero.backgroundImage)
+                      }
+                    }}
+                    className="hidden"
+                    accept="image/*"
                   />
-                  {errors["pageInfo.hero.serviceType"] && (
-                    <p className="text-sm text-destructive">{errors["pageInfo.hero.serviceType"]}</p>
+                  {formData.pageInfo.hero.backgroundImage && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteImage(formData.pageInfo.hero.backgroundImage, "hero")}
+                      className="gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Remove Image
+                    </Button>
                   )}
                 </div>
 
+                {formData.pageInfo.hero.backgroundImage && (
+                  <Card className={`mt-4 overflow-hidden w-full aspect-video relative ${cardStyles}`}>
+                    <Image
+                      src={formData.pageInfo.hero.backgroundImage || "/placeholder.svg"}
+                      alt="Hero background"
+                      fill
+                      className="object-cover"
+                    />
+                  </Card>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Explanation Section */}
+        {activeTab === "explanation" && (
+          <div className={`space-y-6 p-6 rounded-lg ${cardStyles}`}>
+            <h2 className="text-xl font-semibold">Explanation Section</h2>
+            <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.explanation.header" className="flex items-center gap-1">
+                  Header <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="pageInfo.explanation.header"
+                  value={formData.pageInfo.explanation.header}
+                  onChange={(e) => handleTextChange("pageInfo.explanation.header", e.target.value)}
+                  className={cn(inputStyles, errors["pageInfo.explanation.header"] ? "border-destructive" : "")}
+                  placeholder="Enter header"
+                />
+                {errors["pageInfo.explanation.header"] && (
+                  <p className="text-sm text-destructive">{errors["pageInfo.explanation.header"]}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Label className="flex items-center gap-1">
+                    Paragraphs <span className="text-destructive">*</span>
+                  </Label>
+                </div>
+                {errors["pageInfo.explanation.paragraphs"] && (
+                  <p className="text-sm text-destructive">{errors["pageInfo.explanation.paragraphs"]}</p>
+                )}
+
+                {formData.pageInfo.explanation.paragraphs.map((paragraph, index) => (
+                  <div key={index} className={`space-y-2 p-4 rounded-lg ${cardStyles}`}>
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor={`pageInfo.explanation.paragraphs.${index}`}>Paragraph {index + 1}</Label>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeParagraph(index)}
+                        className="gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Remove
+                      </Button>
+                    </div>
+                    <Textarea
+                      id={`pageInfo.explanation.paragraphs.${index}`}
+                      value={paragraph}
+                      onChange={(e) => {
+                        const updatedParagraphs = [...formData.pageInfo.explanation.paragraphs]
+                        updatedParagraphs[index] = e.target.value
+                        setFormData({
+                          ...formData,
+                          pageInfo: {
+                            ...formData.pageInfo,
+                            explanation: {
+                              ...formData.pageInfo.explanation,
+                              paragraphs: updatedParagraphs,
+                            },
+                          },
+                        })
+                      }}
+                      className={cn(inputStyles, "resize-y min-h-[100px] !h-auto")}
+                      style={{ resize: "vertical" }}
+                      placeholder="Enter paragraph text"
+                    />
+                  </div>
+                ))}
+                <div className="flex justify-end mt-4">
+                  <Button
+                    type="button"
+                    onClick={addParagraph}
+                    className={`gap-2 hover:bg-primary/15 hover:text-primary bg-background text-foreground ${buttonStyles}`}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Paragraph
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.explanation.imageAlt">Image Alt Text</Label>
+                <Input
+                  id="pageInfo.explanation.imageAlt"
+                  value={formData.pageInfo.explanation.imageAlt}
+                  onChange={(e) => handleTextChange("pageInfo.explanation.imageAlt", e.target.value)}
+                  className={inputStyles}
+                  placeholder="Enter image alt text"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.explanation.shutters">Shutters</Label>
+                <Input
+                  id="pageInfo.explanation.shutters"
+                  type="number"
+                  value={formData.pageInfo.explanation.shutters}
+                  onChange={(e) => handleTextChange("pageInfo.explanation.shutters", e.target.value)}
+                  className={inputStyles}
+                  placeholder="Enter number of shutters"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.explanation.imageSrc">Explanation Image</Label>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => explanationImageRef.current?.click()}
+                    className={`gap-2 hover:bg-background/80 hover:text-foreground bg-background text-foreground ${buttonStyles}`}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Choose File
+                  </Button>
+                  <input
+                    ref={explanationImageRef}
+                    id="pageInfo.explanation.imageSrc"
+                    type="file"
+                    onChange={async (e) => {
+                      if (e.target.files?.[0]) {
+                        await handleImageUpload(
+                          e.target.files[0],
+                          "explanation",
+                          formData.pageInfo.explanation.imageSrc,
+                        )
+                      }
+                    }}
+                    className="hidden"
+                    accept="image/*"
+                  />
+                  {formData.pageInfo.explanation.imageSrc && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteImage(formData.pageInfo.explanation.imageSrc, "explanation")}
+                      className="gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Remove Image
+                    </Button>
+                  )}
+                </div>
+
+                {formData.pageInfo.explanation.imageSrc && (
+                  <Card className={`mt-4 overflow-hidden w-full aspect-video relative ${cardStyles}`}>
+                    <Image
+                      src={formData.pageInfo.explanation.imageSrc || "/placeholder.svg"}
+                      alt={formData.pageInfo.explanation.imageAlt}
+                      fill
+                      className="object-cover"
+                    />
+                  </Card>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Projects Section */}
+        {activeTab === "projects" && (
+          <div className={`space-y-6 p-6 rounded-lg ${cardStyles}`}>
+            <h2 className="text-xl font-semibold">Projects Section</h2>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="pageInfo.hero.title" className="flex items-center gap-1">
+                  <Label htmlFor="pageInfo.projects.title" className="flex items-center gap-1">
                     Title <span className="text-destructive">*</span>
                   </Label>
                   <Input
-                    id="pageInfo.hero.title"
-                    value={formData.pageInfo.hero.title}
-                    onChange={(e) => handleTextChange("pageInfo.hero.title", e.target.value)}
-                    className={errors["pageInfo.hero.title"] ? "border-destructive" : ""}
-                    placeholder="Enter title"
+                    id="pageInfo.projects.title"
+                    value={formData.pageInfo.projects.title}
+                    onChange={(e) => handleTextChange("pageInfo.projects.title", e.target.value)}
+                    className={cn(inputStyles, errors["pageInfo.projects.title"] ? "border-destructive" : "")}
+                    placeholder="Enter projects section title"
                   />
-                  {errors["pageInfo.hero.title"] && (
-                    <p className="text-sm text-destructive">{errors["pageInfo.hero.title"]}</p>
+                  {errors["pageInfo.projects.title"] && (
+                    <p className="text-sm text-destructive">{errors["pageInfo.projects.title"]}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="pageInfo.hero.underlineText" className="flex items-center gap-1">
-                    Underline Text <span className="text-destructive">*</span>
-                  </Label>
+                  <Label htmlFor="pageInfo.projects.titleColor">Title Color</Label>
                   <Input
-                    id="pageInfo.hero.underlineText"
-                    value={formData.pageInfo.hero.underlineText}
-                    onChange={(e) => handleTextChange("pageInfo.hero.underlineText", e.target.value)}
-                    className={errors["pageInfo.hero.underlineText"] ? "border-destructive" : ""}
-                    placeholder="Enter underline text"
-                  />
-                  {errors["pageInfo.hero.underlineText"] && (
-                    <p className="text-sm text-destructive">{errors["pageInfo.hero.underlineText"]}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.hero.description" className="flex items-center gap-1">
-                    Description <span className="text-destructive">*</span>
-                  </Label>
-                  <Textarea
-                    id="pageInfo.hero.description"
-                    value={formData.pageInfo.hero.description}
-                    onChange={(e) => handleTextChange("pageInfo.hero.description", e.target.value)}
-                    className={errors["pageInfo.hero.description"] ? "border-destructive" : ""}
-                    rows={3}
-                    placeholder="Enter description"
-                  />
-                  {errors["pageInfo.hero.description"] && (
-                    <p className="text-sm text-destructive">{errors["pageInfo.hero.description"]}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.hero.buttonText">Button Text</Label>
-                  <Input
-                    id="pageInfo.hero.buttonText"
-                    value={formData.pageInfo.hero.buttonText}
-                    onChange={(e) => handleTextChange("pageInfo.hero.buttonText", e.target.value)}
-                    placeholder="Enter button text"
+                    id="pageInfo.projects.titleColor"
+                    value={formData.pageInfo.projects.titleColor}
+                    onChange={(e) => handleTextChange("pageInfo.projects.titleColor", e.target.value)}
+                    className={inputStyles}
+                    placeholder="Enter title color class (e.g., text-emerald-800)"
                   />
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.hero.buttonLink">Button Link</Label>
-                  <Input
-                    id="pageInfo.hero.buttonLink"
-                    value={formData.pageInfo.hero.buttonLink}
-                    onChange={(e) => handleTextChange("pageInfo.hero.buttonLink", e.target.value)}
-                    placeholder="Enter button link URL"
-                  />
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Label className="text-lg font-medium">Projects</Label>
                 </div>
 
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="pageInfo.hero.backgroundImage">Background Image</Label>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => heroImageRef.current?.click()}
-                      className="gap-2"
-                    >
-                      <Upload className="h-4 w-4" />
-                      Choose File
-                    </Button>
-                    <input
-                      ref={heroImageRef}
-                      id="pageInfo.hero.backgroundImage"
-                      type="file"
-                      onChange={async (e) => {
-                        if (e.target.files?.[0]) {
-                          await handleImageUpload(e.target.files[0], "hero", formData.pageInfo.hero.backgroundImage)
-                        }
-                      }}
-                      className="hidden"
-                      accept="image/*"
-                    />
-                    {formData.pageInfo.hero.backgroundImage && (
+                {formData.pageInfo.projects.items.map((project, projectIndex) => (
+                  <div key={projectIndex} className={`p-6 space-y-6 rounded-lg ${cardStyles}`}>
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-lg font-medium">Project #{projectIndex + 1}</h3>
                       <Button
                         type="button"
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleDeleteImage(formData.pageInfo.hero.backgroundImage, "hero")}
+                        onClick={() => removeProject(projectIndex)}
                         className="gap-2"
                       >
                         <Trash2 className="h-4 w-4" />
-                        Remove Image
+                        Remove Project
                       </Button>
-                    )}
-                  </div>
-
-                  {formData.pageInfo.hero.backgroundImage && (
-                    <Card className="mt-4 overflow-hidden w-full h-48 relative">
-                      <Image
-                        src={formData.pageInfo.hero.backgroundImage || "/placeholder.svg"}
-                        alt="Hero background"
-                        fill
-                        className="object-cover"
-                      />
-                    </Card>
-                  )}
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* Explanation Section */}
-          <AccordionItem value="explanation" className="border rounded-lg">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <h2 className="text-xl font-semibold">Explanation Section</h2>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="grid grid-cols-1 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.explanation.header" className="flex items-center gap-1">
-                    Header <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="pageInfo.explanation.header"
-                    value={formData.pageInfo.explanation.header}
-                    onChange={(e) => handleTextChange("pageInfo.explanation.header", e.target.value)}
-                    className={errors["pageInfo.explanation.header"] ? "border-destructive" : ""}
-                    placeholder="Enter header"
-                  />
-                  {errors["pageInfo.explanation.header"] && (
-                    <p className="text-sm text-destructive">{errors["pageInfo.explanation.header"]}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <Label className="flex items-center gap-1">
-                      Paragraphs <span className="text-destructive">*</span>
-                    </Label>
-                    <Button type="button" onClick={addParagraph} size="sm" className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Add Paragraph
-                    </Button>
-                  </div>
-                  {errors["pageInfo.explanation.paragraphs"] && (
-                    <p className="text-sm text-destructive">{errors["pageInfo.explanation.paragraphs"]}</p>
-                  )}
-
-                  {formData.pageInfo.explanation.paragraphs.map((paragraph, index) => (
-                    <div key={index} className="space-y-2 border p-4 rounded-lg">
-                      <div className="flex justify-between items-center">
-                        <Label htmlFor={`pageInfo.explanation.paragraphs.${index}`}>Paragraph {index + 1}</Label>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => removeParagraph(index)}
-                          className="gap-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Remove
-                        </Button>
-                      </div>
-                      <Textarea
-                        id={`pageInfo.explanation.paragraphs.${index}`}
-                        value={paragraph}
-                        onChange={(e) => {
-                          const updatedParagraphs = [...formData.pageInfo.explanation.paragraphs]
-                          updatedParagraphs[index] = e.target.value
-                          setFormData({
-                            ...formData,
-                            pageInfo: {
-                              ...formData.pageInfo,
-                              explanation: {
-                                ...formData.pageInfo.explanation,
-                                paragraphs: updatedParagraphs,
-                              },
-                            },
-                          })
-                        }}
-                        rows={4}
-                        placeholder="Enter paragraph text"
-                      />
                     </div>
-                  ))}
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.explanation.imageAlt">Image Alt Text</Label>
-                  <Input
-                    id="pageInfo.explanation.imageAlt"
-                    value={formData.pageInfo.explanation.imageAlt}
-                    onChange={(e) => handleTextChange("pageInfo.explanation.imageAlt", e.target.value)}
-                    placeholder="Enter image alt text"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.explanation.shutters">Shutters</Label>
-                  <Input
-                    id="pageInfo.explanation.shutters"
-                    type="number"
-                    value={formData.pageInfo.explanation.shutters}
-                    onChange={(e) => handleTextChange("pageInfo.explanation.shutters", e.target.value)}
-                    placeholder="Enter number of shutters"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.explanation.imageSrc">Explanation Image</Label>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => explanationImageRef.current?.click()}
-                      className="gap-2"
-                    >
-                      <Upload className="h-4 w-4" />
-                      Choose File
-                    </Button>
-                    <input
-                      ref={explanationImageRef}
-                      id="pageInfo.explanation.imageSrc"
-                      type="file"
-                      onChange={async (e) => {
-                        if (e.target.files?.[0]) {
-                          await handleImageUpload(
-                            e.target.files[0],
-                            "explanation",
-                            formData.pageInfo.explanation.imageSrc,
-                          )
-                        }
-                      }}
-                      className="hidden"
-                      accept="image/*"
-                    />
-                    {formData.pageInfo.explanation.imageSrc && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDeleteImage(formData.pageInfo.explanation.imageSrc, "explanation")}
-                        className="gap-2"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Remove Image
-                      </Button>
-                    )}
-                  </div>
-
-                  {formData.pageInfo.explanation.imageSrc && (
-                    <Card className="mt-4 overflow-hidden w-full h-48 relative">
-                      <Image
-                        src={formData.pageInfo.explanation.imageSrc || "/placeholder.svg"}
-                        alt={formData.pageInfo.explanation.imageAlt}
-                        fill
-                        className="object-cover"
-                      />
-                    </Card>
-                  )}
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* Projects Section */}
-          <AccordionItem value="projects" className="border rounded-lg">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <h2 className="text-xl font-semibold">Projects Section</h2>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="pageInfo.projects.title" className="flex items-center gap-1">
-                      Title <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="pageInfo.projects.title"
-                      value={formData.pageInfo.projects.title}
-                      onChange={(e) => handleTextChange("pageInfo.projects.title", e.target.value)}
-                      className={errors["pageInfo.projects.title"] ? "border-destructive" : ""}
-                      placeholder="Enter projects section title"
-                    />
-                    {errors["pageInfo.projects.title"] && (
-                      <p className="text-sm text-destructive">{errors["pageInfo.projects.title"]}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="pageInfo.projects.titleColor">Title Color</Label>
-                    <Input
-                      id="pageInfo.projects.titleColor"
-                      value={formData.pageInfo.projects.titleColor}
-                      onChange={(e) => handleTextChange("pageInfo.projects.titleColor", e.target.value)}
-                      placeholder="Enter title color class (e.g., text-emerald-800)"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-lg font-medium">Projects</Label>
-                    <Button type="button" onClick={addProject} className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Add Project
-                    </Button>
-                  </div>
-
-                  {formData.pageInfo.projects.items.map((project, projectIndex) => (
-                    <div key={projectIndex} className="border rounded-lg p-6 space-y-6">
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-medium">Project #{projectIndex + 1}</h3>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => removeProject(projectIndex)}
-                          className="gap-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Remove Project
-                        </Button>
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor={`pageInfo.projects.items[${projectIndex}].category`}
-                            className="flex items-center gap-1"
-                          >
-                            Category <span className="text-destructive">*</span>
-                          </Label>
-                          <Input
-                            id={`pageInfo.projects.items[${projectIndex}].category`}
-                            value={project.category}
-                            onChange={(e) =>
-                              handleArrayTextChange("pageInfo.projects.items", projectIndex, "category", e.target.value)
-                            }
-                            className={
-                              errors[`pageInfo.projects.items[${projectIndex}].category`] ? "border-destructive" : ""
-                            }
-                            placeholder="Enter project category"
-                          />
-                          {errors[`pageInfo.projects.items[${projectIndex}].category`] && (
-                            <p className="text-sm text-destructive">
-                              {errors[`pageInfo.projects.items[${projectIndex}].category`]}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor={`pageInfo.projects.items[${projectIndex}].title`}
-                            className="flex items-center gap-1"
-                          >
-                            Title <span className="text-destructive">*</span>
-                          </Label>
-                          <Input
-                            id={`pageInfo.projects.items[${projectIndex}].title`}
-                            value={project.title}
-                            onChange={(e) =>
-                              handleArrayTextChange("pageInfo.projects.items", projectIndex, "title", e.target.value)
-                            }
-                            className={
-                              errors[`pageInfo.projects.items[${projectIndex}].title`] ? "border-destructive" : ""
-                            }
-                            placeholder="Enter project title"
-                          />
-                          {errors[`pageInfo.projects.items[${projectIndex}].title`] && (
-                            <p className="text-sm text-destructive">
-                              {errors[`pageInfo.projects.items[${projectIndex}].title`]}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       <div className="space-y-2">
-                        <Label htmlFor={`pageInfo.projects.items[${projectIndex}].src`}>Project Image</Label>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={() => projectImageRefs.current[projectIndex]?.click()}
-                            className="gap-2"
-                          >
-                            <Upload className="h-4 w-4" />
-                            Choose File
-                          </Button>
-                          <input
-                            ref={(el) => (projectImageRefs.current[projectIndex] = el)}
-                            id={`pageInfo.projects.items[${projectIndex}].src`}
-                            type="file"
-                            onChange={async (e) => {
-                              if (e.target.files?.[0]) {
-                                await handleImageUpload(e.target.files[0], `project-${projectIndex}`, project.src)
-                              }
-                            }}
-                            className="hidden"
-                            accept="image/*"
-                          />
-                          {project.src && (
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDeleteImage(project.src, `project-${projectIndex}`)}
-                              className="gap-2"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              Remove Image
-                            </Button>
+                        <Label
+                          htmlFor={`pageInfo.projects.items[${projectIndex}].category`}
+                          className="flex items-center gap-1"
+                        >
+                          Category <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id={`pageInfo.projects.items[${projectIndex}].category`}
+                          value={project.category}
+                          onChange={(e) =>
+                            handleArrayTextChange("pageInfo.projects.items", projectIndex, "category", e.target.value)
+                          }
+                          className={cn(
+                            inputStyles,
+                            errors[`pageInfo.projects.items[${projectIndex}].category`] ? "border-destructive" : "",
                           )}
-                        </div>
-
-                        {project.src && (
-                          <Card className="mt-4 overflow-hidden w-full h-48 relative">
-                            <Image
-                              src={project.src || "/placeholder.svg"}
-                              alt={project.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </Card>
+                          placeholder="Enter project category"
+                        />
+                        {errors[`pageInfo.projects.items[${projectIndex}].category`] && (
+                          <p className="text-sm text-destructive">
+                            {errors[`pageInfo.projects.items[${projectIndex}].category`]}
+                          </p>
                         )}
                       </div>
 
-                      <div className="space-y-4">
-                        <Label>Project Details</Label>
-                        <div className="space-y-4 border rounded-lg p-4">
-                          <div className="space-y-2">
-                            <Label htmlFor={`pageInfo.projects.items[${projectIndex}].details.description`}>
-                              Description
-                            </Label>
-                            <Textarea
-                              id={`pageInfo.projects.items[${projectIndex}].details.description`}
-                              value={project.details.description}
-                              onChange={(e) => {
-                                const updatedProjects = [...formData.pageInfo.projects.items]
-                                updatedProjects[projectIndex] = {
-                                  ...updatedProjects[projectIndex],
-                                  details: {
-                                    ...updatedProjects[projectIndex].details,
-                                    description: e.target.value,
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor={`pageInfo.projects.items[${projectIndex}].title`}
+                          className="flex items-center gap-1"
+                        >
+                          Title <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                          id={`pageInfo.projects.items[${projectIndex}].title`}
+                          value={project.title}
+                          onChange={(e) =>
+                            handleArrayTextChange("pageInfo.projects.items", projectIndex, "title", e.target.value)
+                          }
+                          className={cn(
+                            inputStyles,
+                            errors[`pageInfo.projects.items[${projectIndex}].title`] ? "border-destructive" : "",
+                          )}
+                          placeholder="Enter project title"
+                        />
+                        {errors[`pageInfo.projects.items[${projectIndex}].title`] && (
+                          <p className="text-sm text-destructive">
+                            {errors[`pageInfo.projects.items[${projectIndex}].title`]}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor={`pageInfo.projects.items[${projectIndex}].src`}>Project Image</Label>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => projectImageRefs.current[projectIndex]?.click()}
+                          className={`gap-2 hover:bg-background/80 hover:text-foreground bg-background text-foreground ${buttonStyles}`}
+                        >
+                          <Upload className="h-4 w-4" />
+                          Choose File
+                        </Button>
+                        <input
+                          ref={(el) => (projectImageRefs.current[projectIndex] = el)}
+                          id={`pageInfo.projects.items[${projectIndex}].src`}
+                          type="file"
+                          onChange={async (e) => {
+                            if (e.target.files?.[0]) {
+                              await handleImageUpload(e.target.files[0], `project-${projectIndex}`, project.src)
+                            }
+                          }}
+                          className="hidden"
+                          accept="image/*"
+                        />
+                        {project.src && (
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteImage(project.src, `project-${projectIndex}`)}
+                            className="gap-2"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Remove Image
+                          </Button>
+                        )}
+                      </div>
+
+                      {project.src && (
+                        <Card className={`mt-4 overflow-hidden w-full aspect-video relative ${cardStyles}`}>
+                          <Image
+                            src={project.src || "/placeholder.svg"}
+                            alt={project.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </Card>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      <Label>Project Details</Label>
+                      <div className={`space-y-4 p-4 rounded-lg ${cardStyles}`}>
+                        <div className="space-y-2">
+                          <Label htmlFor={`pageInfo.projects.items[${projectIndex}].details.description`}>
+                            Description
+                          </Label>
+                          <Textarea
+                            id={`pageInfo.projects.items[${projectIndex}].details.description`}
+                            value={project.details.description}
+                            onChange={(e) => {
+                              const updatedProjects = [...formData.pageInfo.projects.items]
+                              updatedProjects[projectIndex] = {
+                                ...updatedProjects[projectIndex],
+                                details: {
+                                  ...updatedProjects[projectIndex].details,
+                                  description: e.target.value,
+                                },
+                              }
+                              setFormData({
+                                ...formData,
+                                pageInfo: {
+                                  ...formData.pageInfo,
+                                  projects: {
+                                    ...formData.pageInfo.projects,
+                                    items: updatedProjects,
                                   },
-                                }
-                                setFormData({
-                                  ...formData,
-                                  pageInfo: {
-                                    ...formData.pageInfo,
-                                    projects: {
-                                      ...formData.pageInfo.projects,
-                                      items: updatedProjects,
-                                    },
-                                  },
-                                })
-                              }}
-                              rows={4}
-                              placeholder="Enter project description"
-                            />
+                                },
+                              })
+                            }}
+                            className={cn(inputStyles, "resize-y min-h-[100px] !h-auto")}
+                            style={{ resize: "vertical" }}
+                            placeholder="Enter project description"
+                          />
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <Label>Detail Images</Label>
                           </div>
+                          {project.details.images.map((image, imageIndex) => (
+                            <div key={imageIndex} className={`p-4 space-y-4 rounded-lg ${cardStyles}`}>
+                              <div className="flex justify-between items-center">
+                                <Label>Image #{imageIndex + 1}</Label>
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => {
+                                    // First delete the image if it exists
+                                    if (image.src) {
+                                      handleDeleteImage(image.src, `project-detail-${projectIndex}-${imageIndex}`)
+                                    }
 
-                          <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                              <Label>Detail Images</Label>
-                              <Button
-                                type="button"
-                                size="sm"
-                                onClick={() => {
-                                  const updatedProjects = [...formData.pageInfo.projects.items]
-                                  const updatedImages = [
-                                    ...updatedProjects[projectIndex].details.images,
-                                    {
-                                      src: "",
-                                      alt: `Image ${updatedProjects[projectIndex].details.images.length + 1}`,
-                                    },
-                                  ]
-                                  updatedProjects[projectIndex] = {
-                                    ...updatedProjects[projectIndex],
-                                    details: {
-                                      ...updatedProjects[projectIndex].details,
-                                      images: updatedImages,
-                                    },
-                                  }
-                                  setFormData({
-                                    ...formData,
-                                    pageInfo: {
-                                      ...formData.pageInfo,
-                                      projects: {
-                                        ...formData.pageInfo.projects,
-                                        items: updatedProjects,
+                                    // Then remove the image from the array
+                                    const updatedProjects = [...formData.pageInfo.projects.items]
+                                    const updatedImages = updatedProjects[projectIndex].details.images.filter(
+                                      (_, i) => i !== imageIndex,
+                                    )
+                                    updatedProjects[projectIndex] = {
+                                      ...updatedProjects[projectIndex],
+                                      details: {
+                                        ...updatedProjects[projectIndex].details,
+                                        images: updatedImages,
                                       },
-                                    },
-                                  })
-                                }}
-                                className="gap-2"
-                              >
-                                <Plus className="h-4 w-4" />
-                                Add Image
-                              </Button>
-                            </div>
-                            {project.details.images.map((image, imageIndex) => (
-                              <div key={imageIndex} className="border rounded-lg p-4 space-y-4">
-                                <div className="flex justify-between items-center">
-                                  <Label>Image #{imageIndex + 1}</Label>
-                                  <Button
-                                    type="button"
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => {
-                                      // First delete the image if it exists
-                                      if (image.src) {
-                                        handleDeleteImage(image.src, `project-detail-${projectIndex}-${imageIndex}`)
-                                      }
+                                    }
+                                    setFormData({
+                                      ...formData,
+                                      pageInfo: {
+                                        ...formData.pageInfo,
+                                        projects: {
+                                          ...formData.pageInfo.projects,
+                                          items: updatedProjects,
+                                        },
+                                      },
+                                    })
+                                  }}
+                                  className="gap-2"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                  Remove
+                                </Button>
+                              </div>
 
-                                      // Then remove the image from the array
+                              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div className="space-y-2">
+                                  <Label htmlFor={`project-${projectIndex}-image-${imageIndex}-alt`}>Alt Text</Label>
+                                  <Input
+                                    id={`project-${projectIndex}-image-${imageIndex}-alt`}
+                                    value={image.alt}
+                                    onChange={(e) => {
                                       const updatedProjects = [...formData.pageInfo.projects.items]
-                                      const updatedImages = updatedProjects[projectIndex].details.images.filter(
-                                        (_, i) => i !== imageIndex,
-                                      )
+                                      const updatedImages = [...updatedProjects[projectIndex].details.images]
+                                      updatedImages[imageIndex] = {
+                                        ...updatedImages[imageIndex],
+                                        alt: e.target.value,
+                                      }
                                       updatedProjects[projectIndex] = {
                                         ...updatedProjects[projectIndex],
                                         details: {
@@ -1083,352 +1186,400 @@ export default function WasteManagementForm() {
                                         },
                                       })
                                     }}
-                                    className="gap-2"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                    Remove
-                                  </Button>
+                                    className={inputStyles}
+                                    placeholder="Enter image alt text"
+                                  />
                                 </div>
 
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                  <div className="space-y-2">
-                                    <Label htmlFor={`project-${projectIndex}-image-${imageIndex}-alt`}>Alt Text</Label>
-                                    <Input
-                                      id={`project-${projectIndex}-image-${imageIndex}-alt`}
-                                      value={image.alt}
-                                      onChange={(e) => {
-                                        const updatedProjects = [...formData.pageInfo.projects.items]
-                                        const updatedImages = [...updatedProjects[projectIndex].details.images]
-                                        updatedImages[imageIndex] = {
-                                          ...updatedImages[imageIndex],
-                                          alt: e.target.value,
+                                <div className="space-y-2">
+                                  <Label htmlFor={`project-${projectIndex}-image-${imageIndex}-src`}>Image</Label>
+                                  <div className="flex flex-wrap items-center gap-3">
+                                    <Button
+                                      type="button"
+                                      variant="secondary"
+                                      onClick={() =>
+                                        projectDetailImageRefs.current[`${projectIndex}-${imageIndex}`]?.click()
+                                      }
+                                      className={`gap-2 hover:bg-background/80 hover:text-foreground bg-background text-foreground ${buttonStyles}`}
+                                    >
+                                      <Upload className="h-4 w-4" />
+                                      Choose File
+                                    </Button>
+                                    <input
+                                      ref={(el) =>
+                                        (projectDetailImageRefs.current[`${projectIndex}-${imageIndex}`] = el)
+                                      }
+                                      id={`project-${projectIndex}-image-${imageIndex}-src`}
+                                      type="file"
+                                      onChange={async (e) => {
+                                        if (e.target.files?.[0]) {
+                                          const newImagePath = await handleImageUpload(
+                                            e.target.files[0],
+                                            `project-detail-${projectIndex}-${imageIndex}`,
+                                            image.src,
+                                          )
+                                          if (newImagePath) {
+                                            const updatedProjects = [...formData.pageInfo.projects.items]
+                                            const updatedImages = [...updatedProjects[projectIndex].details.images]
+                                            updatedImages[imageIndex] = {
+                                              ...updatedImages[imageIndex],
+                                              src: newImagePath,
+                                            }
+                                            updatedProjects[projectIndex] = {
+                                              ...updatedProjects[projectIndex],
+                                              details: {
+                                                ...updatedProjects[projectIndex].details,
+                                                images: updatedImages,
+                                              },
+                                            }
+                                            setFormData({
+                                              ...formData,
+                                              pageInfo: {
+                                                ...formData.pageInfo,
+                                                projects: {
+                                                  ...formData.pageInfo.projects,
+                                                  items: updatedProjects,
+                                                },
+                                              },
+                                            })
+                                          }
                                         }
-                                        updatedProjects[projectIndex] = {
-                                          ...updatedProjects[projectIndex],
-                                          details: {
-                                            ...updatedProjects[projectIndex].details,
-                                            images: updatedImages,
-                                          },
-                                        }
-                                        setFormData({
-                                          ...formData,
-                                          pageInfo: {
-                                            ...formData.pageInfo,
-                                            projects: {
-                                              ...formData.pageInfo.projects,
-                                              items: updatedProjects,
-                                            },
-                                          },
-                                        })
                                       }}
-                                      placeholder="Enter image alt text"
+                                      className="hidden"
+                                      accept="image/*"
                                     />
-                                  </div>
-
-                                  <div className="space-y-2">
-                                    <Label htmlFor={`project-${projectIndex}-image-${imageIndex}-src`}>Image</Label>
-                                    <div className="flex flex-wrap items-center gap-3">
+                                    {image.src && (
                                       <Button
                                         type="button"
-                                        variant="secondary"
+                                        variant="destructive"
+                                        size="sm"
                                         onClick={() =>
-                                          projectDetailImageRefs.current[`${projectIndex}-${imageIndex}`]?.click()
+                                          handleDeleteImage(image.src, `project-detail-${projectIndex}-${imageIndex}`)
                                         }
                                         className="gap-2"
                                       >
-                                        <Upload className="h-4 w-4" />
-                                        Choose File
+                                        <Trash2 className="h-4 w-4" />
+                                        Remove
                                       </Button>
-                                      <input
-                                        ref={(el) =>
-                                          (projectDetailImageRefs.current[`${projectIndex}-${imageIndex}`] = el)
-                                        }
-                                        id={`project-${projectIndex}-image-${imageIndex}-src`}
-                                        type="file"
-                                        onChange={async (e) => {
-                                          if (e.target.files?.[0]) {
-                                            const newImagePath = await handleImageUpload(
-                                              e.target.files[0],
-                                              `project-detail-${projectIndex}-${imageIndex}`,
-                                              image.src,
-                                            )
-                                            if (newImagePath) {
-                                              const updatedProjects = [...formData.pageInfo.projects.items]
-                                              const updatedImages = [...updatedProjects[projectIndex].details.images]
-                                              updatedImages[imageIndex] = {
-                                                ...updatedImages[imageIndex],
-                                                src: newImagePath,
-                                              }
-                                              updatedProjects[projectIndex] = {
-                                                ...updatedProjects[projectIndex],
-                                                details: {
-                                                  ...updatedProjects[projectIndex].details,
-                                                  images: updatedImages,
-                                                },
-                                              }
-                                              setFormData({
-                                                ...formData,
-                                                pageInfo: {
-                                                  ...formData.pageInfo,
-                                                  projects: {
-                                                    ...formData.pageInfo.projects,
-                                                    items: updatedProjects,
-                                                  },
-                                                },
-                                              })
-                                            }
-                                          }
-                                        }}
-                                        className="hidden"
-                                        accept="image/*"
-                                      />
-                                      {image.src && (
-                                        <Button
-                                          type="button"
-                                          variant="destructive"
-                                          size="sm"
-                                          onClick={() =>
-                                            handleDeleteImage(image.src, `project-detail-${projectIndex}-${imageIndex}`)
-                                          }
-                                          className="gap-2"
-                                        >
-                                          <Trash2 className="h-4 w-4" />
-                                          Remove
-                                        </Button>
-                                      )}
-                                    </div>
-
-                                    {image.src && (
-                                      <Card className="mt-4 overflow-hidden w-full h-32 relative">
-                                        <Image
-                                          src={image.src || "/placeholder.svg"}
-                                          alt={image.alt}
-                                          fill
-                                          className="object-cover"
-                                        />
-                                      </Card>
                                     )}
                                   </div>
+
+                                  {image.src && (
+                                    <Card className={`mt-4 overflow-hidden w-full aspect-video relative ${cardStyles}`}>
+                                      <Image
+                                        src={image.src || "/placeholder.svg"}
+                                        alt={image.alt}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    </Card>
+                                  )}
                                 </div>
                               </div>
-                            ))}
+                            </div>
+                          ))}
+                          <div className="flex justify-end mt-4">
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={() => {
+                                const updatedProjects = [...formData.pageInfo.projects.items]
+                                const updatedImages = [
+                                  ...updatedProjects[projectIndex].details.images,
+                                  {
+                                    src: "",
+                                    alt: `Image ${updatedProjects[projectIndex].details.images.length + 1}`,
+                                  },
+                                ]
+                                updatedProjects[projectIndex] = {
+                                  ...updatedProjects[projectIndex],
+                                  details: {
+                                    ...updatedProjects[projectIndex].details,
+                                    images: updatedImages,
+                                  },
+                                }
+                                setFormData({
+                                  ...formData,
+                                  pageInfo: {
+                                    ...formData.pageInfo,
+                                    projects: {
+                                      ...formData.pageInfo.projects,
+                                      items: updatedProjects,
+                                    },
+                                  },
+                                })
+                              }}
+                              className={`gap-2 hover:bg-primary/15 hover:text-primary bg-background text-foreground ${buttonStyles}`}
+                            >
+                              <Plus className="h-4 w-4" />
+                              Add Image
+                            </Button>
                           </div>
                         </div>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                ))}
+                <div className="flex justify-end mt-6">
+                  <Button
+                    type="button"
+                    onClick={addProject}
+                    className={`gap-2 hover:bg-primary/15 hover:text-primary bg-background text-foreground ${buttonStyles}`}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Project
+                  </Button>
                 </div>
               </div>
-            </AccordionContent>
-          </AccordionItem>
+            </div>
+          </div>
+        )}
 
-          {/* FAQs Section */}
-          <AccordionItem value="faqs" className="border rounded-lg">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <h2 className="text-xl font-semibold">FAQs Section</h2>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="pageInfo.faqs.title" className="flex items-center gap-1">
-                      Title <span className="text-destructive">*</span>
-                    </Label>
-                    <Input
-                      id="pageInfo.faqs.title"
-                      value={formData.pageInfo.faqs.title}
-                      onChange={(e) => handleTextChange("pageInfo.faqs.title", e.target.value)}
-                      className={errors["pageInfo.faqs.title"] ? "border-destructive" : ""}
-                      placeholder="Enter FAQs section title"
-                    />
-                    {errors["pageInfo.faqs.title"] && (
-                      <p className="text-sm text-destructive">{errors["pageInfo.faqs.title"]}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="pageInfo.faqs.highlightWord">Highlight Word</Label>
-                    <Input
-                      id="pageInfo.faqs.highlightWord"
-                      value={formData.pageInfo.faqs.highlightWord}
-                      onChange={(e) => handleTextChange("pageInfo.faqs.highlightWord", e.target.value)}
-                      placeholder="Enter highlight word"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.faqs.description">Description</Label>
-                  <Textarea
-                    id="pageInfo.faqs.description"
-                    value={formData.pageInfo.faqs.description}
-                    onChange={(e) => handleTextChange("pageInfo.faqs.description", e.target.value)}
-                    rows={3}
-                    placeholder="Enter FAQs description"
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-lg font-medium">FAQ Items</Label>
-                    <Button type="button" onClick={addFaq} className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Add FAQ
-                    </Button>
-                  </div>
-
-                  {formData.pageInfo.faqs.items.map((faq, faqIndex) => (
-                    <div key={faqIndex} className="border rounded-lg p-4 space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="font-medium">FAQ #{faqIndex + 1}</h3>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => removeFaq(faqIndex)}
-                          className="gap-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Remove
-                        </Button>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label
-                          htmlFor={`pageInfo.faqs.items[${faqIndex}].question`}
-                          className="flex items-center gap-1"
-                        >
-                          Question <span className="text-destructive">*</span>
-                        </Label>
-                        <Input
-                          id={`pageInfo.faqs.items[${faqIndex}].question`}
-                          value={faq.question}
-                          onChange={(e) =>
-                            handleArrayTextChange("pageInfo.faqs.items", faqIndex, "question", e.target.value)
-                          }
-                          className={errors[`pageInfo.faqs.items[${faqIndex}].question`] ? "border-destructive" : ""}
-                          placeholder="Enter question"
-                        />
-                        {errors[`pageInfo.faqs.items[${faqIndex}].question`] && (
-                          <p className="text-sm text-destructive">
-                            {errors[`pageInfo.faqs.items[${faqIndex}].question`]}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor={`pageInfo.faqs.items[${faqIndex}].answer`} className="flex items-center gap-1">
-                          Answer <span className="text-destructive">*</span>
-                        </Label>
-                        <Textarea
-                          id={`pageInfo.faqs.items[${faqIndex}].answer`}
-                          value={faq.answer}
-                          onChange={(e) =>
-                            handleArrayTextChange("pageInfo.faqs.items", faqIndex, "answer", e.target.value)
-                          }
-                          className={errors[`pageInfo.faqs.items[${faqIndex}].answer`] ? "border-destructive" : ""}
-                          rows={3}
-                          placeholder="Enter answer"
-                        />
-                        {errors[`pageInfo.faqs.items[${faqIndex}].answer`] && (
-                          <p className="text-sm text-destructive">
-                            {errors[`pageInfo.faqs.items[${faqIndex}].answer`]}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          {/* CTA Section */}
-          <AccordionItem value="cta" className="border rounded-lg">
-            <AccordionTrigger className="px-6 py-4 hover:no-underline">
-              <h2 className="text-xl font-semibold">CTA Section</h2>
-            </AccordionTrigger>
-            <AccordionContent className="px-6 pb-6">
+        {/* FAQs Section */}
+        {activeTab === "faqs" && (
+          <div className={`space-y-6 p-6 rounded-lg ${cardStyles}`}>
+            <h2 className="text-xl font-semibold">FAQs Section</h2>
+            <div className="space-y-6">
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="pageInfo.cta.title" className="flex items-center gap-1">
+                  <Label htmlFor="pageInfo.faqs.title" className="flex items-center gap-1">
                     Title <span className="text-destructive">*</span>
                   </Label>
                   <Input
-                    id="pageInfo.cta.title"
-                    value={formData.pageInfo.cta.title}
-                    onChange={(e) => handleTextChange("pageInfo.cta.title", e.target.value)}
-                    className={errors["pageInfo.cta.title"] ? "border-destructive" : ""}
-                    placeholder="Enter CTA title"
+                    id="pageInfo.faqs.title"
+                    value={formData.pageInfo.faqs.title}
+                    onChange={(e) => handleTextChange("pageInfo.faqs.title", e.target.value)}
+                    className={cn(inputStyles, errors["pageInfo.faqs.title"] ? "border-destructive" : "")}
+                    placeholder="Enter FAQs section title"
                   />
-                  {errors["pageInfo.cta.title"] && (
-                    <p className="text-sm text-destructive">{errors["pageInfo.cta.title"]}</p>
+                  {errors["pageInfo.faqs.title"] && (
+                    <p className="text-sm text-destructive">{errors["pageInfo.faqs.title"]}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="pageInfo.cta.description" className="flex items-center gap-1">
-                    Description <span className="text-destructive">*</span>
-                  </Label>
-                  <Textarea
-                    id="pageInfo.cta.description"
-                    value={formData.pageInfo.cta.description}
-                    onChange={(e) => handleTextChange("pageInfo.cta.description", e.target.value)}
-                    className={errors["pageInfo.cta.description"] ? "border-destructive" : ""}
-                    rows={3}
-                    placeholder="Enter CTA description"
-                  />
-                  {errors["pageInfo.cta.description"] && (
-                    <p className="text-sm text-destructive">{errors["pageInfo.cta.description"]}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.cta.buttonText">Button Text</Label>
+                  <Label htmlFor="pageInfo.faqs.highlightWord">Highlight Word</Label>
                   <Input
-                    id="pageInfo.cta.buttonText"
-                    value={formData.pageInfo.cta.buttonText}
-                    onChange={(e) => handleTextChange("pageInfo.cta.buttonText", e.target.value)}
-                    placeholder="Enter button text"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.cta.buttonLink">Button Link</Label>
-                  <Input
-                    id="pageInfo.cta.buttonLink"
-                    value={formData.pageInfo.cta.buttonLink}
-                    onChange={(e) => handleTextChange("pageInfo.cta.buttonLink", e.target.value)}
-                    placeholder="Enter button link URL"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.cta.buttonColor">Button Color</Label>
-                  <Input
-                    id="pageInfo.cta.buttonColor"
-                    value={formData.pageInfo.cta.buttonColor}
-                    onChange={(e) => handleTextChange("pageInfo.cta.buttonColor", e.target.value)}
-                    placeholder="Enter button color class (e.g., bg-emerald-600)"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pageInfo.cta.hoverButtonColor">Hover Button Color</Label>
-                  <Input
-                    id="pageInfo.cta.hoverButtonColor"
-                    value={formData.pageInfo.cta.hoverButtonColor}
-                    onChange={(e) => handleTextChange("pageInfo.cta.hoverButtonColor", e.target.value)}
-                    placeholder="Enter hover button color class (e.g., hover:bg-emerald-700)"
+                    id="pageInfo.faqs.highlightWord"
+                    value={formData.pageInfo.faqs.highlightWord}
+                    onChange={(e) => handleTextChange("pageInfo.faqs.highlightWord", e.target.value)}
+                    className={inputStyles}
+                    placeholder="Enter highlight word"
                   />
                 </div>
               </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
 
-        <div className="flex flex-wrap items-center gap-4 pt-6 border-t">
-          <Button type="submit" disabled={isSaving} className="gap-2">
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.faqs.description">Description</Label>
+                <Textarea
+                  id="pageInfo.faqs.description"
+                  value={formData.pageInfo.faqs.description}
+                  onChange={(e) => handleTextChange("pageInfo.faqs.description", e.target.value)}
+                  className={cn(inputStyles, "resize-y min-h-[100px] !h-auto")}
+                  style={{ resize: "vertical" }}
+                  placeholder="Enter FAQs description"
+                />
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <Label className="text-lg font-medium">FAQ Items</Label>
+                </div>
+
+                {formData.pageInfo.faqs.items.map((faq, faqIndex) => (
+                  <div key={faqIndex} className={`p-4 space-y-4 rounded-lg ${cardStyles}`}>
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-medium">FAQ #{faqIndex + 1}</h3>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeFaq(faqIndex)}
+                        className="gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Remove
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor={`pageInfo.faqs.items[${faqIndex}].question`} className="flex items-center gap-1">
+                        Question <span className="text-destructive">*</span>
+                      </Label>
+                      <Input
+                        id={`pageInfo.faqs.items[${faqIndex}].question`}
+                        value={faq.question}
+                        onChange={(e) =>
+                          handleArrayTextChange("pageInfo.faqs.items", faqIndex, "question", e.target.value)
+                        }
+                        className={cn(
+                          inputStyles,
+                          errors[`pageInfo.faqs.items[${faqIndex}].question`] ? "border-destructive" : "",
+                        )}
+                        placeholder="Enter question"
+                      />
+                      {errors[`pageInfo.faqs.items[${faqIndex}].question`] && (
+                        <p className="text-sm text-destructive">
+                          {errors[`pageInfo.faqs.items[${faqIndex}].question`]}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor={`pageInfo.faqs.items[${faqIndex}].answer`} className="flex items-center gap-1">
+                        Answer <span className="text-destructive">*</span>
+                      </Label>
+                      <Textarea
+                        id={`pageInfo.faqs.items[${faqIndex}].answer`}
+                        value={faq.answer}
+                        onChange={(e) =>
+                          handleArrayTextChange("pageInfo.faqs.items", faqIndex, "answer", e.target.value)
+                        }
+                        className={cn(
+                          inputStyles,
+                          errors[`pageInfo.faqs.items[${faqIndex}].answer`] ? "border-destructive" : "",
+                          "resize-y min-h-[100px] !h-auto",
+                        )}
+                        style={{ resize: "vertical" }}
+                        placeholder="Enter answer"
+                      />
+                      {errors[`pageInfo.faqs.items[${faqIndex}].answer`] && (
+                        <p className="text-sm text-destructive">{errors[`pageInfo.faqs.items[${faqIndex}].answer`]}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                <div className="flex justify-end mt-6">
+                  <Button
+                    type="button"
+                    onClick={addFaq}
+                    className={`gap-2 hover:bg-primary/15 hover:text-primary bg-background text-foreground ${buttonStyles}`}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add FAQ
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* CTA Section */}
+        {activeTab === "cta" && (
+          <div className={`space-y-6 p-6 rounded-lg ${cardStyles}`}>
+            <h2 className="text-xl font-semibold">CTA Section</h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.cta.title" className="flex items-center gap-1">
+                  Title <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="pageInfo.cta.title"
+                  value={formData.pageInfo.cta.title}
+                  onChange={(e) => handleTextChange("pageInfo.cta.title", e.target.value)}
+                  className={cn(inputStyles, errors["pageInfo.cta.title"] ? "border-destructive" : "")}
+                  placeholder="Enter CTA title"
+                />
+                {errors["pageInfo.cta.title"] && (
+                  <p className="text-sm text-destructive">{errors["pageInfo.cta.title"]}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.cta.description" className="flex items-center gap-1">
+                  Description <span className="text-destructive">*</span>
+                </Label>
+                <Textarea
+                  id="pageInfo.cta.description"
+                  value={formData.pageInfo.cta.description}
+                  onChange={(e) => handleTextChange("pageInfo.cta.description", e.target.value)}
+                  className={cn(
+                    inputStyles,
+                    errors["pageInfo.cta.description"] ? "border-destructive" : "",
+                    "resize-y min-h-[100px] !h-auto",
+                  )}
+                  style={{ resize: "vertical" }}
+                  placeholder="Enter CTA description"
+                />
+                {errors["pageInfo.cta.description"] && (
+                  <p className="text-sm text-destructive">{errors["pageInfo.cta.description"]}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.cta.buttonText">Button Text</Label>
+                <Input
+                  id="pageInfo.cta.buttonText"
+                  value={formData.pageInfo.cta.buttonText}
+                  onChange={(e) => handleTextChange("pageInfo.cta.buttonText", e.target.value)}
+                  className={inputStyles}
+                  placeholder="Enter button text"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.cta.buttonLink">Button Link</Label>
+                <Input
+                  id="pageInfo.cta.buttonLink"
+                  value={formData.pageInfo.cta.buttonLink}
+                  onChange={(e) => handleTextChange("pageInfo.cta.buttonLink", e.target.value)}
+                  className={inputStyles}
+                  placeholder="Enter button link URL"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.cta.buttonColor">Button Color</Label>
+                <Input
+                  id="pageInfo.cta.buttonColor"
+                  value={formData.pageInfo.cta.buttonColor}
+                  onChange={(e) => handleTextChange("pageInfo.cta.buttonColor", e.target.value)}
+                  className={inputStyles}
+                  placeholder="Enter button color class (e.g., bg-emerald-600)"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pageInfo.cta.hoverButtonColor">Hover Button Color</Label>
+                <Input
+                  id="pageInfo.cta.hoverButtonColor"
+                  value={formData.pageInfo.cta.hoverButtonColor}
+                  onChange={(e) => handleTextChange("pageInfo.cta.hoverButtonColor", e.target.value)}
+                  className={inputStyles}
+                  placeholder="Enter hover button color class (e.g., hover:bg-emerald-700)"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {message.text && (
+          <Alert
+            variant={message.type === "warning" ? "warning" : message.type === "error" ? "destructive" : "default"}
+            className={`mb-6 ${message.type === "success" ? "bg-zinc-900/90 border-emerald-600/30" : ""}`}
+          >
+            {message.type === "success" ? (
+              <CheckCircle2 className="h-4 w-4 !text-emerald-400" />
+            ) : message.type === "warning" ? (
+              <AlertCircle className="h-4 w-4" />
+            ) : (
+              <AlertCircle className="h-4 w-4" />
+            )}
+            <AlertTitle className={message.type === "success" ? "text-emerald-400" : ""}>
+              {message.type === "success" ? "Success" : message.type === "warning" ? "Warning" : "Error"}
+            </AlertTitle>
+            <AlertDescription className={message.type === "success" ? "text-emerald-300/90" : ""}>
+              {message.text}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <div className="flex flex-wrap items-center gap-4 pt-6 border-t border-white/10">
+          <Button
+            type="submit"
+            disabled={isSaving}
+            className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+          >
             {isSaving ? (
               <>
                 <RefreshCw className="h-4 w-4 animate-spin" />
@@ -1437,7 +1588,7 @@ export default function WasteManagementForm() {
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                Update Waste Management Section
+                Update Retail Consultancy Section
               </>
             )}
           </Button>
@@ -1445,9 +1596,9 @@ export default function WasteManagementForm() {
           <Button
             type="button"
             variant="outline"
-            onClick={fetchWasteManagementData}
+            onClick={fetchRetailData}
             disabled={isSaving}
-            className="gap-2"
+            className={`gap-2 hover:bg-background/80 hover:text-foreground bg-background text-foreground ${buttonStyles}`}
           >
             <RefreshCw className="h-4 w-4" />
             Reset Changes

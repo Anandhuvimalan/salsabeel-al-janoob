@@ -1,68 +1,51 @@
 "use client"
-
-import { useState } from "react"
-import { ArrowLeft, ExternalLink, Eye } from "lucide-react"
+import { ArrowLeft, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import TestimonialForm from "@/components/admin/TestimonialForm"
 
-export default function HeroSectionPage() {
-  const [activeTab, setActiveTab] = useState("edit")
+const buttonStyles = "!border-[0.5px] !border-white/10 hover:!border-white/15"
 
+export default function TestimonialSectionPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-background">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Link href="/admin">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/15 hover:text-primary">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
-            <h1 className="text-2xl font-bold tracking-tight">Testimonial Section</h1>
+            <h1 className="text-2xl font-bold tracking-tight gradient-text">Testimonial Section</h1>
+            <div className="ml-2 bg-background px-3 py-1 rounded-full text-xs !border-[0.5px] !border-white/10 text-muted-foreground">
+              Homepage
+            </div>
           </div>
-          <p className="text-muted-foreground">Customize the Testimonial Section</p>
+          <p className="text-muted-foreground">Customize the testimonials that appear on your homepage.</p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/" target="_blank">
-            <Button variant="outline" size="sm" className="gap-1">
-              <ExternalLink className="h-4 w-4" />
-              View Live Site
+            <Button
+              variant="outline"
+              size="sm"
+              className={`px-4 py-2 bg-background hover:bg-background/80 hover:text-foreground ${buttonStyles}`}
+            >
+              <ExternalLink className="h-4 w-4 mr-2 text-primary" />
+              <span className="text-foreground">View Live Site</span>
             </Button>
           </Link>
         </div>
       </div>
 
-      <Separator />
+      <Separator className="bg-border/3" />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <div className="flex justify-between items-center">
-
-          {activeTab === "preview" && (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="gap-1">
-                <Eye className="h-4 w-4" />
-                Desktop
-              </Button>
-            </div>
-          )}
+      <div className="bg-card">
+        <div className="p-6">
+          <TestimonialForm />
         </div>
-
-        <TabsContent value="edit" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Testimonial section</CardTitle>
-              <CardDescription>Update the Testimonial Section</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TestimonialForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      </div>
     </div>
   )
 }

@@ -1,69 +1,51 @@
 "use client"
-
-import { useState } from "react"
-import { ArrowLeft, ExternalLink, Eye } from "lucide-react"
+import { ArrowLeft, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import FeaturesSectionForm from "@/components/admin/FeaturesForm"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 
-export default function FeaturesSectionPage() {
-  const [activeTab, setActiveTab] = useState("edit")
+const buttonStyles = "!border-[0.5px] !border-white/10 hover:!border-white/15"
 
+export default function FeaturesSectionPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-background">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Link href="/admin">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/15 hover:text-primary">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
-            <h1 className="text-2xl font-bold tracking-tight">Features Section</h1>
+            <h1 className="text-2xl font-bold tracking-tight gradient-text">Features Section</h1>
+            <div className="ml-2 bg-background px-3 py-1 rounded-full text-xs !border-[0.5px] !border-white/10 text-muted-foreground">
+              Homepage
+            </div>
           </div>
           <p className="text-muted-foreground">Manage your website's features section content and layout.</p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/" target="_blank">
-            <Button variant="outline" size="sm" className="gap-1">
-              <ExternalLink className="h-4 w-4" />
-              View Live Site
+            <Button
+              variant="outline"
+              size="sm"
+              className={`px-4 py-2 bg-background hover:bg-background/80 hover:text-foreground ${buttonStyles}`}
+            >
+              <ExternalLink className="h-4 w-4 mr-2 text-primary" />
+              <span className="text-foreground">View Live Site</span>
             </Button>
           </Link>
         </div>
       </div>
 
-      <Separator />
+      <Separator className="bg-border/3" />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <div className="flex justify-between items-center">
-          {activeTab === "preview" && (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="gap-1">
-                <Eye className="h-4 w-4" />
-                Desktop
-              </Button>
-            </div>
-          )}
+      <div className="bg-card">
+        <div className="p-6">
+          <FeaturesSectionForm />
         </div>
-
-        <TabsContent value="edit" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Features Section Content</CardTitle>
-              <CardDescription>
-                Update your features section content, including the heading, feature cards, and call-to-action.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FeaturesSectionForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      </div>
     </div>
   )
 }

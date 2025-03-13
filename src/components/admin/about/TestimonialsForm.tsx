@@ -1,438 +1,602 @@
-"use client";
+"use client"
 
-import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { RefreshCw, Save, CheckCircle2, AlertCircle } from "lucide-react";
+import type React from "react"
+
+import { useState, useEffect, useRef } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { RefreshCw, Save, CheckCircle2, AlertCircle, Upload, Trash2, Plus } from "lucide-react"
+import { supabase } from "@/lib/supabaseClient"
+import Image from "next/image"
+import { Card } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 type Testimonial = {
-  name: string;
-  role: string;
-  img: string;
-  alt: string;
-  text: string;
-};
+  name: string
+  role: string
+  img: string
+  alt: string
+  text: string
+}
 
 type TestimonialsData = {
   header: {
-    banner: string;
-    title: string;
-    subheading: string;
-  };
+    banner: string
+    title: string
+    subheading: string
+  }
   columns: {
-    column1: Testimonial[];
-    column2: Testimonial[];
-    column3: Testimonial[];
-  };
-};
+    column1: Testimonial[]
+    column2: Testimonial[]
+    column3: Testimonial[]
+  }
+}
 
 export default function TestimonialsForm() {
-  const [formData, setFormData] = useState<TestimonialsData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState({ text: "", type: "" });
+  const [formData, setFormData] = useState<TestimonialsData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [message, setMessage] = useState({ text: "", type: "" })
+  const [recordId, setRecordId] = useState<number | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, File>>({})
+  const [imagePreviews, setImagePreviews] = useState<Record<string, string>>({})
+  const [filesToDelete, setFilesToDelete] = useState<string[]>([])
 
   // Refs for file inputs for each column testimonial image
   const testimonialImageRefs = {
-    column1: useRef<{ [key: number]: HTMLInputElement | null }>({}),
-    column2: useRef<{ [key: number]: HTMLInputElement | null }>({}),
-    column3: useRef<{ [key: number]: HTMLInputElement | null }>({}),
-  };
+    column1: useRef<(HTMLInputElement | null)[]>([]),
+    column2: useRef<(HTMLInputElement | null)[]>([]),
+    column3: useRef<(HTMLInputElement | null)[]>([]),
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
+
+  // Clean up object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      Object.values(imagePreviews).forEach((url) => {
+        if (url.startsWith("blob:")) {
+          URL.revokeObjectURL(url)
+        }
+      })
+    }
+  }, [imagePreviews])
 
   const fetchData = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
+    setFilesToDelete([]) // Reset files to delete when fetching new data
     try {
-      const res = await fetch("/api/aboutpage/testimonials");
-      if (!res.ok) throw new Error("Failed to fetch data");
-      const data = await res.json();
-      setFormData(data);
+      const { data, error } = await supabase
+        .from("aboutpage_testimonials")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single()
+
+      if (error) throw error
+
+      setRecordId(data.id)
+
+      // Initialize image previews for existing testimonial images
+      const previews: Record<string, string> = {}
+
+      // Process column1
+      data.columns.column1.forEach((testimonial: Testimonial, index: number) => {
+        if (testimonial.img) {
+          previews[`column1_${index}`] = getImageUrl(testimonial.img)
+        }
+      })
+
+      // Process column2
+      data.columns.column2.forEach((testimonial: Testimonial, index: number) => {
+        if (testimonial.img) {
+          previews[`column2_${index}`] = getImageUrl(testimonial.img)
+        }
+      })
+
+      // Process column3
+      data.columns.column3.forEach((testimonial: Testimonial, index: number) => {
+        if (testimonial.img) {
+          previews[`column3_${index}`] = getImageUrl(testimonial.img)
+        }
+      })
+
+      setImagePreviews(previews)
+      setFormData(data)
     } catch (error) {
-      setMessage({ text: "Failed to load testimonials data.", type: "error" });
-      console.error(error);
+      console.error("Error fetching testimonials data:", error)
+      setMessage({ text: "Failed to load testimonials data. Please refresh the page.", type: "error" })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
+
+  // Helper function to get public URL for images
+  const getImageUrl = (path: string) => {
+    if (!path) return "/placeholder.svg"
+
+    // If the path is already a full URL or starts with /, return it as is
+    if (path.startsWith("http") || path.startsWith("/")) {
+      return path
+    }
+
+    // Otherwise, get the public URL from Supabase storage
+    return supabase.storage.from("aboutpage-testimonials-images").getPublicUrl(path).data.publicUrl
+  }
 
   // Update nested field using dot notation
   const handleFieldChange = (path: string, value: string) => {
-    if (!formData) return;
-    const keys = path.split(".");
+    if (!formData) return
+    const keys = path.split(".")
     setFormData((prev) => {
-      if (!prev) return prev;
-      let updated: any = { ...prev };
-      let obj = updated;
+      if (!prev) return prev
+      const updated: any = { ...prev }
+      let obj = updated
       for (let i = 0; i < keys.length - 1; i++) {
-        obj[keys[i]] = { ...obj[keys[i]] };
-        obj = obj[keys[i]];
+        obj[keys[i]] = { ...obj[keys[i]] }
+        obj = obj[keys[i]]
       }
-      obj[keys[keys.length - 1]] = value;
-      return updated;
-    });
-  };
+      obj[keys[keys.length - 1]] = value
+      return updated
+    })
+  }
 
   const handleTestimonialChange = (
     column: "column1" | "column2" | "column3",
     index: number,
     field: keyof Testimonial,
-    value: string
+    value: string,
   ) => {
-    if (!formData) return;
+    if (!formData) return
     setFormData((prev) => {
-      if (!prev) return prev;
-      const updatedColumn = [...prev.columns[column]];
-      updatedColumn[index] = { ...updatedColumn[index], [field]: value };
+      if (!prev) return prev
+      const updatedColumn = [...prev.columns[column]]
+      updatedColumn[index] = { ...updatedColumn[index], [field]: value }
       return {
         ...prev,
         columns: {
           ...prev.columns,
           [column]: updatedColumn,
         },
-      };
-    });
-  };
+      }
+    })
+  }
 
   const addTestimonial = (column: "column1" | "column2" | "column3") => {
-    if (!formData) return;
+    if (!formData) return
     const newTestimonial: Testimonial = {
       name: "",
       role: "",
       img: "",
       alt: "",
       text: "",
-    };
+    }
     setFormData((prev) => {
-      if (!prev) return prev;
+      if (!prev) return prev
       return {
         ...prev,
         columns: {
           ...prev.columns,
           [column]: [...prev.columns[column], newTestimonial],
         },
-      };
-    });
-  };
+      }
+    })
+  }
 
   const removeTestimonial = (column: "column1" | "column2" | "column3", index: number) => {
-    if (!formData) return;
+    if (!formData) return
+
+    // If there's an image, mark it for deletion
+    const testimonial = formData.columns[column][index]
+    if (testimonial.img && !testimonial.img.startsWith("http") && !testimonial.img.startsWith("/")) {
+      setFilesToDelete((prev) => [...prev, testimonial.img])
+    }
+
     setFormData((prev) => {
-      if (!prev) return prev;
-      const updatedColumn = prev.columns[column].filter((_, i) => i !== index);
+      if (!prev) return prev
+      const updatedColumn = prev.columns[column].filter((_, i) => i !== index)
       return {
         ...prev,
         columns: {
           ...prev.columns,
           [column]: updatedColumn,
         },
-      };
-    });
-  };
+      }
+    })
 
-  // Handle file upload for testimonial image
-  const handleTestimonialImageUpload = async (
+    // Clean up any preview
+    if (imagePreviews[`${column}_${index}`]) {
+      const newPreviews = { ...imagePreviews }
+      delete newPreviews[`${column}_${index}`]
+      setImagePreviews(newPreviews)
+    }
+  }
+
+  const handleFileSelect = (
+    e: React.ChangeEvent<HTMLInputElement>,
     column: "column1" | "column2" | "column3",
     index: number,
-    oldPath: string
   ) => {
-    const fileInput = testimonialImageRefs[column].current[index];
-    if (!fileInput || !fileInput.files || !fileInput.files[0]) return;
-    const file = fileInput.files[0];
-    const form = new FormData();
-    form.append("image", file);
-    form.append("oldImagePath", oldPath);
-    // Create a query field identifier like "testimonial_column1_0"
-    const queryField = `testimonial_${column}_${index}`;
-    try {
-      const res = await fetch(`/api/aboutpage/testimonials/upload?field=${queryField}`, {
-        method: "POST",
-        body: form,
-      });
-      const { imagePath } = await res.json();
-      if (!formData) return;
-      setFormData((prev) => {
-        if (!prev) return prev;
-        const updatedColumn = [...prev.columns[column]];
-        updatedColumn[index] = { ...updatedColumn[index], img: imagePath };
-        return {
-          ...prev,
-          columns: {
-            ...prev.columns,
-            [column]: updatedColumn,
-          },
-        };
-      });
-    } catch (error) {
-      setMessage({ text: "Image upload failed. Please try again.", type: "error" });
-      console.error(error);
-    }
-  };
+    if (!e.target.files || !e.target.files[0] || !formData) return
 
-  const handleTestimonialImageDelete = async (
-    column: "column1" | "column2" | "column3",
-    index: number
-  ) => {
-    if (!formData) return;
-    const oldPath = formData.columns[column][index].img;
-    if (!oldPath) return;
-    try {
-      const res = await fetch("/api/aboutpage/testimonials/delete-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imagePath: oldPath }),
-      });
-      if (res.ok) {
-        setFormData((prev) => {
-          if (!prev) return prev;
-          const updatedColumn = [...prev.columns[column]];
-          updatedColumn[index] = { ...updatedColumn[index], img: "" };
-          return {
-            ...prev,
-            columns: {
-              ...prev.columns,
-              [column]: updatedColumn,
-            },
-          };
-        });
-      }
-    } catch (error) {
-      setMessage({ text: "Failed to delete image. Please try again.", type: "error" });
-      console.error(error);
+    const file = e.target.files[0]
+
+    // Validate file type and size
+    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"]
+    if (!validTypes.includes(file.type)) {
+      setMessage({
+        text: "Invalid file type. Please upload JPEG, PNG, WebP, or SVG.",
+        type: "error",
+      })
+      return
     }
-  };
+
+    if (file.size > 5 * 1024 * 1024) {
+      // 5MB limit
+      setMessage({
+        text: "File size exceeds 5MB limit.",
+        type: "error",
+      })
+      return
+    }
+
+    // Check if there's an existing image to mark for deletion
+    const currentImage = formData.columns[column][index].img
+    if (currentImage && !currentImage.startsWith("http") && !currentImage.startsWith("/")) {
+      setFilesToDelete((prev) => [...prev, currentImage])
+    }
+
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file)
+
+    // Store file and preview
+    setSelectedFiles((prev) => ({
+      ...prev,
+      [`${column}_${index}`]: file,
+    }))
+
+    setImagePreviews((prev) => ({
+      ...prev,
+      [`${column}_${index}`]: previewUrl,
+    }))
+
+    // Reset input value to allow selecting the same file again
+    e.target.value = ""
+  }
+
+  const handleDeleteImage = (column: "column1" | "column2" | "column3", index: number) => {
+    if (!formData) return
+
+    // Mark the image for deletion if it's stored in Supabase
+    const imagePath = formData.columns[column][index].img
+    if (imagePath && !imagePath.startsWith("http") && !imagePath.startsWith("/")) {
+      setFilesToDelete((prev) => [...prev, imagePath])
+    }
+
+    // Update testimonial in formData
+    const updatedColumns = { ...formData.columns }
+    updatedColumns[column][index] = {
+      ...updatedColumns[column][index],
+      img: "",
+    }
+    setFormData({ ...formData, columns: updatedColumns })
+
+    // Remove preview
+    if (imagePreviews[`${column}_${index}`]) {
+      const newPreviews = { ...imagePreviews }
+      delete newPreviews[`${column}_${index}`]
+      setImagePreviews(newPreviews)
+    }
+
+    // Clear selected file if there is one
+    if (selectedFiles[`${column}_${index}`]) {
+      const newSelectedFiles = { ...selectedFiles }
+      delete newSelectedFiles[`${column}_${index}`]
+      setSelectedFiles(newSelectedFiles)
+    }
+  }
+
+  const uploadFiles = async () => {
+    const uploads = Object.entries(selectedFiles).map(async ([key, file]) => {
+      // Extract column and index from key format "column{n}_{index}"
+      const [column, indexStr] = key.split("_")
+      const index = Number.parseInt(indexStr)
+
+      // Generate a unique filename
+      const timestamp = Date.now()
+      const randomString = Math.random().toString(36).substring(2, 15)
+      const fileExt = file.name.split(".").pop() || "jpg"
+      const fileName = `testimonial-${column}-${index}-${timestamp}-${randomString}.${fileExt}`
+
+      // Upload the file to Supabase storage
+      const { error: uploadError } = await supabase.storage
+        .from("aboutpage-testimonials-images")
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: file.type,
+        })
+
+      if (uploadError) throw uploadError
+
+      return { column, index, fileName }
+    })
+
+    return Promise.all(uploads)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
-    setMessage({ text: "", type: "" });
-    try {
-      const res = await fetch("/api/aboutpage/testimonials", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error("Failed to save data");
-      setMessage({ text: "Testimonials updated successfully", type: "success" });
-      await fetchData();
-    } catch (error) {
-      setMessage({ text: "Failed to save changes", type: "error" });
-      console.error(error);
-    } finally {
-      setIsSaving(false);
+    e.preventDefault()
+    if (!formData || !recordId) {
+      setMessage({ text: "Missing data. Please refresh the page.", type: "error" })
+      return
     }
-  };
 
-  if (isLoading || !formData) return <div>Loading...</div>;
+    setIsSaving(true)
+    setMessage({ text: "", type: "" })
+
+    try {
+      // First upload all selected files
+      const uploadResults = await uploadFiles()
+
+      // Create a copy of the form data to update with new file paths
+      const updatedData = JSON.parse(JSON.stringify(formData))
+
+      // Update the data with new file paths
+      uploadResults.forEach(({ column, index, fileName }) => {
+        updatedData.columns[column][index].img = fileName
+      })
+
+      // Update the database
+      const { error } = await supabase
+        .from("aboutpage_testimonials")
+        .update({
+          header: updatedData.header,
+          columns: updatedData.columns,
+        })
+        .eq("id", recordId)
+
+      if (error) throw error
+
+      // After successful update, delete old files
+      if (filesToDelete.length > 0) {
+        const { error: deleteError } = await supabase.storage
+          .from("aboutpage-testimonials-images")
+          .remove(filesToDelete)
+
+        if (deleteError) {
+          console.error("Error deleting old files:", deleteError)
+          // Don't throw error here, just log it - we don't want to fail the whole operation
+        }
+      }
+
+      setMessage({ text: "Testimonials updated successfully!", type: "success" })
+      setSelectedFiles({})
+      setFilesToDelete([])
+      await fetchData()
+    } catch (error) {
+      console.error("Error saving testimonials data:", error)
+      setMessage({ text: "Failed to save changes. Please try again.", type: "error" })
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (isLoading || !formData) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-6">
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-8 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-40 w-full" />
+      </div>
+    )
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Header Section */}
-      <div className="p-6 border rounded-lg bg-card">
-        <h2 className="text-xl font-semibold mb-4">Testimonials Header</h2>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="banner">Banner</Label>
-            <Input
-              id="banner"
-              value={formData.header.banner}
-              onChange={(e) => handleFieldChange("header.banner", e.target.value)}
-              placeholder="Enter banner text"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              value={formData.header.title}
-              onChange={(e) => handleFieldChange("header.title", e.target.value)}
-              placeholder="Enter title"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="subheading">Subheading</Label>
-            <Input
-              id="subheading"
-              value={formData.header.subheading}
-              onChange={(e) => handleFieldChange("header.subheading", e.target.value)}
-              placeholder="Enter subheading"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Testimonials Columns */}
-      {(["column1", "column2", "column3"] as const).map((column) => (
-        <div key={column} className="p-6 border rounded-lg bg-card">
-          <h2 className="text-xl font-semibold mb-4">{column.toUpperCase()} Testimonials</h2>
-          {formData.columns[column].map((testimonial, index) => (
-            <div key={index} className="p-4 border rounded-lg mb-4 space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold">Testimonial #{index + 1}</h3>
-                <Button 
-                  type="button" 
-                  variant="destructive" 
-                  size="sm" 
-                  onClick={() => removeTestimonial(column, index)}
-                >
-                  Remove
-                </Button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor={`${column}-${index}-name`}>Name</Label>
-                    <Input
-                      id={`${column}-${index}-name`}
-                      value={testimonial.name}
-                      onChange={(e) => handleTestimonialChange(column, index, "name", e.target.value)}
-                      placeholder="Enter name"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor={`${column}-${index}-role`}>Role</Label>
-                    <Input
-                      id={`${column}-${index}-role`}
-                      value={testimonial.role}
-                      onChange={(e) => handleTestimonialChange(column, index, "role", e.target.value)}
-                      placeholder="Enter role"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor={`${column}-${index}-img`}>Image URL</Label>
-                    <Input
-                      id={`${column}-${index}-img`}
-                      value={testimonial.img}
-                      onChange={(e) => handleTestimonialChange(column, index, "img", e.target.value)}
-                      placeholder="Enter image URL or upload below"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor={`${column}-${index}-alt`}>Alt Text</Label>
-                    <Input
-                      id={`${column}-${index}-alt`}
-                      value={testimonial.alt}
-                      onChange={(e) => handleTestimonialChange(column, index, "alt", e.target.value)}
-                      placeholder="Enter alt text"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor={`${column}-${index}-text`}>Testimonial Text</Label>
-                    <Textarea
-                      id={`${column}-${index}-text`}
-                      value={testimonial.text}
-                      onChange={(e) => handleTestimonialChange(column, index, "text", e.target.value)}
-                      placeholder="Enter testimonial text"
-                      rows={3}
-                    />
-                  </div>
-                </div>
-                
-                {/* Image Preview Section */}
-                <div className="space-y-3">
-                  <Label>Image Preview</Label>
-                  <div className="border rounded-lg overflow-hidden bg-gray-50 h-48 flex items-center justify-center">
-                    {testimonial.img ? (
-                      <img 
-                        src={testimonial.img} 
-                        alt={testimonial.alt || "Testimonial image"} 
-                        className="max-w-full max-h-full object-cover"
-                      />
-                    ) : (
-                      <div className="text-gray-400 text-sm text-center p-4">
-                        No image uploaded
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="flex-1"
-                      onClick={() => testimonialImageRefs[column].current[index]?.click()}
-                    >
-                      {testimonial.img ? "Change Image" : "Upload Image"}
-                    </Button>
-                    <input
-                      ref={(el) => (testimonialImageRefs[column].current[index] = el)}
-                      type="file"
-                      onChange={() => handleTestimonialImageUpload(column, index, testimonial.img)}
-                      className="hidden"
-                      accept="image/svg+xml, image/png, image/jpeg"
-                    />
-                    
-                    {testimonial.img && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        onClick={() => handleTestimonialImageDelete(column, index)}
-                      >
-                        Remove Image
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          <Button type="button" onClick={() => addTestimonial(column)} className="mt-2">
-            Add Testimonial
-          </Button>
-        </div>
-      ))}
-
-      {/* Actions */}
-      <div className="flex gap-4 pt-4 border-t">
-        <Button type="submit" disabled={isSaving} className="gap-2">
-          {isSaving ? (
-            <>
-              <RefreshCw className="h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="h-4 w-4" />
-              Save Changes
-            </>
-          )}
-        </Button>
-        <Button type="button" variant="outline" onClick={fetchData} disabled={isSaving}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Reset
-        </Button>
-      </div>
-
+    <div>
       {message.text && (
-        <Alert variant={message.type === "success" ? "default" : "destructive"} className="mt-4">
+        <Alert variant={message.type === "success" ? "default" : "destructive"} className="mb-6">
           {message.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
           <AlertTitle>{message.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{message.text}</AlertDescription>
         </Alert>
       )}
-    </form>
-  );
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Header Section */}
+        <div className="p-6 border rounded-lg bg-card">
+          <h2 className="text-xl font-semibold mb-4">Testimonials Header</h2>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="header.banner">Banner</Label>
+              <Input
+                id="header.banner"
+                value={formData.header.banner}
+                onChange={(e) => handleFieldChange("header.banner", e.target.value)}
+                placeholder="Enter banner text"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="header.title">Title</Label>
+              <Input
+                id="header.title"
+                value={formData.header.title}
+                onChange={(e) => handleFieldChange("header.title", e.target.value)}
+                placeholder="Enter title"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="header.subheading">Subheading</Label>
+              <Input
+                id="header.subheading"
+                value={formData.header.subheading}
+                onChange={(e) => handleFieldChange("header.subheading", e.target.value)}
+                placeholder="Enter subheading"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Testimonials Columns */}
+        {(["column1", "column2", "column3"] as const).map((column) => (
+          <div key={column} className="p-6 border rounded-lg bg-card">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">{column.replace("column", "Column ")} Testimonials</h2>
+              <Button type="button" onClick={() => addTestimonial(column)} className="gap-2">
+                <Plus className="h-4 w-4" />
+                Add Testimonial
+              </Button>
+            </div>
+
+            {formData.columns[column].length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No testimonials added yet. Click "Add Testimonial" to get started.
+              </div>
+            ) : (
+              formData.columns[column].map((testimonial, index) => (
+                <div key={index} className="p-4 border rounded-lg mb-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-semibold">Testimonial #{index + 1}</h3>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeTestimonial(column, index)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Remove
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor={`${column}-${index}-name`}>Name</Label>
+                        <Input
+                          id={`${column}-${index}-name`}
+                          value={testimonial.name}
+                          onChange={(e) => handleTestimonialChange(column, index, "name", e.target.value)}
+                          placeholder="Enter name"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${column}-${index}-role`}>Role</Label>
+                        <Input
+                          id={`${column}-${index}-role`}
+                          value={testimonial.role}
+                          onChange={(e) => handleTestimonialChange(column, index, "role", e.target.value)}
+                          placeholder="Enter role"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${column}-${index}-alt`}>Alt Text</Label>
+                        <Input
+                          id={`${column}-${index}-alt`}
+                          value={testimonial.alt}
+                          onChange={(e) => handleTestimonialChange(column, index, "alt", e.target.value)}
+                          placeholder="Enter alt text"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={`${column}-${index}-text`}>Testimonial Text</Label>
+                        <Textarea
+                          id={`${column}-${index}-text`}
+                          value={testimonial.text}
+                          onChange={(e) => handleTestimonialChange(column, index, "text", e.target.value)}
+                          placeholder="Enter testimonial text"
+                          rows={3}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Image Preview Section */}
+                    <div className="space-y-3">
+                      <Label>Image</Label>
+                      <div className="flex items-center gap-3">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => testimonialImageRefs[column].current[index]?.click()}
+                          className="gap-2"
+                        >
+                          <Upload className="h-4 w-4" />
+                          Upload Image
+                        </Button>
+                        <input
+                          ref={(el) => (testimonialImageRefs[column].current[index] = el)}
+                          type="file"
+                          onChange={(e) => handleFileSelect(e, column, index)}
+                          className="hidden"
+                          accept="image/*"
+                        />
+                        {(testimonial.img || selectedFiles[`${column}_${index}`]) && (
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteImage(column, index)}
+                            className="gap-2"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Remove Image
+                          </Button>
+                        )}
+                      </div>
+
+                      {(testimonial.img || imagePreviews[`${column}_${index}`]) && (
+                        <Card className="mt-4 overflow-hidden w-32 h-32 relative">
+                          <Image
+                            src={
+                              imagePreviews[`${column || "/placeholder.svg"}_${index}`] || getImageUrl(testimonial.img)
+                            }
+                            alt={testimonial.alt || "Testimonial image"}
+                            fill
+                            className="object-cover"
+                          />
+                        </Card>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        ))}
+
+        {/* Actions */}
+        <div className="flex gap-4 pt-4 border-t">
+          <Button type="submit" disabled={isSaving} className="gap-2">
+            {isSaving ? (
+              <>
+                <RefreshCw className="h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                Save Changes
+              </>
+            )}
+          </Button>
+          <Button type="button" variant="outline" onClick={fetchData} disabled={isSaving} className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Reset Changes
+          </Button>
+        </div>
+      </form>
+    </div>
+  )
 }
 
-// Helper function to update nested objects based on dot notation keys
-function updateNestedObject(obj: any, path: string[], value: any): any {
-  if (path.length === 0) return value;
-  const [current, ...rest] = path;
-  const index = Number(current);
-  if (!isNaN(index)) {
-    const newArr = Array.isArray(obj) ? [...obj] : [];
-    newArr[index] = updateNestedObject(newArr[index], rest, value);
-    return newArr;
-  } else {
-    return {
-      ...obj,
-      [current]: updateNestedObject(obj ? obj[current] : undefined, rest, value),
-    };
-  }
-}

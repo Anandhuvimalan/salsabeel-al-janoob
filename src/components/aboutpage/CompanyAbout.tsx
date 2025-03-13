@@ -1,89 +1,107 @@
-"use client";
+"use client"
 
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { motion } from "framer-motion"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabaseClient"
 
 interface CompanyAboutData {
-  leftColumn: {
+  left_column: {
     intro: {
-      title: string;
-      description: string;
-    };
+      title: string
+      description: string
+    }
     founder: {
-      title: string;
-      descriptionBefore: string;
-      founderName: string;
-      descriptionAfter: string;
-    };
+      title: string
+      descriptionBefore: string
+      founderName: string
+      descriptionAfter: string
+    }
     growth: {
-      title: string;
-      description: string;
-    };
+      title: string
+      description: string
+    }
     timeline: Array<{
-      label: string;
-      value?: string;
-      title?: string;
-      subtitle?: string;
-    }>;
-  };
-  rightColumn: {
+      label: string
+      value?: string
+      title?: string
+      subtitle?: string
+    }>
+  }
+  right_column: {
     globalExpansion: {
-      title: string;
-      description: string;
-    };
+      title: string
+      description: string
+    }
     imageBlock: {
       image: {
-        src: string;
-        alt: string;
-      };
-    };
+        src: string
+        alt: string
+      }
+    }
     legacy: {
-      title: string;
-      description: string;
-    };
-  };
+      title: string
+      description: string
+    }
+  }
 }
 
 const CompanyAbout = () => {
-  const [data, setData] = useState<CompanyAboutData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<CompanyAboutData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/aboutpage/companyabout");
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const jsonData = await response.json();
-        setData(jsonData);
-      } catch (err) {
-        setError("Failed to load company information");
-        console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+        const { data: companyData, error } = await supabase
+          .from("aboutpage_company")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single()
 
-    fetchData();
-  }, []);
+        if (error) throw error
+
+        // Process image URL if it's from Supabase storage
+        if (
+          companyData.right_column.imageBlock.image.src &&
+          !companyData.right_column.imageBlock.image.src.startsWith("http") &&
+          !companyData.right_column.imageBlock.image.src.startsWith("/")
+        ) {
+          companyData.right_column.imageBlock.image.src = supabase.storage
+            .from("aboutpage-company-images")
+            .getPublicUrl(companyData.right_column.imageBlock.image.src).data.publicUrl
+        }
+
+        setData(companyData)
+      } catch (err) {
+        setError("Failed to load company information")
+        console.error("Fetch error:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   if (loading) {
     return (
-      <div className="relative py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse space-y-8">
+      <div className="relative py-16 sm:py-20 md:py-24 bg-white font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="animate-pulse space-y-6 sm:space-y-8">
             {/* Loading skeleton */}
-            <div className="h-12 bg-zinc-200 rounded w-1/2 mb-6" />
-            <div className="space-y-4">
-              <div className="h-4 bg-zinc-200 rounded w-3/4" />
-              <div className="h-4 bg-zinc-200 rounded w-full" />
-              <div className="h-4 bg-zinc-200 rounded w-2/3" />
+            <div className="h-8 sm:h-12 bg-zinc-200 rounded w-1/2 mb-4 sm:mb-6" />
+            <div className="space-y-3 sm:space-y-4">
+              <div className="h-4 sm:h-5 bg-zinc-200 rounded w-3/4" />
+              <div className="h-4 sm:h-5 bg-zinc-200 rounded w-full" />
+              <div className="h-4 sm:h-5 bg-zinc-200 rounded w-2/3" />
             </div>
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   if (error || !data) {
@@ -91,13 +109,20 @@ const CompanyAbout = () => {
       <div className="relative py-20 bg-white text-center text-red-500">
         {error || "Failed to load company information"}
       </div>
-    );
+    )
   }
 
+  // Rename variables to match the original component's expected structure
+  const leftColumn = data.left_column
+  const rightColumn = data.right_column
+
   return (
-    <section id="company-about" className="relative py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-16">
+    <section
+      id="company-about"
+      className="relative py-16 sm:py-20 md:py-24 bg-white font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif]"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid md:grid-cols-2 gap-8 sm:gap-12 md:gap-16">
           {/* Left Column */}
           <div className="space-y-8">
             {/* Intro Block */}
@@ -107,12 +132,10 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-zinc-800 mb-6">
-                {data.leftColumn.intro.title}
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-zinc-800 mb-4 sm:mb-6 tracking-tight leading-tight">
+                {leftColumn.intro.title}
               </h2>
-              <p className="text-zinc-600 leading-relaxed">
-                {data.leftColumn.intro.description}
-              </p>
+              <p className="text-sm sm:text-base text-zinc-600 leading-relaxed">{leftColumn.intro.description}</p>
             </motion.div>
 
             {/* Founder Block */}
@@ -122,16 +145,14 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="border-l-4 border-amber-500 pl-4">
-                <h3 className="text-lg font-semibold text-zinc-800 mb-2">
-                  {data.leftColumn.founder.title}
+              <div className="border-l-4 border-amber-500 pl-3 sm:pl-4">
+                <h3 className="text-base sm:text-lg font-semibold text-zinc-800 mb-1 sm:mb-2">
+                  {leftColumn.founder.title}
                 </h3>
-                <p className="text-zinc-600">
-                  {data.leftColumn.founder.descriptionBefore}
-                  <span className="font-medium">
-                    {data.leftColumn.founder.founderName}
-                  </span>
-                  {data.leftColumn.founder.descriptionAfter}
+                <p className="text-sm sm:text-base text-zinc-600">
+                  {leftColumn.founder.descriptionBefore}
+                  <span className="font-medium">{leftColumn.founder.founderName}</span>
+                  {leftColumn.founder.descriptionAfter}
                 </p>
               </div>
             </motion.div>
@@ -143,37 +164,31 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <h3 className="text-lg font-semibold text-zinc-800 mb-2">
-                {data.leftColumn.growth.title}
+              <h3 className="text-base sm:text-lg font-semibold text-zinc-800 mb-1 sm:mb-2">
+                {leftColumn.growth.title}
               </h3>
-              <p className="text-zinc-600">
-                {data.leftColumn.growth.description}
-              </p>
+              <p className="text-sm sm:text-base text-zinc-600">{leftColumn.growth.description}</p>
             </motion.div>
 
             {/* Timeline Section */}
-            <div className="space-y-8 pt-8">
-              {data.leftColumn.timeline.map((event, index) => (
+            <div className="space-y-6 sm:space-y-8 pt-6 sm:pt-8">
+              {leftColumn.timeline.map((event, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.2 * (index + 1) }}
-                  className="relative pl-8 border-l-2 border-amber-200"
+                  className="relative pl-6 sm:pl-8 border-l-2 border-amber-200"
                 >
-                  <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-amber-600" />
-                  <p className="text-amber-600 text-sm font-medium">{event.label}</p>
+                  <div className="absolute left-[-8px] sm:left-[-9px] top-0 w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-amber-600" />
+                  <p className="text-xs sm:text-sm text-amber-600 font-medium">{event.label}</p>
                   {event.value ? (
-                    <p className="text-2xl font-bold text-zinc-900">
-                      {event.value}
-                    </p>
+                    <p className="text-xl sm:text-2xl font-bold text-zinc-900">{event.value}</p>
                   ) : (
                     <>
-                      <p className="text-xl font-bold text-zinc-900">
-                        {event.title}
-                      </p>
-                      <p className="text-zinc-600">{event.subtitle}</p>
+                      <p className="text-base sm:text-xl font-bold text-zinc-900">{event.title}</p>
+                      <p className="text-sm sm:text-base text-zinc-600">{event.subtitle}</p>
                     </>
                   )}
                 </motion.div>
@@ -190,13 +205,11 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              <div className="bg-zinc-50 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold text-zinc-800 mb-2">
-                  {data.rightColumn.globalExpansion.title}
+              <div className="bg-zinc-50 p-4 sm:p-6 rounded-lg">
+                <h3 className="text-base sm:text-lg font-semibold text-zinc-800 mb-1 sm:mb-2">
+                  {rightColumn.globalExpansion.title}
                 </h3>
-                <p className="text-zinc-600">
-                  {data.rightColumn.globalExpansion.description}
-                </p>
+                <p className="text-sm sm:text-base text-zinc-600">{rightColumn.globalExpansion.description}</p>
               </div>
             </motion.div>
 
@@ -214,13 +227,13 @@ const CompanyAbout = () => {
                   transition={{
                     duration: 1.2,
                     ease: [0.645, 0.045, 0.355, 1],
-                    delay: 0.4
+                    delay: 0.4,
                   }}
                   className="absolute inset-0 bg-white origin-right z-20"
                 />
                 <Image
-                  src={data.rightColumn.imageBlock.image.src}
-                  alt={data.rightColumn.imageBlock.image.alt}
+                  src={rightColumn.imageBlock.image.src || "/placeholder.svg"}
+                  alt={rightColumn.imageBlock.image.alt}
                   fill={true}
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -236,13 +249,11 @@ const CompanyAbout = () => {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: 1 }}
             >
-              <div className="bg-amber-50 p-6 rounded-lg border border-amber-100">
-                <h3 className="text-lg font-semibold text-zinc-800 mb-2">
-                  {data.rightColumn.legacy.title}
+              <div className="bg-amber-50 p-4 sm:p-6 rounded-lg border border-amber-100">
+                <h3 className="text-base sm:text-lg font-semibold text-zinc-800 mb-1 sm:mb-2">
+                  {rightColumn.legacy.title}
                 </h3>
-                <p className="text-zinc-600">
-                  {data.rightColumn.legacy.description}
-                </p>
+                <p className="text-sm sm:text-base text-zinc-600">{rightColumn.legacy.description}</p>
               </div>
             </motion.div>
           </div>
@@ -262,7 +273,8 @@ const CompanyAbout = () => {
         </motion.div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default CompanyAbout;
+export default CompanyAbout
+

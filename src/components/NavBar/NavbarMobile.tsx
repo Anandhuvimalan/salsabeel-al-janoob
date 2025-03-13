@@ -4,9 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-
-// Import the services data from the JSON file
-import servicesData from "../../../data/services.json"
+import { supabase } from "@/lib/supabaseClient"
 
 const menuVariants = {
   hidden: {
@@ -74,9 +72,17 @@ const serviceItemVariants = {
 }
 
 const NavbarMobile = () => {
-  // Use the services from the imported JSON file
-  const services = servicesData.services
-  
+  const [services, setServices] = useState<
+    Array<{
+      id: number
+      title: string
+      image: string
+      description: string
+      gradient: string
+    }>
+  >([])
+  const [loading, setLoading] = useState(true)
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isServicesOpen, setIsServicesOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
@@ -111,9 +117,44 @@ const NavbarMobile = () => {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [lastScrollY])
 
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("services_section")
+          .select("*")
+          .order("id", { ascending: false })
+          .limit(1)
+          .single()
+
+        if (error) throw error
+
+        setServices(data.services)
+      } catch (error) {
+        console.error("Error fetching services:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchServices()
+  }, [])
+
+  // Helper function to get public URL for images
+  const getImageUrl = (path: string) => {
+    if (!path) return "/placeholder.svg"
+
+    // If the path is already a full URL or starts with /, return it as is
+    if (path.startsWith("http") || path.startsWith("/")) {
+      return path
+    }
+
+    // Otherwise, get the public URL from Supabase storage
+    return supabase.storage.from("services-images").getPublicUrl(path).data.publicUrl
+  }
+
   return (
     <nav
-      className={`block md:block lg:hidden text-white w-full fixed z-[100] transition-all duration-500 ease-in-out ${
+      className={`block md:block lg:hidden text-white w-full fixed z-[100] transition-all duration-500 ease-in-out font-['Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open Sans','Helvetica Neue',sans-serif] ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       } ${scrolled || isMenuOpen ? "bg-gray-900/95 backdrop-blur-md shadow-lg" : "bg-transparent"}`}
     >
@@ -124,9 +165,9 @@ const NavbarMobile = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <Image src="/logo.svg" alt="Logo" width={32} height={32} className="rounded-full" />
+          <Image src="/logo.svg" alt="Logo" width={28} height={28} className="rounded-full" />
           <div className="flex flex-col">
-            <span className="text-base font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
+            <span className="text-sm sm:text-base font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
               Salsabeel Al Janoob Imp Exp
             </span>
             <span className="text-xs text-gray-300">Your gateway to the international market</span>
@@ -165,7 +206,7 @@ const NavbarMobile = () => {
               <motion.div variants={menuItemVariants}>
                 <Link
                   href="/"
-                  className="text-lg font-semibold hover:text-gray-300 transition-colors duration-200 text-left block py-2"
+                  className="text-base sm:text-lg font-semibold hover:text-gray-300 transition-colors duration-200 text-left block py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Home
@@ -178,22 +219,23 @@ const NavbarMobile = () => {
                   onClick={() => setIsServicesOpen((prev) => !prev)}
                   aria-expanded={isServicesOpen}
                 >
-                  <h2 className="text-lg font-semibold">Services</h2>
+                  <h2 className="text-base sm:text-lg font-semibold">Services</h2>
                   <motion.div
                     animate={{ rotate: isServicesOpen ? 180 : 0 }}
                     transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    className="w-6 h-6 flex items-center justify-center"
+                    className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
+                      width="16"
+                      height="16"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      className="sm:w-5 sm:h-5"
                     >
                       <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
@@ -209,32 +251,47 @@ const NavbarMobile = () => {
                       variants={serviceDropdownVariants}
                       className="mt-2 grid grid-cols-1 gap-3 overflow-hidden pl-2"
                     >
-                      {services.map((service) => (
-                        <motion.div key={service.id} variants={serviceItemVariants} layout className="w-full">
-                          <Link
-                            href={`/${service.title.toLowerCase().replace(/\s+/g, "-")}`}
-                            className="flex items-center p-3 bg-gray-800/70 rounded-lg hover:bg-gray-700/80 transition-all duration-200 text-left border border-gray-700/50 hover:border-gray-600"
-                            onClick={() => {
-                              setIsMenuOpen(false)
-                              setIsServicesOpen(false)
-                            }}
-                          >
-                            <div className="w-12 h-12 rounded-md overflow-hidden relative flex-shrink-0 mr-3">
-                              <Image
-                                src={service.image || "/placeholder.svg"}
-                                alt={service.title}
-                                width={48}
-                                height={48}
-                                className="object-cover w-full h-full"
-                              />
-                            </div>
-                            <div>
-                              <h3 className="text-sm font-bold">{service.title}</h3>
-                              <p className="text-xs text-gray-400 line-clamp-2">{service.description}</p>
-                            </div>
-                          </Link>
-                        </motion.div>
-                      ))}
+                      {loading
+                        ? // Loading state
+                          Array(3)
+                            .fill(0)
+                            .map((_, index) => (
+                              <motion.div key={index} variants={serviceItemVariants} layout className="w-full">
+                                <div className="flex items-center p-2 sm:p-3 bg-gray-800/70 rounded-lg border border-gray-700/50 animate-pulse">
+                                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-gray-700 flex-shrink-0 mr-2 sm:mr-3"></div>
+                                  <div className="w-full">
+                                    <div className="h-3 sm:h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
+                                    <div className="h-2 sm:h-3 bg-gray-700 rounded w-full"></div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            ))
+                        : services.map((service) => (
+                            <motion.div key={service.id} variants={serviceItemVariants} layout className="w-full">
+                              <Link
+                                href={`/${service.title.toLowerCase().replace(/\s+/g, "-")}`}
+                                className="flex items-center p-2 sm:p-3 bg-gray-800/70 rounded-lg hover:bg-gray-700/80 transition-all duration-200 text-left border border-gray-700/50 hover:border-gray-600"
+                                onClick={() => {
+                                  setIsMenuOpen(false)
+                                  setIsServicesOpen(false)
+                                }}
+                              >
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md overflow-hidden relative flex-shrink-0 mr-2 sm:mr-3">
+                                  <Image
+                                    src={getImageUrl(service.image) || "/placeholder.svg"}
+                                    alt={service.title}
+                                    width={48}
+                                    height={48}
+                                    className="object-cover w-full h-full"
+                                  />
+                                </div>
+                                <div>
+                                  <h3 className="text-xs sm:text-sm font-bold">{service.title}</h3>
+                                  <p className="text-xs text-gray-400 line-clamp-2">{service.description}</p>
+                                </div>
+                              </Link>
+                            </motion.div>
+                          ))}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -243,7 +300,7 @@ const NavbarMobile = () => {
               <motion.div variants={menuItemVariants}>
                 <Link
                   href="/about"
-                  className="text-lg font-semibold hover:text-gray-300 transition-colors duration-200 text-left block py-2"
+                  className="text-base sm:text-lg font-semibold hover:text-gray-300 transition-colors duration-200 text-left block py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   About
@@ -252,7 +309,7 @@ const NavbarMobile = () => {
               <motion.div variants={menuItemVariants}>
                 <Link
                   href="/careers"
-                  className="text-lg font-semibold hover:text-gray-300 transition-colors duration-200 text-left block py-2"
+                  className="text-base sm:text-lg font-semibold hover:text-gray-300 transition-colors duration-200 text-left block py-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Careers
@@ -262,13 +319,13 @@ const NavbarMobile = () => {
                 <motion.div variants={menuItemVariants}>
                   <Link
                     href="/contact"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-medium rounded-full shadow-lg hover:from-blue-600 hover:to-teal-600 transition-all duration-300 w-full"
+                    className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-medium rounded-full shadow-lg hover:from-blue-600 hover:to-teal-600 transition-all duration-300 w-full text-sm sm:text-base"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
+                      width="16"
+                      height="16"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -293,3 +350,4 @@ const NavbarMobile = () => {
 }
 
 export default NavbarMobile
+

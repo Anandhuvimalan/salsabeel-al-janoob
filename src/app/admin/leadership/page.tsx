@@ -1,69 +1,43 @@
 "use client"
 
-import { useState } from "react"
-import { ArrowLeft, ExternalLink, Eye } from "lucide-react"
+import { ArrowLeft, ExternalLink } from "lucide-react"
 import Link from "next/link"
-import HeroSectionForm from "@/components/admin/HeroSectionForm"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import LeadershipSectionForm from "@/components/admin/about/LeadershipForm"
 
-export default function HeroSectionPage() {
-  const [activeTab, setActiveTab] = useState("edit")
-
+export default function LeadershipSectionPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-background">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Link href="/admin">
-              <Button variant="ghost" size="icon" className="h-8 w-8">
+              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
-            <h1 className="text-2xl font-bold tracking-tight">Hero Section</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Leadership Section</h1>
           </div>
-          <p className="text-muted-foreground">Customize the main hero section that appears on your homepage.</p>
+          <p className="text-muted-foreground">Manage the leadership team section that appears on your about page.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/" target="_blank">
-            <Button variant="outline" size="sm" className="gap-1">
+          <Link href="/about" target="_blank">
+            <Button variant="outline" size="sm" className="gap-1 border-[0.5px] border-white/10 hover:bg-primary/10">
               <ExternalLink className="h-4 w-4" />
-              View Live Site
+              View About Page
             </Button>
           </Link>
         </div>
       </div>
 
-      <Separator />
+      <Separator className="bg-white/5" />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <div className="flex justify-between items-center">
-
-          {activeTab === "preview" && (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="gap-1">
-                <Eye className="h-4 w-4" />
-                Desktop
-              </Button>
-            </div>
-          )}
+      <div className="bg-card border border-white/10 rounded-lg">
+        <div className="p-6">
+          <LeadershipSectionForm />
         </div>
-
-        <TabsContent value="edit" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Hero Section Content</CardTitle>
-              <CardDescription>Update the content and background image of your hero section.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <LeadershipSectionForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      </div>
     </div>
   )
 }

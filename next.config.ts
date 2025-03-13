@@ -10,7 +10,17 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ["images.unsplash.com"],
+    domains: [
+      "images.unsplash.com",
+      "hrrfjlbkbjmzkyihcufw.supabase.co"
+    ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "hrrfjlbkbjmzkyihcufw.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
   },
   async headers() {
     return [

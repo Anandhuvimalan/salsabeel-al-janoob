@@ -1,17 +1,12 @@
 "use client"
-
-import { useState } from "react"
-import { ArrowLeft, ExternalLink, Eye } from "lucide-react"
+import { ArrowLeft, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import FAQForm from "@/components/admin/services/retailform"
+import RetailConsultancyForm from "@/components/admin/services/retailform"
 
-export default function HeroSectionPage() {
-  const [activeTab, setActiveTab] = useState("edit")
-
+export default function RetailConsultancyPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -22,47 +17,20 @@ export default function HeroSectionPage() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
-            <h1 className="text-2xl font-bold tracking-tight">FAQ Section</h1>
+            <h1 className="text-2xl font-bold tracking-tight gradient-text">Retail Consultancy Section</h1>
+            <div className="rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">Services</div>
           </div>
-          <p className="text-muted-foreground">Customize the FAQ Section</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link href="/" target="_blank">
-            <Button variant="outline" size="sm" className="gap-1">
-              <ExternalLink className="h-4 w-4" />
-              View Live Site
-            </Button>
-          </Link>
+          <p className="text-muted-foreground">Manage the retail consultancy section content.</p>
         </div>
       </div>
 
-      <Separator />
+      <Separator className="bg-border/3" />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <div className="flex justify-between items-center">
-
-          {activeTab === "preview" && (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="gap-1">
-                <Eye className="h-4 w-4" />
-                Desktop
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <TabsContent value="edit" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>FAQ section</CardTitle>
-              <CardDescription>Update the FAQ Section</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FAQForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <Card className="border-[0.5px] border-white/10 bg-card text-white">
+        <CardContent>
+          <RetailConsultancyForm />
+        </CardContent>
+      </Card>
     </div>
   )
 }
