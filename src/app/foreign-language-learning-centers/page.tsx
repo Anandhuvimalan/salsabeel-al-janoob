@@ -11,8 +11,15 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Foreign Language Courses & Certification Programs | Professional Language Training",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default:
+      "Foreign Language Courses & Certification Programs | Professional Language Training",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
     "Comprehensive language learning programs with certified instructors. Learn English, Arabic, French, and more with our immersive teaching methodology.",
   keywords: [
@@ -22,9 +29,18 @@ export const metadata: Metadata = {
     "TOEFL/IELTS preparation",
     "business communication skills",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
-    title: "Language Learning Programs | Salsabeel Al Janoob ImpExp",
-    description: "Interactive foreign language courses with cultural immersion programs and certification",
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/foreign-language-learning-centers",
+    siteName: "Salsabeel Al Janoob ImpExp",
+    title:
+      "Language Learning Programs | Salsabeel Al Janoob ImpExp",
+    description:
+      "Interactive foreign language courses with cultural immersion programs and certification",
     images: [
       {
         url: "/language-center-og.webp",
@@ -34,9 +50,37 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "Language Learning Programs | Salsabeel Al Janoob ImpExp",
+    description:
+      "Interactive foreign language courses with cultural immersion programs and certification",
+    images: ["/language-center-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/foreign-language-learning-centers",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/foreign-language-learning-centers",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/foreign-language-learning-centers",
+    },
   },
+  category: "Education",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
@@ -101,7 +145,8 @@ async function getServiceData() {
         faqs: {
           title: "Language Learning FAQs",
           highlightWord: "Fluency",
-          description: "Find answers to common questions about our language courses and teaching methodology.",
+          description:
+            "Find answers to common questions about our language courses and teaching methodology.",
           items: [],
         },
         cta: {
@@ -120,20 +165,16 @@ async function getServiceData() {
 
 export default async function Page() {
   const data = await getServiceData()
-
-  // Check if we have the expected structure and provide defaults if not
   const pageInfo = data?.pageInfo || {}
 
-  // Destructure with default empty objects to prevent undefined errors
   const hero = pageInfo.hero || {}
   const explanation = pageInfo.explanation || {}
   const faqs = pageInfo.faqs || { items: [] }
   const cta = pageInfo.cta || {}
   const projects = pageInfo.projects || { items: [] }
 
-  // Ensure projects.items exists before mapping
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -141,7 +182,7 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
@@ -200,7 +241,8 @@ export default async function Page() {
         title={faqs.title || "Language Learning FAQs"}
         highlightWord={faqs.highlightWord || "Fluency"}
         description={
-          faqs.description || "Find answers to common questions about our language courses and teaching methodology."
+          faqs.description ||
+          "Find answers to common questions about our language courses and teaching methodology."
         }
         faqs={faqs.items || []}
       />
@@ -254,4 +296,3 @@ export default async function Page() {
     </>
   )
 }
-

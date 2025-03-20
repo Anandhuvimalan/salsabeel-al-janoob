@@ -11,8 +11,14 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Marriage Counseling & Family Therapy Services | Relationship Experts",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Marriage Counseling & Family Therapy Services | Relationship Experts",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
     "Professional counseling for couples and families. Improve communication, resolve conflicts, and strengthen relationships with certified therapists.",
   keywords: [
@@ -22,27 +28,65 @@ export const metadata: Metadata = {
     "couples therapy",
     "family conflict resolution",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/marriage-&-family-counseling",
+    siteName: "Salsabeel Al Janoob ImpExp",
     title: "Family & Marriage Counseling Services | Salsabeel Al Janoob ImpExp",
-    description: "Confidential counseling sessions for couples and families with experienced relationship experts",
+    description:
+      "Confidential counseling sessions for couples and families with experienced relationship experts",
     images: [
       {
-        url: "/counseling-og.jpg",
+        url: "/counseling-og.webp",
         width: 1200,
         height: 630,
         alt: "Family Counseling Session",
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Family & Marriage Counseling Services | Salsabeel Al Janoob ImpExp",
+    description:
+      "Confidential counseling sessions for couples and families with experienced relationship experts",
+    images: ["/counseling-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/marriage-&-family-counseling",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/marriage-&-family-counseling",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/marriage-&-family-counseling",
+    },
   },
+  category: "Counseling",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
   try {
     // Fetch the data
-    const { data, error } = await supabase.from("marriage").select("page_info").single()
+    const { data, error } = await supabase
+      .from("marriage")
+      .select("page_info")
+      .single()
 
     if (error) {
       console.error("Error fetching marriage data:", error)
@@ -102,7 +146,7 @@ async function getServiceData() {
         cta: {
           title: "Ready to Build Your Vision?",
           description:
-            "Contact us today to discuss your project and discover how our comprehensive civil contract services can bring your vision to life.",
+            "Contact us today to discuss your relationship goals and discover how our expert counseling can help strengthen your bonds.",
           buttonText: "Schedule Consultation",
           buttonLink: "/contact",
           buttonColor: "bg-emerald-600",
@@ -115,20 +159,16 @@ async function getServiceData() {
 
 export default async function Page() {
   const data = await getServiceData()
-
-  // Check if we have the expected structure and provide defaults if not
   const pageInfo = data?.pageInfo || {}
 
-  // Destructure with default empty objects to prevent undefined errors
   const hero = pageInfo.hero || {}
   const explanation = pageInfo.explanation || {}
   const faqs = pageInfo.faqs || { items: [] }
   const cta = pageInfo.cta || {}
   const projects = pageInfo.projects || { items: [] }
 
-  // Ensure projects.items exists before mapping
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -136,7 +176,7 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
@@ -178,7 +218,7 @@ export default async function Page() {
           ]
         }
         imageSrc={explanation.imageSrc || "/uploads/marriage/counseling.webp"}
-        imageAlt={explanation.imageAlt || "Counseling process overview"}
+        imageAlt={explanation.imageAlt || "Couple in counseling session"}
         shutters={explanation.shutters || 5}
       />
 
@@ -202,7 +242,7 @@ export default async function Page() {
         title={cta.title || "Ready to Build Your Vision?"}
         description={
           cta.description ||
-          "Contact us today to discuss your project and discover how our comprehensive civil contract services can bring your vision to life."
+          "Contact us today to discuss your relationship goals and discover how our expert counseling can help strengthen your bonds."
         }
         buttonText={cta.buttonText || "Schedule Consultation"}
         buttonLink={cta.buttonLink || "/contact"}
@@ -245,4 +285,3 @@ export default async function Page() {
     </>
   )
 }
-

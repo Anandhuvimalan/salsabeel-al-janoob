@@ -11,8 +11,15 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Educational Counseling & Career Guidance Services | Professional Academic Planning",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default:
+      "Educational Counseling & Career Guidance Services | Professional Academic Planning",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
     "Comprehensive educational consulting and career path guidance for students and professionals. University admission support, skill assessment, and career transition strategies.",
   keywords: [
@@ -22,9 +29,18 @@ export const metadata: Metadata = {
     "professional career planning",
     "skill development workshops",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
-    title: "Academic & Career Development Services | Salsabeel Al Janoob ImpExp",
-    description: "Expert educational counseling and career roadmap development for academic and professional success",
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/educational-&-career-guidance",
+    siteName: "Salsabeel Al Janoob ImpExp",
+    title:
+      "Academic & Career Development Services | Salsabeel Al Janoob ImpExp",
+    description:
+      "Expert educational counseling and career roadmap development for academic and professional success",
     images: [
       {
         url: "/career-guidance-og.webp",
@@ -34,9 +50,37 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title:
+      "Academic & Career Development Services | Salsabeel Al Janoob ImpExp",
+    description:
+      "Expert educational counseling and career roadmap development for academic and professional success",
+    images: ["/career-guidance-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/educational-&-career-guidance",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/educational-&-career-guidance",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/educational-&-career-guidance",
+    },
   },
+  category: "Education",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
@@ -101,12 +145,14 @@ async function getServiceData() {
         faqs: {
           title: "Career Guidance FAQs",
           highlightWord: "Success",
-          description: "Find answers to common questions about our educational and career counseling services.",
+          description:
+            "Find answers to common questions about our educational and career counseling services.",
           items: [],
         },
         cta: {
           title: "Ready to Plan Your Future?",
-          description: "Reach out today for professional guidance on your educational and career journey.",
+          description:
+            "Reach out today for professional guidance on your educational and career journey.",
           buttonText: "Get Started",
           buttonLink: "/contact",
           buttonColor: "bg-indigo-600",
@@ -132,7 +178,7 @@ export default async function Page() {
 
   // Ensure projects.items exists before mapping
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -140,11 +186,13 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
-                  alt={image.alt || `Career guidance case ${index + 1}`}
+                  alt={
+                    image.alt || `Career guidance case ${index + 1}`
+                  }
                   width={300}
                   height={200}
                   className="w-full h-auto object-cover rounded-lg"
@@ -162,9 +210,13 @@ export default async function Page() {
       <Navbar />
       <HeroSection
         backgroundImage={hero.backgroundImage || "/education-career.jpg"}
-        serviceType={hero.serviceType || "Educational & Career Guidance"}
+        serviceType={
+          hero.serviceType || "Educational & Career Guidance"
+        }
         title={hero.title || "Expert & Personalized"}
-        underlineText={hero.underlineText || "Career Development Services"}
+        underlineText={
+          hero.underlineText || "Career Development Services"
+        }
         description={
           hero.description ||
           "Comprehensive educational counseling and career planning to help you achieve your academic and professional goals."
@@ -181,8 +233,12 @@ export default async function Page() {
             "Our certified counselors offer personalized assessments, academic planning, and career development strategies for long-term success.",
           ]
         }
-        imageSrc={explanation.imageSrc || "/placeholder.svg?height=400&width=600"}
-        imageAlt={explanation.imageAlt || "Career planning process flowchart"}
+        imageSrc={
+          explanation.imageSrc || "/placeholder.svg?height=400&width=600"
+        }
+        imageAlt={
+          explanation.imageAlt || "Career planning process flowchart"
+        }
         shutters={explanation.shutters || 5}
       />
 
@@ -199,7 +255,8 @@ export default async function Page() {
         title={faqs.title || "Career Guidance FAQs"}
         highlightWord={faqs.highlightWord || "Success"}
         description={
-          faqs.description || "Find answers to common questions about our educational and career counseling services."
+          faqs.description ||
+          "Find answers to common questions about our educational and career counseling services."
         }
         faqs={faqs.items || []}
       />
@@ -207,7 +264,8 @@ export default async function Page() {
       <CTASection
         title={cta.title || "Ready to Plan Your Future?"}
         description={
-          cta.description || "Reach out today for professional guidance on your educational and career journey."
+          cta.description ||
+          "Reach out today for professional guidance on your educational and career journey."
         }
         buttonText={cta.buttonText || "Get Started"}
         buttonLink={cta.buttonLink || "/contact"}
@@ -221,7 +279,8 @@ export default async function Page() {
           "@context": "https://schema.org",
           "@type": ["EducationalOrganization", "Occupation"],
           name: "Salsabeel Al Janoob ImpExp Career Services",
-          description: "Professional educational counseling and career guidance services",
+          description:
+            "Professional educational counseling and career guidance services",
           serviceType: "CareerCounseling",
           provider: {
             "@type": "Organization",
@@ -253,4 +312,3 @@ export default async function Page() {
     </>
   )
 }
-

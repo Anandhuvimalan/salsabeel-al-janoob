@@ -11,8 +11,15 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
+
 export const metadata: Metadata = {
-  title: "Comprehensive Waste Management Solutions | Oil Recycling & Waste Removal",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Comprehensive Waste Management Solutions | Oil Recycling & Waste Removal",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
     "Professional waste management services including industrial recycling, MEP waste handling, oil recycling, and eco-friendly waste removal. ISO-certified sustainable solutions.",
   keywords: [
@@ -22,10 +29,17 @@ export const metadata: Metadata = {
     "hazardous waste disposal",
     "electronic waste recycling",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
-    title: "Complete Waste Management Solutions | Salsabeel Al Janoob ImpExp",
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/all-waste-management",
+    siteName: "Salsabeel Al Janoob ImpExp",
+    title: "Comprehensive Waste Management Solutions | Oil Recycling & Waste Removal",
     description:
-      "Environmentally responsible waste management services including recycling, disposal, and waste-to-energy solutions",
+      "Environmentally responsible waste management services including recycling, disposal, and waste-to-energy solutions.",
     images: [
       {
         url: "/all-waste-management-og.webp",
@@ -35,9 +49,36 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Comprehensive Waste Management Solutions | Salsabeel Al Janoob ImpExp",
+    description:
+      "Professional waste management services with a focus on sustainable recycling and eco-friendly waste removal.",
+    images: ["/all-waste-management-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/all-waste-management",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/all-waste-management",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/all-waste-management",
+    },
   },
+  category: "Waste Management",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
@@ -55,7 +96,6 @@ async function getServiceData() {
       throw new Error("Failed to fetch allwaste data")
     }
 
-    // Parse the JSON string if needed
     let pageInfo
     if (typeof data.page_info === "string") {
       try {
@@ -71,7 +111,6 @@ async function getServiceData() {
     return pageInfo
   } catch (error) {
     console.error("Error in getServiceData:", error)
-    // Return default data structure in case of error
     return {
       pageInfo: {
         hero: {
@@ -121,20 +160,15 @@ async function getServiceData() {
 
 export default async function Page() {
   const data = await getServiceData()
-
-  // Check if we have the expected structure and provide defaults if not
   const pageInfo = data?.pageInfo || {}
-
-  // Destructure with default empty objects to prevent undefined errors
   const hero = pageInfo.hero || {}
   const explanation = pageInfo.explanation || {}
   const faqs = pageInfo.faqs || { items: [] }
   const cta = pageInfo.cta || {}
   const projects = pageInfo.projects || { items: [] }
 
-  // Ensure projects.items exists before mapping
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -142,7 +176,7 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
@@ -225,6 +259,7 @@ export default async function Page() {
           provider: {
             "@type": "Organization",
             name: "Salsabeel Al Janoob ImpExp",
+            url: "https://salsabeelaljanoobimpexp.com",
           },
           areaServed: ["India", "Middle East", "Global"],
           hasOfferCatalog: {
@@ -253,4 +288,3 @@ export default async function Page() {
     </>
   )
 }
-

@@ -11,10 +11,16 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Vastu Shastra Consultation Services | Home & Office Energy Balancing",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Vastu Shastra Consultation Services | Home & Office Energy Balancing",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
-    "Professional Vastu consultancy for residential and commercial spaces. Harmony optimization, directional alignment, and positive energy flow solutions.",
+    "Professional Vasthu consultancy for residential and commercial spaces. Harmony optimization, directional alignment, and positive energy flow solutions.",
   keywords: [
     "vastu consultation",
     "home energy balancing",
@@ -22,27 +28,65 @@ export const metadata: Metadata = {
     "architectural alignment",
     "positive space design",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/vasthu-consultancy",
+    siteName: "Salsabeel Al Janoob ImpExp",
     title: "Vastu Shastra Experts | Salsabeel Al Janoob ImpExp",
-    description: "Traditional Vastu consultations with modern implementation techniques for holistic living spaces",
+    description:
+      "Traditional Vasthu consultations with modern implementation techniques for holistic living spaces",
     images: [
       {
-        url: "/vastu-consultancy-og.jpg",
+        url: "/vastu-consultancy-og.webp",
         width: 1200,
         height: 630,
         alt: "Vastu Consultation Process",
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vastu Shastra Experts | Salsabeel Al Janoob ImpExp",
+    description:
+      "Traditional Vasthu consultations with modern techniques to harmonize your home and office environments.",
+    images: ["/vastu-consultancy-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/vasthu-consultancy",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/vasthu-consultancy",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/vasthu-consultancy",
+    },
   },
+  category: "ProfessionalService",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
   try {
-    // Fetch the data
-    const { data, error } = await supabase.from("vasthu").select("page_info").single()
+    // Fetch the data from the "vasthu" table
+    const { data, error } = await supabase
+      .from("vasthu")
+      .select("page_info")
+      .single()
 
     if (error) {
       console.error("Error fetching vasthu data:", error)
@@ -61,7 +105,6 @@ async function getServiceData() {
     } else {
       pageInfo = data.page_info
     }
-
     return pageInfo
   } catch (error) {
     console.error("Error in getServiceData:", error)
@@ -115,20 +158,16 @@ async function getServiceData() {
 
 export default async function Page() {
   const data = await getServiceData()
-
-  // Check if we have the expected structure and provide defaults if not
   const pageInfo = data?.pageInfo || {}
 
-  // Destructure with default empty objects to prevent undefined errors
   const hero = pageInfo.hero || {}
   const explanation = pageInfo.explanation || {}
   const faqs = pageInfo.faqs || { items: [] }
   const cta = pageInfo.cta || {}
   const projects = pageInfo.projects || { items: [] }
 
-  // Ensure projects.items exists before mapping
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -136,7 +175,7 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
@@ -178,7 +217,7 @@ export default async function Page() {
           ]
         }
         imageSrc={explanation.imageSrc || "/placeholder.svg?height=400&width=600"}
-        imageAlt={explanation.imageAlt || "Vasthu principles diagram"}
+        imageAlt={explanation.imageAlt || "Vasthu consultation session"}
         shutters={explanation.shutters || 5}
       />
 
@@ -239,11 +278,15 @@ export default async function Page() {
             "@type": "Country",
             name: "India",
           },
-          knowsAbout: ["Vasthu Shastra", "Space Energy Balancing", "Directional Alignment", "Traditional Architecture"],
+          knowsAbout: [
+            "Vasthu Shastra",
+            "Space Energy Balancing",
+            "Directional Alignment",
+            "Traditional Architecture",
+          ],
         })}
       </script>
       <Footer />
     </>
   )
 }
-

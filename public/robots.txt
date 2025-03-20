@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /login
+
+# Host
+Host: https://salsabeelaljanoobimpexp.com
+
+# Sitemaps
+Sitemap: https://salsabeelaljanoobimpexp.com/sitemap.xml

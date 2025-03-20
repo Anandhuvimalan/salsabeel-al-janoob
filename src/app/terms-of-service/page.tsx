@@ -1,11 +1,75 @@
+import type { Metadata } from "next"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Terms of Service | Salsabeel Al Janoob ImpExp",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
+  description:
+    "Review the Terms of Service for Salsabeel Al Janoob ImpExp. These terms govern your access to and use of our website and services.",
+  keywords: [
+    "terms of service",
+    "TOS",
+    "user agreement",
+    "legal",
+    "Salsabeel Al Janoob ImpExp terms",
+  ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/terms-of-service",
+    siteName: "Salsabeel Al Janoob ImpExp",
+    title: "Terms of Service | Salsabeel Al Janoob ImpExp",
+    description:
+      "Review the Terms of Service for Salsabeel Al Janoob ImpExp. By using our services, you agree to these terms.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Terms of Service | Salsabeel Al Janoob ImpExp",
+    description:
+      "Review the Terms of Service for Salsabeel Al Janoob ImpExp and understand your rights and responsibilities.",
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "/terms-of-service",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/terms-of-service",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/terms-of-service",
+    },
+  },
+  category: "Legal",
+  manifest: "/site.webmanifest",
+  verification: {
+    google: "G-VS910V1G3D",
+  },
+}
 
 export default function TermsOfService() {
   return (
     <div className="container mx-auto py-10 px-4 max-w-4xl">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Terms of Service</h1>
-        <p className="text-muted-foreground mt-2">Effective Date: {new Date().toLocaleDateString()}</p>
+        <p className="text-muted-foreground mt-2">
+          Effective Date: {new Date().toLocaleDateString()}
+        </p>
       </div>
 
       <Card className="mb-8">
@@ -14,9 +78,8 @@ export default function TermsOfService() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p>
-            Welcome to Salsabeel Al Janoob Imp Exp ("Company", "we", "us", or "our"). These Terms of Service ("Terms") 
-            govern your access to and use of our website, services, and any related platforms (collectively, the "Services"). 
-            By accessing or using our Services, you agree to be bound by these Terms.
+            Welcome to Salsabeel Al Janoob ImpExp ("Company", "we", "us", or "our").
+            These Terms of Service ("Terms") govern your access to and use of our website, services, and any related platforms (collectively, the "Services"). By accessing or using our Services, you agree to be bound by these Terms.
           </p>
           <p>
             We operate through two primary entities:
@@ -24,15 +87,19 @@ export default function TermsOfService() {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="p-4 border rounded-lg">
               <h3 className="font-semibold">Oman Operation</h3>
-              <p className="text-sm">Salsabeel Al Janoob Trad & Cont. Est<br/>
-              PO Box xxxx PC xxx Salalah<br/>
-              Head Office at Barka, Sultanate of Oman</p>
+              <p className="text-sm">
+                Salsabeel Al Janoob Trad & Cont. Est<br />
+                PO Box xxxx PC xxx Salalah<br />
+                Head Office at Barka, Sultanate of Oman
+              </p>
             </div>
             <div className="p-4 border rounded-lg">
               <h3 className="font-semibold">Indian Operation</h3>
-              <p className="text-sm">Salsabeel Al Janoob ImpExp<br/>
-              Jwala Complex, Marappalam<br/>
-              PO Madukarai 641105, Coimbatore, Tamilnadu</p>
+              <p className="text-sm">
+                Salsabeel Al Janoob ImpExp<br />
+                Jwala Complex, Marappalam<br />
+                PO Madukarai 641105, Coimbatore, Tamilnadu
+              </p>
             </div>
           </div>
         </CardContent>
@@ -112,9 +179,7 @@ export default function TermsOfService() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p>
-            All content, trademarks, and proprietary information displayed on our platforms remain the exclusive 
-            property of Salsabeel Al Janoob Imp Exp. Limited, revocable license for personal, non-commercial 
-            use is granted through website access.
+            All content, trademarks, and proprietary information displayed on our platforms remain the exclusive property of Salsabeel Al Janoob ImpExp. A revocable license for personal, non-commercial use is granted through website access.
           </p>
         </CardContent>
       </Card>
@@ -142,9 +207,7 @@ export default function TermsOfService() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p>
-            These Terms are governed by Omani law. Any disputes shall be resolved through arbitration in 
-            Muscat, Oman, in accordance with Oman Arbitration Law. For Indian operations, concurrent jurisdiction 
-            may apply as specified in individual service contracts.
+            These Terms are governed by Omani law. Any disputes shall be resolved through arbitration in Muscat, Oman, in accordance with Oman Arbitration Law. For Indian operations, concurrent jurisdiction may apply as specified in individual service contracts.
           </p>
         </CardContent>
       </Card>
@@ -158,31 +221,30 @@ export default function TermsOfService() {
             <div>
               <h4 className="font-medium mb-2">Oman Headquarters</h4>
               <p className="text-sm">
-                Salsabeel Al Janoob Trad & Cont. Est<br/>
-                PO Box xxxx PC xxx Salalah<br/>
-                Head Office at Barka, Sultanate of Oman<br/>
+                Salsabeel Al Janoob Trad & Cont. Est<br />
+                Post Box no : 730, postal code : 111<br />
+                Dhofar-Salala, Sultanate of Oman<br />
                 Tel: +968 9171 8606
               </p>
             </div>
             <div>
               <h4 className="font-medium mb-2">Indian Operations</h4>
               <p className="text-sm">
-                Salsabeel Al Janoob ImpExp<br/>
-                Jwala Complex, Marappalam<br/>
-                PO Madukarai 641105, Coimbatore, Tamilnadu<br/>
+                Salsabeel Al Janoob ImpExp<br />
+                Jwala Complex, Marappalam<br />
+                PO Madukarai 641105, Coimbatore, Tamilnadu<br />
                 Tel: 0422-4547438 | +91 93494 74746
               </p>
             </div>
           </div>
           <p>
-            Visit our <a href="/contact" className="text-primary hover:underline">Contact Page</a> for inquiries or 
-            explore opportunities on our <a href="/careers" className="text-primary hover:underline">Career Portal</a>.
+            Visit our <a href="/contact" className="text-primary hover:underline">Contact Page</a> for inquiries or explore opportunities on our <a href="/careers" className="text-primary hover:underline">Career Portal</a>.
           </p>
         </CardContent>
       </Card>
 
       <div className="text-center text-sm text-muted-foreground mt-8">
-        <p>© {new Date().getFullYear()} Salsabeel Al Janoob Imp Exp. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Salsabeel Al Janoob ImpExp. All rights reserved.</p>
         <p className="mt-2">Version 1.1 | Updated {new Date().toLocaleDateString()}</p>
       </div>
     </div>

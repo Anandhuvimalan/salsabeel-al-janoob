@@ -39,7 +39,6 @@ const HeroSection = () => {
 
         if (error) throw error
 
-        // Process image URL if it's from Supabase storage
         if (
           data.background.image &&
           !data.background.image.startsWith("http") &&
@@ -78,12 +77,20 @@ const HeroSection = () => {
     )
   }
 
+  const isExternalLink = (url: string) => url.startsWith("http")
+
   return (
-    <section className="relative h-screen overflow-hidden">
-      {/* Background Image */}
+    <header 
+      className="relative h-screen overflow-hidden"
+      aria-live="polite"
+      role="banner"
+    >
+      {/* Background Image with accessibility features */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${heroData.background.image || "/placeholder.svg"})` }}
+        role="img"
+        aria-label={heroData.background.alt}
       />
 
       {/* Curtain Reveal Effect */}
@@ -96,18 +103,20 @@ const HeroSection = () => {
           delay: 0.2,
         }}
         className="absolute inset-0 bg-zinc-950 origin-top z-20"
+        aria-hidden="true"
       />
 
       {/* Content Overlay */}
-      <div className="absolute inset-0 bg-black/50 z-10" />
+      <div className="absolute inset-0 bg-black/50 z-10" aria-hidden="true" />
 
-      {/* Content Container */}
+      {/* Main Content */}
       <div className="relative z-10 flex flex-col justify-center items-center h-full px-4 text-center max-w-7xl mx-auto">
         <motion.span
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.7 }}
           className="inline-block px-4 py-1.5 mb-6 text-sm font-medium tracking-wider text-white/90 rounded-full bg-white/10 backdrop-blur-sm border border-white/10"
+          role="status"
         >
           {heroData.content.badge}
         </motion.span>
@@ -126,6 +135,7 @@ const HeroSection = () => {
               animate={{ width: "100%" }}
               transition={{ duration: 0.8, delay: 2.3 }}
               className="absolute bottom-0 left-0 h-0.5 bg-white/30"
+              aria-hidden="true"
             />
           </span>
         </motion.h1>
@@ -145,23 +155,47 @@ const HeroSection = () => {
           transition={{ duration: 0.6, delay: 2.3 }}
           className="flex gap-4"
         >
-          <Link
-            href={heroData.content.button.link}
-            className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden rounded-full bg-white text-zinc-950 transition-transform duration-300 ease-out hover:scale-105"
-          >
-            <span className="relative z-20 font-medium tracking-wide">{heroData.content.button.text}</span>
-            <motion.div
-              initial={false}
-              animate={{ scale: 2, opacity: 0 }}
-              transition={{ duration: 0.5, repeat: Number.POSITIVE_INFINITY, repeatDelay: 1 }}
-              className="absolute inset-0 z-10 bg-white/20"
-            />
-          </Link>
+          {isExternalLink(heroData.content.button.link) ? (
+            <a
+              href={heroData.content.button.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden rounded-full bg-white text-zinc-950 transition-transform duration-300 ease-out hover:scale-105"
+              aria-label={`${heroData.content.button.text} (opens in new tab)`}
+            >
+              <span className="relative z-20 font-medium tracking-wide">
+                {heroData.content.button.text}
+              </span>
+              <motion.div
+                initial={false}
+                animate={{ scale: 2, opacity: 0 }}
+                transition={{ duration: 0.5, repeat: Number.POSITIVE_INFINITY, repeatDelay: 1 }}
+                className="absolute inset-0 z-10 bg-white/20"
+                aria-hidden="true"
+              />
+            </a>
+          ) : (
+            <Link
+              href={heroData.content.button.link}
+              className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden rounded-full bg-white text-zinc-950 transition-transform duration-300 ease-out hover:scale-105"
+              aria-label={heroData.content.button.text}
+            >
+              <span className="relative z-20 font-medium tracking-wide">
+                {heroData.content.button.text}
+              </span>
+              <motion.div
+                initial={false}
+                animate={{ scale: 2, opacity: 0 }}
+                transition={{ duration: 0.5, repeat: Number.POSITIVE_INFINITY, repeatDelay: 1 }}
+                className="absolute inset-0 z-10 bg-white/20"
+                aria-hidden="true"
+              />
+            </Link>
+          )}
         </motion.div>
       </div>
-    </section>
+    </header>
   )
 }
 
 export default HeroSection
-

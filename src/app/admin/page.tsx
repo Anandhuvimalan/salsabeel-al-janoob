@@ -1,9 +1,10 @@
 "use client"
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Home, Building2, Briefcase, PhoneIncoming, GraduationCap, Mailbox } from "lucide-react"
 import { motion } from "framer-motion"
 import Link from "next/link"
+
+
 
 export default function Dashboard() {
   // Animation variants for the cards

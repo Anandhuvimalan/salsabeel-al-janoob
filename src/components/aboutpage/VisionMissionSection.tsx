@@ -43,7 +43,6 @@ const VisionMissionSection = () => {
 
         if (error) throw error
 
-        // Process icons to get full URLs
         const processedData = {
           ...data,
           vision_card: {
@@ -71,29 +70,22 @@ const VisionMissionSection = () => {
     fetchVisionMissionData()
   }, [])
 
-  // Helper function to get public URL for icons
   const getIconUrl = (path: string) => {
     if (!path) return "/placeholder.svg"
-
-    // If the path is already a full URL or starts with /, return it as is
-    if (path.startsWith("http") || path.startsWith("/")) {
-      return path
-    }
-
-    // Otherwise, get the public URL from Supabase storage
+    if (path.startsWith("http") || path.startsWith("/")) return path
     return supabase.storage.from("aboutpage-visionmission-icons").getPublicUrl(path).data.publicUrl
   }
 
   if (isLoading) {
     return (
-      <section className="relative py-20 bg-zinc-50">
+      <section aria-label="Loading vision and mission" role="region" className="relative py-20 bg-zinc-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-zinc-200 rounded w-1/4 mx-auto"></div>
-            <div className="h-10 bg-zinc-200 rounded w-1/2 mx-auto"></div>
+          <div role="status" aria-live="polite" className="animate-pulse space-y-8">
+            <div className="h-8 bg-zinc-200 rounded w-1/4 mx-auto" />
+            <div className="h-10 bg-zinc-200 rounded w-1/2 mx-auto" />
             <div className="grid md:grid-cols-2 gap-12">
-              <div className="h-96 bg-zinc-200 rounded"></div>
-              <div className="h-96 bg-zinc-200 rounded"></div>
+              <div className="h-96 bg-zinc-200 rounded" />
+              <div className="h-96 bg-zinc-200 rounded" />
             </div>
           </div>
         </div>
@@ -103,27 +95,31 @@ const VisionMissionSection = () => {
 
   if (error || !visionMissionData) {
     return (
-      <section className="relative py-20 bg-zinc-50 text-center text-red-500">
+      <section 
+        className="relative py-20 bg-zinc-50 text-center text-red-500" 
+        role="alert" 
+        aria-live="assertive"
+      >
         {error || "Failed to load vision & mission data"}
       </section>
     )
   }
 
   return (
-    <section className="relative py-20 bg-zinc-50">
+    <section aria-label="Vision and mission" className="relative py-20 bg-zinc-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Inline-banner */}
-        <motion.div
+        {/* Banner */}
+        <motion.header
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ margin: "-100px", once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-4"
         >
-          <div className="inline-block px-4 py-2 text-sm font-semibold text-amber-600 bg-amber-100 rounded-full">
+          <span className="inline-block px-4 py-2 text-sm font-semibold text-amber-600 bg-amber-100 rounded-full">
             {visionMissionData.inline_banner}
-          </div>
-        </motion.div>
+          </span>
+        </motion.header>
 
         {/* Main Section Heading */}
         <motion.h2
@@ -138,71 +134,78 @@ const VisionMissionSection = () => {
 
         <div className="grid md:grid-cols-2 gap-12">
           {/* Vision Card */}
-          <motion.div
+          <motion.article
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ margin: "-100px", once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="bg-white p-8 rounded-2xl shadow-lg border border-zinc-100"
+            aria-labelledby="vision-heading"
           >
             <div className="mb-6">
-              <div className="w-16 h-16 rounded-xl bg-amber-500 flex items-center justify-center text-white">
+              <figure className="w-16 h-16 rounded-xl bg-amber-500 flex items-center justify-center text-white">
                 <Image
                   src={visionMissionData.vision_card.icon || "/placeholder.svg"}
-                  alt="Vision Icon"
+                  alt={`${visionMissionData.vision_card.title} icon`}
                   width={32}
                   height={32}
                   className="w-8 h-8"
+                  aria-hidden="true"
                 />
-              </div>
+              </figure>
             </div>
-            <h3 className="text-2xl font-bold text-zinc-800 mb-4">{visionMissionData.vision_card.title}</h3>
+            <h3 id="vision-heading" className="text-2xl font-bold text-zinc-800 mb-4">
+              {visionMissionData.vision_card.title}
+            </h3>
             <p className="text-zinc-600 text-lg leading-relaxed">{visionMissionData.vision_card.description}</p>
-          </motion.div>
+          </motion.article>
 
           {/* Mission Card */}
-          <motion.div
+          <motion.article
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ margin: "-100px", once: true }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="bg-amber-50 p-8 rounded-2xl shadow-lg border border-amber-100"
+            aria-labelledby="mission-heading"
           >
             <div className="mb-6">
-              <div className="w-16 h-16 rounded-xl bg-amber-600 flex items-center justify-center text-white">
+              <figure className="w-16 h-16 rounded-xl bg-amber-600 flex items-center justify-center text-white">
                 <Image
                   src={visionMissionData.mission_card.icon || "/placeholder.svg"}
-                  alt="Mission Icon"
+                  alt={`${visionMissionData.mission_card.title} icon`}
                   width={32}
                   height={32}
                   className="w-8 h-8"
+                  aria-hidden="true"
                 />
-              </div>
+              </figure>
             </div>
-            <h3 className="text-2xl font-bold text-zinc-800 mb-6">{visionMissionData.mission_card.title}</h3>
+            <h3 id="mission-heading" className="text-2xl font-bold text-zinc-800 mb-6">
+              {visionMissionData.mission_card.title}
+            </h3>
 
-            <div className="space-y-6">
+            <ul className="space-y-6" aria-label="Mission objectives">
               {visionMissionData.mission_card.items.map((item, index) => (
-                <div key={index} className="flex gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-6 h-6 text-amber-600">
-                      <Image
-                        src={item.icon || "/placeholder.svg"}
-                        alt="Mission item icon"
-                        width={24}
-                        height={24}
-                        className="w-6 h-6"
-                      />
-                    </div>
-                  </div>
+                <li key={index} className="flex gap-4">
+                  <figure className="flex-shrink-0" aria-hidden="true">
+                    <Image
+                      src={item.icon || "/placeholder.svg"}
+                      alt=""
+                      width={24}
+                      height={24}
+                      className="w-6 h-6 text-amber-600"
+                      aria-hidden="true"
+                    />
+                  </figure>
                   <p className="text-zinc-600">
                     <strong>{item.strongText} </strong>
                     {item.text}
                   </p>
-                </div>
+                </li>
               ))}
-            </div>
-          </motion.div>
+            </ul>
+          </motion.article>
         </div>
       </div>
     </section>
@@ -210,4 +213,3 @@ const VisionMissionSection = () => {
 }
 
 export default VisionMissionSection
-

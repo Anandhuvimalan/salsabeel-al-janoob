@@ -11,8 +11,14 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Civil Construction & Maintenance Contracts | Design-Build Services",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Civil Construction & Maintenance Contracts | Design-Build Services",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
     "Complete civil contracting solutions from design to construction, demolition to solar installations. Professional project management with AMC services.",
   keywords: [
@@ -22,7 +28,14 @@ export const metadata: Metadata = {
     "solar panel installation",
     "annual maintenance contracts",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/civil-contracts",
+    siteName: "Salsabeel Al Janoob ImpExp",
     title: "Integrated Civil Contracting Services | Salsabeel Al Janoob ImpExp",
     description:
       "End-to-end civil construction solutions including landscaping, electrical works, and sustainable energy installations",
@@ -35,9 +48,36 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Integrated Civil Contracting Services | Salsabeel Al Janoob ImpExp",
+    description:
+      "End-to-end civil construction solutions including landscaping, electrical works, and sustainable energy installations",
+    images: ["/civil-contracts-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/civil-contracts",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/civil-contracts",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/civil-contracts",
+    },
   },
+  category: "Construction",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
@@ -134,7 +174,7 @@ export default async function Page() {
 
   // Ensure projects.items exists before mapping
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -142,7 +182,7 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
@@ -200,7 +240,9 @@ export default async function Page() {
       <Frequent
         title={faqs.title || "Civil Construction FAQs"}
         highlightWord={faqs.highlightWord || "Solutions"}
-        description={faqs.description || "Find answers to common questions about our civil construction services."}
+        description={
+          faqs.description || "Find answers to common questions about our civil construction services."
+        }
         faqs={faqs.items || []}
       />
 
@@ -267,4 +309,3 @@ export default async function Page() {
     </>
   )
 }
-

@@ -1,5 +1,68 @@
+import type { Metadata } from "next"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Shield, Lock, Mail, Phone, Globe,ChartBarIncreasing } from "lucide-react"
+import { Shield, Lock, Mail, Phone, Globe, ChartBarIncreasing } from "lucide-react"
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Privacy Policy | Salsabeel Al Janoob ImpExp",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
+  description:
+    "Read the Privacy Policy for Salsabeel Al Janoob ImpExp. We are committed to protecting your personal information through compliance with international data protection standards.",
+  keywords: [
+    "privacy policy",
+    "data protection",
+    "personal information",
+    "Salsabeel Al Janoob ImpExp privacy",
+  ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/privacy-policy",
+    siteName: "Salsabeel Al Janoob ImpExp",
+    title: "Privacy Policy | Salsabeel Al Janoob ImpExp",
+    description:
+      "Read the Privacy Policy for Salsabeel Al Janoob ImpExp. We ensure your data is protected through robust security measures and adherence to international standards.",
+    // No images included for privacy policy
+  },
+  twitter: {
+    card: "summary",
+    title: "Privacy Policy | Salsabeel Al Janoob ImpExp",
+    description:
+      "Read the Privacy Policy for Salsabeel Al Janoob ImpExp and learn how we protect your personal data with industry-standard security measures.",
+    // No images included for privacy policy
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "/privacy-policy",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/privacy-policy",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/privacy-policy",
+    },
+  },
+  category: "Legal",
+  manifest: "/site.webmanifest",
+  verification: {
+    google: "G-VS910V1G3D",
+  },
+}
 
 export default function PrivacyPolicy() {
   return (
@@ -18,7 +81,7 @@ export default function PrivacyPolicy() {
         </CardHeader>
         <CardContent className="space-y-4 pt-4">
           <p>
-            Salsabeel Al Janoob Imp Exp ("we", "us", or "our") operates across Oman and India, 
+            Salsabeel Al Janoob ImpExp ("we", "us", or "our") operates across Oman and India, 
             committed to protecting your personal information through compliance with international 
             data protection standards.
           </p>
@@ -199,7 +262,7 @@ export default function PrivacyPolicy() {
           <div>
             <h4 className="font-semibold mb-3">Office Locations</h4>
             <p className="text-sm">
-              OMAN: PO Box xxxx PC xxx Salalah<br />
+              OMAN: Post Box no : 730, postal code : 111,<br /> Dhofar-Salala, sultanate of oman<br />
               INDIA: Jwala Complex, Marappalam,<br />
               PO Madukarai 641105, Coimbatore
             </p>

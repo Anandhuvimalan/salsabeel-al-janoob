@@ -11,8 +11,14 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Retail Business Consulting & Store Management Services | Full-Service Solutions",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Retail Business Consulting & Store Management Services | Full-Service Solutions",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
     "Comprehensive retail consultancy for food service businesses, convenience stores, and supermarkets. From setup to operations management and optimization.",
   keywords: [
@@ -22,7 +28,14 @@ export const metadata: Metadata = {
     "food service consulting",
     "retail operations optimization",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/retail-consultancy",
+    siteName: "Salsabeel Al Janoob ImpExp",
     title: "Retail Consultancy Services | Salsabeel Al Janoob ImpExp",
     description:
       "End-to-end retail solutions for food businesses and supermarkets including design, staffing, and inventory management",
@@ -35,9 +48,36 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Retail Consultancy Services | Salsabeel Al Janoob ImpExp",
+    description:
+      "End-to-end retail solutions for food businesses and supermarkets including design, staffing, and inventory management",
+    images: ["/retail-consultancy-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/retail-consultancy",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/retail-consultancy",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/retail-consultancy",
+    },
   },
+  category: "HouseholdServices",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
@@ -121,8 +161,6 @@ async function getServiceData() {
 
 export default async function Page() {
   const data = await getServiceData()
-
-  // Check if we have the expected structure and provide defaults if not
   const pageInfo = data?.pageInfo || {}
 
   // Destructure with default empty objects to prevent undefined errors
@@ -132,9 +170,9 @@ export default async function Page() {
   const cta = pageInfo.cta || {}
   const projects = pageInfo.projects || { items: [] }
 
-  // Ensure projects.items exists before mapping
+  // Map projects to include additional content
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -142,7 +180,7 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
@@ -201,7 +239,8 @@ export default async function Page() {
         title={faqs.title || "Retail Consultancy FAQs"}
         highlightWord={faqs.highlightWord || "Solutions"}
         description={
-          faqs.description || "Find answers to common questions about our retail business consulting services."
+          faqs.description ||
+          "Find answers to common questions about our retail business consulting services."
         }
         faqs={faqs.items || []}
       />
@@ -247,11 +286,15 @@ export default async function Page() {
             "@type": "Country",
             name: "India",
           },
-          knowsAbout: ["Retail Management", "Food Service Operations", "Store Design", "Inventory Management"],
+          knowsAbout: [
+            "Retail Management",
+            "Food Service Operations",
+            "Store Design",
+            "Inventory Management",
+          ],
         })}
       </script>
       <Footer />
     </>
   )
 }
-

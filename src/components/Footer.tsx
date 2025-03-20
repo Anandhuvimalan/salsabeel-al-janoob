@@ -1,7 +1,5 @@
 "use client"
 import { Fragment, useState, useEffect } from "react"
-import type React from "react"
-
 import Link from "next/link"
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
@@ -49,9 +47,15 @@ const SocialLink = ({
     className="flex items-center text-gray-300 hover:text-white transition-colors duration-300"
     target="_blank"
     rel="noopener noreferrer"
+    aria-label={`Visit our ${label} profile`}
   >
-    <img src={getImageUrl(iconSrc) || "/placeholder.svg"} alt={label} className="w-6 h-6" />
-    <span className="ml-2">{label}</span>
+    <img 
+      src={getImageUrl(iconSrc) || "/placeholder.svg"} 
+      alt="" 
+      className="w-6 h-6"
+      aria-hidden="true"
+    />
+    <span className="ml-2 sr-only">{label}</span>
   </a>
 )
 
@@ -66,6 +70,8 @@ const LocationMap = ({ src, title }: { src: string; title: string }) => (
       loading="lazy"
       referrerPolicy="no-referrer-when-downgrade"
       title={title}
+      aria-label={title}
+      sandbox="allow-scripts allow-same-origin"
     ></iframe>
   </div>
 )
@@ -83,18 +89,19 @@ const CompanyLocation = ({
   phoneNumbers: string[]
   mapSrc: string
 }) => (
-  <div className="space-y-4">
-    <h4 className="text-lg font-semibold text-purple-400">{name}</h4>
+  <article className="space-y-4">
+    <h3 className="text-lg font-semibold text-purple-400">{name}</h3>
     <p className="text-gray-300">{operation}</p>
-    <p className="text-gray-400">{address}</p>
+    <address className="text-gray-400 not-italic">{address}</address>
     <div className="flex items-start">
-      <img src="/phone.svg" alt="Phone" className="w-5 h-5 mr-2 mt-1" />
+      <img src="/phone.svg" alt="" className="w-5 h-5 mr-2 mt-1" aria-hidden="true" />
       <div className="flex flex-wrap">
         {phoneNumbers.map((phone, index) => (
           <Fragment key={index}>
             <a
               href={`tel:${phone.replace(/\s+/g, "")}`}
               className="text-gray-300 hover:text-white transition-colors duration-300 whitespace-nowrap"
+              aria-label={`Call ${phone}`}
             >
               {phone}
             </a>
@@ -104,19 +111,12 @@ const CompanyLocation = ({
       </div>
     </div>
     <LocationMap src={mapSrc} title={`${name} Location`} />
-  </div>
+  </article>
 )
 
-// Helper function to get public URL for images
 const getImageUrl = (path: string) => {
   if (!path) return "/placeholder.svg"
-
-  // If the path is already a full URL or starts with /, return it as is
-  if (path.startsWith("http") || path.startsWith("/")) {
-    return path
-  }
-
-  // Otherwise, get the public URL from Supabase storage
+  if (path.startsWith("http") || path.startsWith("/")) return path
   return supabase.storage.from("footer-images").getPublicUrl(path).data.publicUrl
 }
 
@@ -140,7 +140,6 @@ const Footer = () => {
 
         if (error) throw error
 
-        // Transform data to match component expectations
         const transformedData = {
           company_info: {
             ...footerData.company_info,
@@ -175,22 +174,17 @@ const Footer = () => {
   }, [])
 
   useEffect(() => {
-    // When subscription status changes and is not null
     if (subscriptionStatus) {
-      // Set a timeout to clear the message after 2 seconds
       const timer = setTimeout(() => {
         setSubscriptionStatus(null)
         setSubscriptionMessage("")
       }, 2000)
-
-      // Clean up the timeout if the component unmounts or status changes
       return () => clearTimeout(timer)
     }
   }, [subscriptionStatus])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (!email) return
 
     try {
@@ -198,36 +192,52 @@ const Footer = () => {
 
       if (error) {
         if (error.code === "23505") {
-          // Unique violation - email already exists
           setSubscriptionStatus("error")
           setSubscriptionMessage("You are already subscribed to our newsletter!")
         } else {
-          console.error("Error subscribing to newsletter:", error)
+          console.error("Error subscribing:", error)
           setSubscriptionStatus("error")
-          setSubscriptionMessage("Failed to subscribe. Please try again later.")
+          setSubscriptionMessage("Subscription failed. Please try again.")
         }
       } else {
         setSubscriptionStatus("success")
-        setSubscriptionMessage("Thank you for subscribing to our newsletter!")
+        setSubscriptionMessage("Thank you for subscribing!")
         setEmail("")
       }
     } catch (err) {
-      console.error("Error in subscription process:", err)
+      console.error("Subscription error:", err)
       setSubscriptionStatus("error")
-      setSubscriptionMessage("An unexpected error occurred. Please try again later.")
+      setSubscriptionMessage("An error occurred. Please try again.")
     }
   }
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-b from-gray-900 to-black min-h-[500px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400"></div>
-      </div>
+      <main aria-label="Loading footer" className="bg-gradient-to-b from-gray-900 to-black min-h-[500px] flex items-center justify-center">
+        <div 
+          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400"
+          aria-hidden="true"
+        />
+      </main>
     )
   }
 
   if (error) {
-    return <div className="bg-gradient-to-b from-gray-900 to-black text-red-400 text-center py-20">Error: {error}</div>
+    return (
+      <section role="alert" aria-label="Footer error" className="bg-gradient-to-b from-gray-900 to-black text-red-400 text-center py-20">
+        <article className="max-w-md mx-auto p-4">
+          <h2 className="text-xl font-bold mb-4">Loading Error</h2>
+          <p className="mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500"
+            aria-label="Retry loading footer"
+          >
+            Try Again
+          </button>
+        </article>
+      </section>
+    )
   }
 
   if (!data) return null
@@ -248,66 +258,81 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-6 lg:col-span-2">
             <Image
-              src={companyInfo.logoSrc || "/placeholder.svg"}
-              alt="Company Logo"
+              src={companyInfo.logoSrc}
+              alt={`${companyInfo.heading} logo`}
               width={120}
               height={120}
               className="rounded-full"
+              loading="lazy"
             />
-            <h3 className="text-2xl font-bold text-purple-400">{companyInfo.heading}</h3>
+            <h2 className="text-2xl font-bold text-purple-400">{companyInfo.heading}</h2>
             <p className="text-gray-400">{companyInfo.description}</p>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-purple-400">Quick Links</h4>
-            <nav className="flex flex-col space-y-2">
-              {quickLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.link}
-                  className="text-gray-300 hover:text-white transition-colors duration-300 flex items-center"
-                >
-                  <img src={legal.chevronIcon || "/placeholder.svg"} alt="Chevron" className="w-4 h-4 mr-2" />
-                  <span>{link.name}</span>
-                </Link>
-              ))}
-            </nav>
-          </div>
+          <nav aria-label="Quick links">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-purple-400">Quick Links</h3>
+              <ul className="flex flex-col space-y-2">
+                {quickLinks.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.link}
+                      className="text-gray-300 hover:text-white transition-colors duration-300 flex items-center"
+                    >
+                      <img 
+                        src={legal.chevronIcon} 
+                        alt="" 
+                        className="w-4 h-4 mr-2" 
+                        aria-hidden="true"
+                      />
+                      <span>{link.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </nav>
 
           {/* Newsletter */}
-          <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-purple-400">{newsletter.heading}</h4>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="email"
-                placeholder={newsletter.placeholder}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
-                required
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-500 transition-colors duration-300 flex items-center justify-center gap-2"
-              >
-                {newsletter.buttonText}
-                <img src={newsletter.buttonIcon || "/placeholder.svg"} alt="Send" className="w-4 h-4" />
-              </button>
-
-              {subscriptionStatus && (
-                <div
-                  className={`mt-2 p-2 rounded text-sm ${
-                    subscriptionStatus === "success"
-                      ? "bg-green-900/50 text-green-300 border border-green-700"
-                      : "bg-red-900/50 text-red-300 border border-red-700"
-                  }`}
+          <section aria-label="Newsletter subscription">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-purple-400">{newsletter.heading}</h3>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+                <input
+                  id="newsletter-email"
+                  type="email"
+                  placeholder={newsletter.placeholder}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-500 transition-colors duration-300 flex items-center justify-center gap-2"
+                  aria-label="Subscribe to newsletter"
                 >
-                  {subscriptionMessage}
-                </div>
-              )}
-            </form>
-          </div>
+                  {newsletter.buttonText}
+                  <img src={newsletter.buttonIcon} alt="" className="w-4 h-4" aria-hidden="true" />
+                </button>
+
+                {subscriptionStatus && (
+                  <div
+                    role="alert"
+                    className={`mt-2 p-2 rounded text-sm ${
+                      subscriptionStatus === "success"
+                        ? "bg-green-900/50 text-green-300 border border-green-700"
+                        : "bg-red-900/50 text-red-300 border border-red-700"
+                    }`}
+                  >
+                    {subscriptionMessage}
+                  </div>
+                )}
+              </form>
+            </div>
+          </section>
         </div>
 
         {/* Company Locations */}
@@ -318,28 +343,29 @@ const Footer = () => {
         </div>
 
         {/* Social Links */}
-        <div className="mt-12 flex justify-center space-x-6">
-          {socialMedia.map((social) => (
-            <SocialLink key={social.name} href={social.link} iconSrc={social.iconSrc} label={social.name} />
-          ))}
-        </div>
+        <nav aria-label="Social media links">
+          <div className="mt-12 flex justify-center space-x-6">
+            {socialMedia.map((social) => (
+              <SocialLink key={social.name} href={social.link} iconSrc={social.iconSrc} label={social.name} />
+            ))}
+          </div>
+        </nav>
 
         {/* Copyright & Legal */}
         <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
             {legal.copyright.replace("{year}", new Date().getFullYear().toString())}
           </p>
-          <div className="flex space-x-4 mt-4 md:mt-0">
-            <Link href={legal.terms} className="text-gray-400 hover:text-white text-sm transition-colors duration-300">
-              Terms of Service
-            </Link>
-            <Link
-              href={legal.privacy}
-              className="text-gray-400 hover:text-white text-sm transition-colors duration-300"
-            >
-              Privacy Policy
-            </Link>
-          </div>
+          <nav aria-label="Legal links">
+            <div className="flex space-x-4 mt-4 md:mt-0">
+              <Link href={legal.terms} className="text-gray-400 hover:text-white text-sm transition-colors duration-300">
+                Terms of Service
+              </Link>
+              <Link href={legal.privacy} className="text-gray-400 hover:text-white text-sm transition-colors duration-300">
+                Privacy Policy
+              </Link>
+            </div>
+          </nav>
         </div>
       </div>
     </footer>
@@ -347,4 +373,3 @@ const Footer = () => {
 }
 
 export default Footer
-

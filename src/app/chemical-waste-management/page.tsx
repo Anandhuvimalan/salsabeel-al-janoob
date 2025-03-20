@@ -11,8 +11,14 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Chemical Waste Disposal & Management Services | Hazardous Waste Solutions",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Chemical Waste Disposal & Management Services | Hazardous Waste Solutions",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
     "Safe and compliant chemical waste management services including hazardous material disposal, laboratory waste handling, and industrial chemical recycling. EPA-compliant solutions.",
   keywords: [
@@ -22,7 +28,14 @@ export const metadata: Metadata = {
     "toxic waste handling",
     "industrial chemical recycling",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/chemical-waste-management",
+    siteName: "Salsabeel Al Janoob ImpExp",
     title: "Professional Chemical Waste Management Services | Salsabeel Al Janoob ImpExp",
     description:
       "Certified chemical waste disposal and hazardous material management solutions with 24/7 emergency response",
@@ -35,15 +48,45 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Professional Chemical Waste Management Services | Salsabeel Al Janoob ImpExp",
+    description:
+      "Certified chemical waste disposal and hazardous material management solutions with 24/7 emergency response",
+    images: ["/chemical-waste-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/chemical-waste-management",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/chemical-waste-management",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/chemical-waste-management",
+    },
   },
+  category: "EnvironmentalService",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
   try {
-    // Fetch the data
-    const { data, error } = await supabase.from("chemicalwaste").select("page_info").single()
+    // Fetch the data from Supabase
+    const { data, error } = await supabase
+      .from("chemicalwaste")
+      .select("page_info")
+      .single()
 
     if (error) {
       console.error("Error fetching chemical waste data:", error)
@@ -74,7 +117,8 @@ async function getServiceData() {
           serviceType: "Chemical Waste Management",
           title: "Innovative & Sustainable",
           underlineText: "Chemical Waste Management",
-          description: "Delivering cutting-edge, eco-friendly solutions for safe chemical waste handling and disposal.",
+          description:
+            "Delivering cutting-edge, eco-friendly solutions for safe chemical waste handling and disposal.",
           buttonText: "Get in Touch",
           buttonLink: "/contact",
         },
@@ -115,20 +159,16 @@ async function getServiceData() {
 
 export default async function Page() {
   const data = await getServiceData()
-
-  // Check if we have the expected structure and provide defaults if not
   const pageInfo = data?.pageInfo || {}
 
-  // Destructure with default empty objects to prevent undefined errors
   const hero = pageInfo.hero || {}
   const explanation = pageInfo.explanation || {}
   const faqs = pageInfo.faqs || { items: [] }
   const cta = pageInfo.cta || {}
   const projects = pageInfo.projects || { items: [] }
 
-  // Ensure projects.items exists before mapping
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -136,7 +176,7 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
@@ -234,7 +274,7 @@ export default async function Page() {
             "@type": "CreativeWork",
             name: "Waste Manifest",
           },
-          termsOfService: "https://salsabeelaljanoobimpexp.com/terms",
+          termsOfService: "https://salsabeelaljanoobimpexp.com/terms-of-service",
           category: "EnvironmentalService",
         })}
       </script>
@@ -242,4 +282,3 @@ export default async function Page() {
     </>
   )
 }
-

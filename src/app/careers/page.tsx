@@ -5,8 +5,70 @@ import Navbar from "@/components/NavBar"
 import Footer from "@/components/Footer"
 
 export const metadata: Metadata = {
-  title: "Careers | Salsabeel Al Janoob",
-  description: "Join our team and be part of our mission to provide exceptional services across multiple industries",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Careers | Salsabeel Al Janoob ImpExp",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
+  description:
+    "Join our team and be part of our mission to provide exceptional services across multiple industries. Discover career opportunities, growth, and a dynamic work environment.",
+  keywords: [
+    "careers",
+    "jobs",
+    "employment opportunities",
+    "join our team",
+    "career growth",
+  ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/careers",
+    siteName: "Salsabeel Al Janoob ImpExp",
+    title: "Careers | Salsabeel Al Janoob ImpExp",
+    description:
+      "Join our team and be part of our mission to provide exceptional services across multiple industries.",
+    images: [
+      {
+        url: "/careers-og.webp",
+        width: 1200,
+        height: 630,
+        alt: "Careers at Salsabeel Al Janoob ImpExp",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Careers | Salsabeel Al Janoob ImpExp",
+    description:
+      "Join our team and be part of our mission to deliver exceptional services. Explore career opportunities with Salsabeel Al Janoob.",
+    images: ["/careers-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "/careers",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/careers",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/careers",
+    },
+  },
+  category: "Employment",
+  manifest: "/site.webmanifest",
 }
 
 export default function CareersPage() {
@@ -124,7 +186,7 @@ export default function CareersPage() {
   )
 }
 
-function BenefitCard({ title, description }) {
+function BenefitCard({ title, description }: { title: string; description: string }) {
   return (
     <div className="bg-zinc-800/50 p-6 rounded-lg border border-zinc-700 hover:border-[#38bdf8]/50 transition-colors">
       <h3 className="text-xl font-semibold mb-2 text-white">{title}</h3>
@@ -132,4 +194,3 @@ function BenefitCard({ title, description }) {
     </div>
   )
 }
-

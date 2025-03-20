@@ -1,5 +1,5 @@
 "use client"
-
+import type { Metadata } from "next"
 import type React from "react"
 import "./varial.css"
 import { useState, useEffect } from "react"
@@ -36,6 +36,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
+
 
 /** Custom hook to manage authentication and redirect if not logged in */
 function useAuth() {

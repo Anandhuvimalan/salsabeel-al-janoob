@@ -44,7 +44,7 @@ const ProcessStepCard = ({
   iconTo: string
 }) => {
   return (
-    <motion.div
+    <motion.li
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -53,22 +53,25 @@ const ProcessStepCard = ({
     >
       <div
         className={`w-16 h-16 flex items-center justify-center rounded-full mb-6 transition-colors duration-300 bg-gradient-to-br ${iconFrom} ${iconTo} group-hover:bg-white`}
+        aria-hidden="true"
       >
         <img
           src={iconSrc || "/placeholder.svg"}
-          alt={title}
+          alt={`${title} icon`}
           className="w-8 h-8 transition-colors duration-300 brightness-0 invert"
+          loading="lazy"
         />
       </div>
       <h3 className="text-2xl font-bold mb-3 group-hover:text-white">{title}</h3>
       <p className="text-gray-600 group-hover:text-white">{description}</p>
-    </motion.div>
+    </motion.li>
   )
 }
 
 export default function ImportExportProcess() {
   const [processData, setProcessData] = useState<ProcessData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchProcessData = async () => {
@@ -82,7 +85,6 @@ export default function ImportExportProcess() {
 
         if (error) throw error
 
-        // Transform steps to include full URLs for icons
         const stepsWithFullUrls = data.steps.map((step: ProcessStep) => ({
           ...step,
           iconSrc: getIconUrl(step.iconSrc),
@@ -94,6 +96,7 @@ export default function ImportExportProcess() {
         })
       } catch (error) {
         console.error("Error fetching process data:", error)
+        setError(error instanceof Error ? error.message : "Failed to load process data")
       } finally {
         setLoading(false)
       }
@@ -102,52 +105,60 @@ export default function ImportExportProcess() {
     fetchProcessData()
   }, [])
 
-  // Helper function to get public URL for icons
   const getIconUrl = (path: string) => {
     if (!path) return "/placeholder.svg"
-
-    // If the path is already a full URL or starts with /, return it as is
-    if (path.startsWith("http") || path.startsWith("/")) {
-      return path
-    }
-
-    // Otherwise, get the public URL from Supabase storage
+    if (path.startsWith("http") || path.startsWith("/")) return path
     return supabase.storage.from("process-icons").getPublicUrl(path).data.publicUrl
   }
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+      <main className="flex justify-center items-center min-h-screen" aria-label="Loading process section">
+        <div 
+          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+          aria-hidden="true"
+        />
+      </main>
     )
   }
 
-  if (!processData) {
+  if (error || !processData) {
     return (
-      <div className="text-center text-red-500 py-20">
-        <p>Failed to load process data.</p>
-      </div>
+      <main className="flex justify-center items-center min-h-screen" aria-label="Process section error">
+        <article className="text-center p-8 max-w-md">
+          <h2 role="alert" className="text-xl font-bold text-red-500 mb-4">
+            Loading Error
+          </h2>
+          <p className="text-gray-600 mb-6">{error || "Failed to load process data"}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            aria-label="Retry loading process section"
+          >
+            Try Again
+          </button>
+        </article>
+      </main>
     )
   }
 
   return (
-    <section className="bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 py-24 font-sans overflow-hidden">
+    <section aria-labelledby="process-heading" className="bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 py-24 font-sans overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
-        <motion.div
+        <motion.header
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center"
         >
-          <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-4">
+          <h2 id="process-heading" className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-4">
             {processData.section.heading}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">{processData.section.description}</p>
-        </motion.div>
+        </motion.header>
 
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <ul className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {processData.steps.map((step, index) => (
             <ProcessStepCard
               key={index}
@@ -161,7 +172,7 @@ export default function ImportExportProcess() {
               iconTo={step.iconTo}
             />
           ))}
-        </div>
+        </ul>
 
         <motion.div
           className="mt-12 flex justify-center"
@@ -173,6 +184,8 @@ export default function ImportExportProcess() {
           <Link
             href={processData.section.buttonLink}
             className="inline-block px-6 py-3 bg-indigo-600 text-white font-semibold rounded-full hover:bg-indigo-700 transition-colors duration-300"
+            rel={processData.section.buttonLink.startsWith('http') ? "noopener noreferrer" : undefined}
+            aria-label={processData.section.buttonText}
           >
             {processData.section.buttonText}
           </Link>
@@ -181,4 +194,3 @@ export default function ImportExportProcess() {
     </section>
   )
 }
-

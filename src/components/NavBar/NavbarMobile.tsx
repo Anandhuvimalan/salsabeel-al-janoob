@@ -25,7 +25,6 @@ const menuVariants = {
       staggerChildren: 0.1,
     },
   },
-  // Removed exit variant to eliminate delay on unmount
 }
 
 const menuItemVariants = {
@@ -35,7 +34,6 @@ const menuItemVariants = {
     y: 0,
     transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
   },
-  // Removed exit variant
 }
 
 const serviceDropdownVariants = {
@@ -58,7 +56,6 @@ const serviceDropdownVariants = {
       staggerChildren: 0.08,
     },
   },
-  // Removed exit variant
 }
 
 const serviceItemVariants = {
@@ -68,7 +65,6 @@ const serviceItemVariants = {
     scale: 1,
     transition: { duration: 0.3, ease: "easeOut" },
   },
-  // Removed exit variant
 }
 
 const NavbarMobile = () => {
@@ -82,6 +78,7 @@ const NavbarMobile = () => {
     }>
   >([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isServicesOpen, setIsServicesOpen] = useState(false)
@@ -128,10 +125,10 @@ const NavbarMobile = () => {
           .single()
 
         if (error) throw error
-
         setServices(data.services)
       } catch (error) {
         console.error("Error fetching services:", error)
+        setError(error instanceof Error ? error.message : "Failed to load services")
       } finally {
         setLoading(false)
       }
@@ -139,16 +136,9 @@ const NavbarMobile = () => {
     fetchServices()
   }, [])
 
-  // Helper function to get public URL for images
   const getImageUrl = (path: string) => {
     if (!path) return "/placeholder.svg"
-
-    // If the path is already a full URL or starts with /, return it as is
-    if (path.startsWith("http") || path.startsWith("/")) {
-      return path
-    }
-
-    // Otherwise, get the public URL from Supabase storage
+    if (path.startsWith("http") || path.startsWith("/")) return path
     return supabase.storage.from("services-images").getPublicUrl(path).data.publicUrl
   }
 
@@ -157,27 +147,30 @@ const NavbarMobile = () => {
       className={`block md:block lg:hidden text-white w-full fixed z-[100] transition-all duration-500 ease-in-out ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       } ${scrolled || isMenuOpen ? "bg-gray-900/95 backdrop-blur-md shadow-lg" : "bg-transparent"}`}
+      aria-label="Mobile navigation"
     >
       <div className="top-0 left-0 w-full flex items-center justify-between px-6 py-4">
-        <motion.div
-          className="flex items-center space-x-2 z-50"
-          initial={false}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Image src="/logo.svg" alt="Logo" width={32} height={32} className="rounded-full" />
+        <Link href="/" className="flex items-center space-x-2 z-50" aria-label="Home">
+          <Image 
+            src="/logo.svg" 
+            alt="Salsabeel Al Janoob Import Export Logo" 
+            width={32} 
+            height={32} 
+            className="rounded-full"
+          />
           <div className="flex flex-col">
             <span className="text-base font-bold bg-gradient-to-r from-blue-400 to-teal-400 bg-clip-text text-transparent">
               Salsabeel Al Janoob Imp Exp
             </span>
             <span className="text-xs text-gray-300">Your gateway to the international market</span>
           </div>
-        </motion.div>
+        </Link>
 
         <button
           className="z-50 relative w-10 h-10 flex items-center justify-center focus:outline-none"
           onClick={() => setIsMenuOpen((prev) => !prev)}
-          aria-label="Toggle Menu"
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMenuOpen}
         >
           <div className="relative flex items-center justify-center">
             <span
@@ -199,8 +192,9 @@ const NavbarMobile = () => {
             variants={menuVariants}
             initial="hidden"
             animate="visible"
-            // Removed exit animation so the menu unmounts instantly
             className="fixed top-0 left-0 w-full h-[100vh] bg-gray-900/95 backdrop-blur-lg text-white z-40 flex flex-col overflow-y-auto"
+            role="dialog"
+            aria-modal="true"
           >
             <motion.div className="py-20 px-6 space-y-6 h-full flex flex-col">
               <motion.div variants={menuItemVariants}>
@@ -208,6 +202,7 @@ const NavbarMobile = () => {
                   href="/"
                   className="text-lg font-semibold hover:text-gray-300 transition-colors duration-200 text-left block py-2"
                   onClick={() => setIsMenuOpen(false)}
+                  aria-current="page"
                 >
                   Home
                 </Link>
@@ -218,6 +213,8 @@ const NavbarMobile = () => {
                   className="flex justify-between items-center cursor-pointer py-2"
                   onClick={() => setIsServicesOpen((prev) => !prev)}
                   aria-expanded={isServicesOpen}
+                  role="button"
+                  tabIndex={0}
                 >
                   <h2 className="text-lg font-semibold">Services</h2>
                   <motion.div
@@ -246,51 +243,54 @@ const NavbarMobile = () => {
                     <motion.div
                       initial="hidden"
                       animate="visible"
-                      // Removed exit animation so the dropdown unmounts immediately
                       variants={serviceDropdownVariants}
                       className="mt-2 grid grid-cols-1 gap-3 overflow-hidden pl-2"
+                      role="region"
                     >
-                      {loading
-                        ? // Loading state
-                          Array(3)
-                            .fill(0)
-                            .map((_, index) => (
-                              <motion.div key={index} variants={serviceItemVariants} layout className="w-full">
-                                <div className="flex items-center p-3 bg-gray-800/70 rounded-lg border border-gray-700/50 animate-pulse">
-                                  <div className="w-12 h-12 rounded-md bg-gray-700 flex-shrink-0 mr-3"></div>
-                                  <div className="w-full">
-                                    <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
-                                    <div className="h-3 bg-gray-700 rounded w-full"></div>
-                                  </div>
-                                </div>
-                              </motion.div>
-                            ))
-                        : services.map((service) => (
-                            <motion.div key={service.id} variants={serviceItemVariants} layout className="w-full">
-                              <Link
-                                href={`/${service.title.toLowerCase().replace(/\s+/g, "-")}`}
-                                className="flex items-center p-3 bg-gray-800/70 rounded-lg hover:bg-gray-700/80 transition-all duration-200 text-left border border-gray-700/50 hover:border-gray-600"
-                                onClick={() => {
-                                  setIsMenuOpen(false)
-                                  setIsServicesOpen(false)
-                                }}
-                              >
-                                <div className="w-12 h-12 rounded-md overflow-hidden relative flex-shrink-0 mr-3">
-                                  <Image
-                                    src={getImageUrl(service.image) || "/placeholder.svg"}
-                                    alt={service.title}
-                                    width={48}
-                                    height={48}
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div>
-                                  <h3 className="text-sm font-bold">{service.title}</h3>
-                                  <p className="text-xs text-gray-400 line-clamp-2">{service.description}</p>
-                                </div>
-                              </Link>
-                            </motion.div>
-                          ))}
+                      {loading ? (
+                        Array(3).fill(0).map((_, index) => (
+                          <motion.div key={index} variants={serviceItemVariants} layout className="w-full">
+                            <div className="flex items-center p-3 bg-gray-800/70 rounded-lg border border-gray-700/50 animate-pulse">
+                              <div className="w-12 h-12 rounded-md bg-gray-700 flex-shrink-0 mr-3"></div>
+                              <div className="w-full">
+                                <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
+                                <div className="h-3 bg-gray-700 rounded w-full"></div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))
+                      ) : error ? (
+                        <div className="text-red-400 p-3">Error loading services</div>
+                      ) : (
+                        services.map((service) => (
+                          <motion.div key={service.id} variants={serviceItemVariants} layout className="w-full">
+                            <Link
+                              href={`/${service.title.toLowerCase().replace(/\s+/g, "-")}`}
+                              className="flex items-center p-3 bg-gray-800/70 rounded-lg hover:bg-gray-700/80 transition-all duration-200 text-left border border-gray-700/50 hover:border-gray-600"
+                              onClick={() => {
+                                setIsMenuOpen(false)
+                                setIsServicesOpen(false)
+                              }}
+                              aria-label={`Learn more about ${service.title}`}
+                            >
+                              <div className="w-12 h-12 rounded-md overflow-hidden relative flex-shrink-0 mr-3">
+                                <Image
+                                  src={getImageUrl(service.image)}
+                                  alt={`${service.title} service illustration`}
+                                  width={48}
+                                  height={48}
+                                  className="object-cover w-full h-full"
+                                  loading="lazy"
+                                />
+                              </div>
+                              <div>
+                                <h3 className="text-sm font-bold">{service.title}</h3>
+                                <p className="text-xs text-gray-400 line-clamp-2">{service.description}</p>
+                              </div>
+                            </Link>
+                          </motion.div>
+                        ))
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -305,6 +305,7 @@ const NavbarMobile = () => {
                   About
                 </Link>
               </motion.div>
+
               <motion.div variants={menuItemVariants}>
                 <Link
                   href="/careers"
@@ -314,12 +315,14 @@ const NavbarMobile = () => {
                   Careers
                 </Link>
               </motion.div>
+
               <div className="mt-auto pt-6">
                 <motion.div variants={menuItemVariants}>
                   <Link
                     href="/contact"
                     className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-teal-500 text-white font-medium rounded-full shadow-lg hover:from-blue-600 hover:to-teal-600 transition-all duration-300 w-full"
                     onClick={() => setIsMenuOpen(false)}
+                    aria-label="Contact us"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -349,4 +352,3 @@ const NavbarMobile = () => {
 }
 
 export default NavbarMobile
-

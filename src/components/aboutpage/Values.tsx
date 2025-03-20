@@ -34,7 +34,6 @@ const ValuesSection = () => {
 
         if (error) throw error
 
-        // Process icons to get full URLs if they're from Supabase storage
         const processedValues = data.values.map((value: ValueItem) => ({
           ...value,
           icon: getIconUrl(value.icon),
@@ -55,58 +54,53 @@ const ValuesSection = () => {
     fetchData()
   }, [])
 
-  // Helper function to get public URL for icons
   const getIconUrl = (path: string) => {
     if (!path) return "/placeholder.svg"
-
-    // If the path is already a full URL or starts with /, return it as is
-    if (path.startsWith("http") || path.startsWith("/")) {
-      return path
-    }
-
-    // Otherwise, get the public URL from Supabase storage
+    if (path.startsWith("http") || path.startsWith("/")) return path
     return supabase.storage.from("aboutpage-values-icons").getPublicUrl(path).data.publicUrl
   }
 
   if (isLoading) {
     return (
-      <div className="relative py-20 bg-white">
+      <section aria-label="Loading values" role="region" className="relative py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse space-y-8">
-            <div className="h-8 bg-zinc-200 rounded w-1/4 mx-auto"></div>
-            <div className="h-10 bg-zinc-200 rounded w-1/2 mx-auto"></div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div role="status" aria-live="polite" className="animate-pulse space-y-8">
+            <div className="h-8 bg-zinc-200 rounded w-1/4 mx-auto" />
+            <div className="h-10 bg-zinc-200 rounded w-1/2 mx-auto" />
+            <ul className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-40 bg-zinc-200 rounded"></div>
+                <li key={i} className="h-40 bg-zinc-200 rounded" />
               ))}
-            </div>
+            </ul>
           </div>
         </div>
-      </div>
+      </section>
     )
   }
 
   if (error || !valuesData) {
     return (
-      <div className="relative py-20 bg-white text-center text-red-500">{error || "Failed to load values data"}</div>
+      <section className="relative py-20 bg-white text-center text-red-500" role="alert" aria-live="assertive">
+        {error || "Failed to load values data"}
+      </section>
     )
   }
 
   return (
-    <section className="relative py-20 bg-white">
+    <section aria-label="Company values" className="relative py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Inline-banner */}
-        <motion.div
+        {/* Banner */}
+        <motion.header
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ margin: "-100px", once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-4"
         >
-          <div className="inline-block px-4 py-2 text-sm font-semibold text-amber-600 bg-amber-100 rounded-full">
+          <span className="inline-block px-4 py-2 text-sm font-semibold text-amber-600 bg-amber-100 rounded-full">
             {valuesData.banner}
-          </div>
-        </motion.div>
+          </span>
+        </motion.header>
 
         {/* Section Heading */}
         <motion.h2
@@ -120,40 +114,42 @@ const ValuesSection = () => {
         </motion.h2>
 
         {/* Values Grid */}
-        <motion.div
+        <motion.ul
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ margin: "-100px", once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
+          role="list"
         >
           {valuesData.values.map((value, index) => (
-            <div
+            <motion.li
               key={index}
               className="bg-white p-6 rounded-xl border border-zinc-100 hover:border-amber-100 hover:bg-amber-50/20 transition-all group"
+              role="listitem"
             >
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-amber-100 rounded-lg">
+              <article className="flex items-start gap-4">
+                <figure className="p-3 bg-amber-100 rounded-lg" aria-hidden="true">
                   <Image
                     src={value.icon || "/placeholder.svg"}
-                    alt={`${value.title} icon`}
+                    alt={`Icon representing ${value.title}`}
                     width={32}
                     height={32}
                     className="w-8 h-8"
+                    aria-hidden="true"
                   />
-                </div>
+                </figure>
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold text-zinc-800 mb-2">{value.title}</h3>
                   <p className="text-zinc-600 leading-relaxed">{value.description}</p>
                 </div>
-              </div>
-            </div>
+              </article>
+            </motion.li>
           ))}
-        </motion.div>
+        </motion.ul>
       </div>
     </section>
   )
 }
 
 export default ValuesSection
-

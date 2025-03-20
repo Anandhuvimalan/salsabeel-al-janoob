@@ -11,8 +11,15 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Professional Laundry & Dry Cleaning Services | Eco-Friendly Fabric Care",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default:
+      "Professional Laundry & Dry Cleaning Services | Eco-Friendly Fabric Care",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
     "Premium laundry solutions with pickup/delivery. Specialized in delicate fabric handling, stain removal, and commercial laundry services. Hygienic and eco-friendly processes.",
   keywords: [
@@ -22,22 +29,56 @@ export const metadata: Metadata = {
     "commercial laundry",
     "eco-friendly fabric care",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/laundry-services",
+    siteName: "Salsabeel Al Janoob ImpExp",
     title: "Expert Laundry Services | Salsabeel Al Janoob ImpExp",
     description:
       "24/7 laundry solutions with free pickup and delivery. Special care for delicate fabrics and bulk commercial services",
     images: [
       {
-        url: "/laundry-services-og.jpg",
+        url: "/laundry-services-og.webp",
         width: 1200,
         height: 630,
         alt: "Professional Laundry Service",
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Expert Laundry Services | Salsabeel Al Janoob ImpExp",
+    description:
+      "24/7 laundry solutions with free pickup and delivery. Special care for delicate fabrics and bulk commercial services",
+    images: ["/laundry-services-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/laundry-services",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/laundry-services",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/laundry-services",
+    },
   },
+  category: "HouseholdServices",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
@@ -102,12 +143,14 @@ async function getServiceData() {
         faqs: {
           title: "Laundry Services FAQs",
           highlightWord: "Clean",
-          description: "Find answers to common questions about our laundry and dry cleaning services.",
+          description:
+            "Find answers to common questions about our laundry and dry cleaning services.",
           items: [],
         },
         cta: {
           title: "Ready for Fresh, Clean Clothes?",
-          description: "Schedule a pickup today and experience our premium laundry services with free delivery.",
+          description:
+            "Schedule a pickup today and experience our premium laundry services with free delivery.",
           buttonText: "Book Now",
           buttonLink: "/contact",
           buttonColor: "bg-sky-600",
@@ -120,20 +163,16 @@ async function getServiceData() {
 
 export default async function Page() {
   const data = await getServiceData()
-
-  // Check if we have the expected structure and provide defaults if not
   const pageInfo = data?.pageInfo || {}
 
-  // Destructure with default empty objects to prevent undefined errors
   const hero = pageInfo.hero || {}
   const explanation = pageInfo.explanation || {}
   const faqs = pageInfo.faqs || { items: [] }
   const cta = pageInfo.cta || {}
   const projects = pageInfo.projects || { items: [] }
 
-  // Ensure projects.items exists before mapping
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -141,7 +180,7 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
@@ -200,7 +239,8 @@ export default async function Page() {
         title={faqs.title || "Laundry Services FAQs"}
         highlightWord={faqs.highlightWord || "Clean"}
         description={
-          faqs.description || "Find answers to common questions about our laundry and dry cleaning services."
+          faqs.description ||
+          "Find answers to common questions about our laundry and dry cleaning services."
         }
         faqs={faqs.items || []}
       />
@@ -208,7 +248,8 @@ export default async function Page() {
       <CTASection
         title={cta.title || "Ready for Fresh, Clean Clothes?"}
         description={
-          cta.description || "Schedule a pickup today and experience our premium laundry services with free delivery."
+          cta.description ||
+          "Schedule a pickup today and experience our premium laundry services with free delivery."
         }
         buttonText={cta.buttonText || "Book Now"}
         buttonLink={cta.buttonLink || "/contact"}
@@ -240,15 +281,20 @@ export default async function Page() {
           telephone: "+91-93494-74746",
           openingHoursSpecification: {
             "@type": "OpeningHoursSpecification",
-            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            opens: "07:00",
-            closes: "21:00",
+            dayOfWeek: [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+            ],
+            opens: "09:00",
+            closes: "22:00",
           },
-          sameAs: ["https://facebook.com/yourpage", "https://instagram.com/yourprofile"],
         })}
       </script>
       <Footer />
     </>
   )
 }
-

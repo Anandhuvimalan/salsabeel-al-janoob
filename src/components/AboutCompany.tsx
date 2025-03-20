@@ -52,7 +52,6 @@ const AboutSection = () => {
   useEffect(() => {
     const fetchAboutData = async () => {
       try {
-        // Fetch data from Supabase
         const { data, error } = await supabase
           .from("about_section")
           .select("*")
@@ -61,7 +60,6 @@ const AboutSection = () => {
           .single()
 
         if (error) throw error
-
         setAboutData(data)
       } catch (err) {
         console.error("Failed to fetch about data:", err)
@@ -74,65 +72,69 @@ const AboutSection = () => {
     fetchAboutData()
   }, [])
 
-  // Helper function to get public URL for images
   const getImageUrl = (path: string) => {
     if (!path) return "/placeholder.svg"
-
-    // If the path is already a full URL or starts with /, return it as is
-    if (path.startsWith("http") || path.startsWith("/")) {
-      return path
-    }
-
-    // Otherwise, get the public URL from Supabase storage
+    if (path.startsWith("http") || path.startsWith("/")) return path
     return supabase.storage.from("about-section-images").getPublicUrl(path).data.publicUrl
   }
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+      <main className="flex justify-center items-center min-h-screen">
+        <div 
+          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+          aria-label="Loading about section"
+        />
+      </main>
     )
   }
 
   if (error || !aboutData) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center p-8 max-w-md">
-          <h3 className="text-xl font-bold text-red-500 mb-4">Error Loading Data</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">{error || "Failed to load about section data"}</p>
+      <main className="flex justify-center items-center min-h-screen">
+        <article className="text-center p-8 max-w-md">
+          <h2 role="alert" className="text-xl font-bold text-red-500 mb-4">
+            Error Loading Data
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {error || "Failed to load about section data"}
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            aria-label="Retry loading about section"
           >
             Try Again
           </button>
-        </div>
-      </div>
+        </article>
+      </main>
     )
   }
 
   return (
-    <div className="w-full bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 font-sans">
-      <section className="relative py-24 overflow-hidden">
+    <main className="w-full bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 font-sans">
+      {/* Hero Section */}
+      <section aria-labelledby="about-heading" className="relative py-24 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row gap-16 items-center">
-          <motion.div
+          <motion.article
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="space-y-8 flex-1"
           >
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+            <h2 id="about-heading" className="text-5xl md:text-6xl font-bold leading-tight">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
                 {aboutData.hero.title.highlight}
               </span>
               <br />
-              <span className="text-slate-700 dark:text-slate-300 font-medium">{aboutData.hero.title.subtitle}</span>
-            </h1>
+              <span className="text-slate-700 dark:text-slate-300 font-medium">
+                {aboutData.hero.title.subtitle}
+              </span>
+            </h2>
 
             <div className="space-y-6 text-lg text-slate-600 dark:text-slate-400">
-              {aboutData.hero.description.map((paragraph: string, index: number) => (
+              {aboutData.hero.description.map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}
             </div>
@@ -141,12 +143,13 @@ const AboutSection = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-8 py-4 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-xl font-semibold shadow-lg"
+              aria-label={aboutData.hero.button.text}
             >
               {aboutData.hero.button.text}
             </motion.button>
-          </motion.div>
+          </motion.article>
 
-          <motion.div
+          <motion.figure
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -154,56 +157,61 @@ const AboutSection = () => {
             className="flex-1 relative h-[500px] rounded-3xl overflow-hidden shadow-2xl"
           >
             <img
-              src={getImageUrl(aboutData.hero.image.src) || "/placeholder.svg"}
+              src={getImageUrl(aboutData.hero.image.src)}
               alt={aboutData.hero.image.alt}
               className="w-full h-full object-cover"
+              loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60" />
-            <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60" aria-hidden="true" />
+            <figcaption className="absolute bottom-0 left-0 right-0 p-8 text-white">
               <div className="flex items-center gap-4">
                 {aboutData.hero.imageOverlay.icon && (
                   <img
-                    src={getImageUrl(aboutData.hero.imageOverlay.icon) || "/placeholder.svg"}
-                    alt="Globe Icon"
+                    src={getImageUrl(aboutData.hero.imageOverlay.icon)}
+                    alt=""
+                    aria-hidden="true"
                     className="h-8 w-8 text-teal-400"
                   />
                 )}
                 <h3 className="text-xl font-bold">{aboutData.hero.imageOverlay.text}</h3>
               </div>
-            </div>
-          </motion.div>
+            </figcaption>
+          </motion.figure>
         </div>
       </section>
 
-      {/* Achievement Grid */}
-      <section className="py-24 px-6">
+      {/* Achievements Section */}
+      <section aria-labelledby="achievements-heading" className="py-24 px-6">
+        <h2 id="achievements-heading" className="sr-only">Company Achievements</h2>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {aboutData.achievements.map((achievement: any, index: number) => (
-            <motion.div
+          {aboutData.achievements.map((achievement, index) => (
+            <motion.article
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: "easeOut", delay: index * 0.1 }}
               className="p-8 text-center"
+              aria-labelledby={`achievement-${index}`}
             >
-              <div className={`text-4xl font-bold ${achievement.color} mb-4`}>
+              <div id={`achievement-${index}`} className={`text-4xl font-bold ${achievement.color} mb-4`}>
                 <CountUp
                   end={achievement.value}
                   duration={3}
                   suffix={achievement.suffix !== "None" ? achievement.suffix : ""}
                   enableScrollSpy={true}
                   scrollSpyOnce={true}
+                  aria-label={`${achievement.value}${achievement.suffix}`}
                 />
               </div>
               <p className="text-lg font-medium">{achievement.label}</p>
-            </motion.div>
+            </motion.article>
           ))}
         </div>
       </section>
 
       {/* Values Section */}
-      <section className="py-24 px-6 bg-gradient-to-r from-blue-50 to-teal-50 dark:from-slate-900 dark:to-slate-800">
+      <section aria-labelledby="values-heading" className="py-24 px-6 bg-gradient-to-r from-blue-50 to-teal-50 dark:from-slate-900 dark:to-slate-800">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -213,19 +221,20 @@ const AboutSection = () => {
             className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center"
           >
             <div className="space-y-8">
-              <h2 className="text-4xl md:text-5xl font-bold">
+              <h2 id="values-heading" className="text-4xl md:text-5xl font-bold">
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
                   {aboutData.values.title}
                 </span>
               </h2>
 
-              <div className="space-y-6">
-                {aboutData.values.items.map((item: any, index: number) => (
-                  <div key={index} className="flex items-start gap-6">
+              <ul className="space-y-6">
+                {aboutData.values.items.map((item, index) => (
+                  <li key={index} className="flex items-start gap-6">
                     {item.icon && (
                       <img
-                        src={getImageUrl(item.icon) || "/placeholder.svg"}
-                        alt={`${item.title} Icon`}
+                        src={getImageUrl(item.icon)}
+                        alt=""
+                        aria-hidden="true"
                         className={`h-8 w-8 ${item.iconColor} flex-shrink-0`}
                       />
                     )}
@@ -233,25 +242,25 @@ const AboutSection = () => {
                       <h3 className="text-xl font-bold mb-2">{item.title}</h3>
                       <p className="text-slate-600 dark:text-slate-400">{item.description}</p>
                     </div>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
 
-            <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+            <figure className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
               <img
-                src={getImageUrl(aboutData.values.image.src) || "/placeholder.svg"}
+                src={getImageUrl(aboutData.values.image.src)}
                 alt={aboutData.values.image.alt}
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60" />
-            </div>
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60" aria-hidden="true" />
+            </figure>
           </motion.div>
         </div>
       </section>
-    </div>
+    </main>
   )
 }
 
 export default AboutSection
-

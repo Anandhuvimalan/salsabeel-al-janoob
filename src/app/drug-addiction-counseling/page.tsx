@@ -11,8 +11,14 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
-  title: "Professional Drug Addiction Counseling & Recovery Programs",
+  metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
+  title: {
+    default: "Professional Drug Addiction Counseling & Recovery Programs",
+    template: "%s | Salsabeel Al Janoob ImpExp",
+  },
   description:
     "Confidential substance abuse counseling and comprehensive addiction treatment services. Certified therapists offering personalized recovery plans and family support.",
   keywords: [
@@ -22,21 +28,56 @@ export const metadata: Metadata = {
     "outpatient rehab services",
     "relapse prevention therapy",
   ],
+  authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
+  creator: "Salsabeel Al Janoob ImpExp",
+  publisher: "Salsabeel Al Janoob ImpExp",
   openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://salsabeelaljanoobimpexp.com/drug-addiction-counseling",
+    siteName: "Salsabeel Al Janoob ImpExp",
     title: "Drug Addiction Recovery Services | Salsabeel Al Janoob ImpExp",
-    description: "Professional counseling and evidence-based treatment programs for substance abuse recovery",
+    description:
+      "Professional counseling and evidence-based treatment programs for substance abuse recovery",
     images: [
       {
-        url: "/addiction-counseling-og.jpg",
+        url: "/addiction-counseling-og.webp",
         width: 1200,
         height: 630,
         alt: "Addiction Counseling Session",
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Drug Addiction Recovery Services | Salsabeel Al Janoob ImpExp",
+    description:
+      "Professional counseling and evidence-based treatment programs for substance abuse recovery",
+    images: ["/addiction-counseling-og.webp"],
+    creator: "@salsabeelaljanoob",
+    site: "@salsabeelaljanoob",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   alternates: {
     canonical: "/drug-addiction-counseling",
+    languages: {
+      en: "https://salsabeelaljanoobimpexp.com/drug-addiction-counseling",
+      ar: "https://salsabeelaljanoobimpexp.com/ar/drug-addiction-counseling",
+    },
   },
+  category: "Counseling",
+  manifest: "/site.webmanifest",
 }
 
 async function getServiceData() {
@@ -78,7 +119,8 @@ async function getServiceData() {
           serviceType: "Drug Addiction Counseling",
           title: "Compassionate & Confidential",
           underlineText: "Addiction Recovery Services",
-          description: "Professional counseling and evidence-based treatment programs for substance abuse recovery.",
+          description:
+            "Professional counseling and evidence-based treatment programs for substance abuse recovery.",
           buttonText: "Get Help Today",
           buttonLink: "/contact",
         },
@@ -105,7 +147,8 @@ async function getServiceData() {
         },
         cta: {
           title: "Ready to Start Your Recovery Journey?",
-          description: "Reach out today for confidential support and professional guidance on your path to recovery.",
+          description:
+            "Reach out today for confidential support and professional guidance on your path to recovery.",
           buttonText: "Contact Us Now",
           buttonLink: "/contact",
           buttonColor: "bg-purple-600",
@@ -131,7 +174,7 @@ export default async function Page() {
 
   // Ensure projects.items exists before mapping
   const enhancedProjects = projects.items
-    ? projects.items.map((project) => ({
+    ? projects.items.map((project: any) => ({
         ...project,
         content: (
           <div className="bg-[#F5F5F7] p-8 md:p-14 rounded-3xl mb-4">
@@ -139,7 +182,7 @@ export default async function Page() {
               {project.details?.description || "No description available"}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {(project.details?.images || []).map((image, index) => (
+              {(project.details?.images || []).map((image: any, index: number) => (
                 <Image
                   key={index}
                   src={image.src || "/placeholder.svg"}
@@ -197,7 +240,10 @@ export default async function Page() {
       <Frequent
         title={faqs.title || "Addiction Recovery FAQs"}
         highlightWord={faqs.highlightWord || "Support"}
-        description={faqs.description || "Find answers to common questions about our addiction counseling services."}
+        description={
+          faqs.description ||
+          "Find answers to common questions about our addiction counseling services."
+        }
         faqs={faqs.items || []}
       />
 
@@ -250,4 +296,3 @@ export default async function Page() {
     </>
   )
 }
-
