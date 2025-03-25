@@ -22,6 +22,25 @@ interface HeroData {
   }
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: HeroData = {
+  background: {
+    image: "about-hero-1741725878940-yqlxa2is62.webp",
+    alt: "salsabeel-al-janoob-imp-exp-company-image",
+  },
+  content: {
+    badge: "SERVING OMAN AND INDIA",
+    mainTitle: "Salsabeel Al Janoob:",
+    highlightText: "Your Trusted Partner",
+    description:
+      "For nearly five decades, Salsabeel Al Janoob has been a cornerstone of trust and reliability. We offer a comprehensive range of services, from international trade to specialized consulting, tailored to meet your unique needs. Discover how we can help you achieve your goals.",
+    button: {
+      text: "Learn More About Us",
+      link: "#company-about",
+    },
+  },
+}
+
 const HeroSection = () => {
   const [heroData, setHeroData] = useState<HeroData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -37,22 +56,47 @@ const HeroSection = () => {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
 
-        if (
-          data.background.image &&
-          !data.background.image.startsWith("http") &&
-          !data.background.image.startsWith("/")
-        ) {
-          data.background.image = supabase.storage
-            .from("aboutpage-hero-images")
-            .getPublicUrl(data.background.image).data.publicUrl
+          // Process fallback data with image URL
+          const processedFallbackData = {
+            ...FALLBACK_DATA,
+            background: {
+              ...FALLBACK_DATA.background,
+              image: processImageUrl(FALLBACK_DATA.background.image),
+            },
+          }
+
+          setHeroData(processedFallbackData)
+          return
         }
 
-        setHeroData(data)
+        // Process fetched data
+        const processedData = {
+          ...data,
+          background: {
+            ...data.background,
+            image: processImageUrl(data.background.image),
+          },
+        }
+
+        setHeroData(processedData)
       } catch (err) {
-        setError("Failed to load hero section content")
         console.error("Fetch error:", err)
+        console.log("Using fallback data due to fetch error")
+
+        // Process fallback data with image URL
+        const processedFallbackData = {
+          ...FALLBACK_DATA,
+          background: {
+            ...FALLBACK_DATA.background,
+            image: processImageUrl(FALLBACK_DATA.background.image),
+          },
+        }
+
+        setHeroData(processedFallbackData)
       } finally {
         setLoading(false)
       }
@@ -60,6 +104,15 @@ const HeroSection = () => {
 
     fetchHeroData()
   }, [])
+
+  // Helper function to process image URLs
+  const processImageUrl = (imagePath: string) => {
+    if (!imagePath) return "/placeholder.svg"
+    if (imagePath.startsWith("http") || imagePath.startsWith("/")) return imagePath
+    return supabase.storage.from("aboutpage-hero-images").getPublicUrl(imagePath).data.publicUrl
+  }
+
+  const isExternalLink = (url: string) => url.startsWith("http")
 
   if (loading) {
     return (
@@ -69,22 +122,14 @@ const HeroSection = () => {
     )
   }
 
-  if (error || !heroData) {
-    return (
-      <div className="relative h-screen overflow-hidden flex items-center justify-center text-red-500">
-        {error || "Failed to load hero section"}
-      </div>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!heroData) {
+    return null // This should never happen with fallback data
   }
 
-  const isExternalLink = (url: string) => url.startsWith("http")
-
   return (
-    <header 
-      className="relative h-screen overflow-hidden"
-      aria-live="polite"
-      role="banner"
-    >
+    <header className="relative h-screen overflow-hidden" aria-live="polite" role="banner">
       {/* Background Image with accessibility features */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -163,9 +208,7 @@ const HeroSection = () => {
               className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden rounded-full bg-white text-zinc-950 transition-transform duration-300 ease-out hover:scale-105"
               aria-label={`${heroData.content.button.text} (opens in new tab)`}
             >
-              <span className="relative z-20 font-medium tracking-wide">
-                {heroData.content.button.text}
-              </span>
+              <span className="relative z-20 font-medium tracking-wide">{heroData.content.button.text}</span>
               <motion.div
                 initial={false}
                 animate={{ scale: 2, opacity: 0 }}
@@ -180,9 +223,7 @@ const HeroSection = () => {
               className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden rounded-full bg-white text-zinc-950 transition-transform duration-300 ease-out hover:scale-105"
               aria-label={heroData.content.button.text}
             >
-              <span className="relative z-20 font-medium tracking-wide">
-                {heroData.content.button.text}
-              </span>
+              <span className="relative z-20 font-medium tracking-wide">{heroData.content.button.text}</span>
               <motion.div
                 initial={false}
                 animate={{ scale: 2, opacity: 0 }}
@@ -199,3 +240,4 @@ const HeroSection = () => {
 }
 
 export default HeroSection
+

@@ -26,6 +26,54 @@ interface VisionMissionData {
   }
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: VisionMissionData = {
+  inline_banner: "Vision & Mission",
+  main_heading: "Defining Our Path, Shaping the Future",
+  vision_card: {
+    icon: "vision-icon-1741730134307-zz1berwsken.svg",
+    title: "Our Vision",
+    description:
+      "To be a globally recognized leader in integrated solutions, renowned for connecting businesses and individuals to opportunities worldwide. We aspire to be the preferred partner for clients seeking comprehensive and reliable services, setting the standard for excellence in international trade, diverse business solutions, and community enrichment. We envision a future where Salsabeel Al Janoob is synonymous with trust, innovation, and sustainable growth, contributing positively to the economic and social well-being of the communities we serve.",
+  },
+  mission_card: {
+    icon: "mission-icon-1741730296779-rkcicvry0gp.svg",
+    title: "Our Mission",
+    items: [
+      {
+        icon: "mission-item-0-1741730296779-1tuzfxky05k.svg",
+        strongText: "Facilitating seamless international trade:",
+        text: "Connecting businesses with global markets through efficient and reliable import and export solutions.",
+      },
+      {
+        icon: "mission-item-1-1741730296779-w43zcs9dpr.svg",
+        strongText: "Delivering comprehensive business solutions:",
+        text: "Offering diverse services from waste management to retail consultancy, tailored to evolving client needs.",
+      },
+      {
+        icon: "mission-item-2-1741730296779-ozy0cdre6ds.svg",
+        strongText: "Fostering personal and professional growth:",
+        text: "Providing counseling and educational resources to empower individual potential.",
+      },
+      {
+        icon: "mission-item-3-1741730296779-9hxwuda8sbl.svg",
+        strongText: "Upholding ethical standards:",
+        text: "Conducting business with integrity, transparency, and accountability.",
+      },
+      {
+        icon: "mission-item-4-1741730296779-8kklt6g37ax.svg",
+        strongText: "Embracing innovation & sustainability:",
+        text: "Developing sustainable solutions while minimizing environmental impact.",
+      },
+      {
+        icon: "mission-item-5-1741730296779-jau0umt6gfl.svg",
+        strongText: "Building strong relationships:",
+        text: "Nurturing partnerships based on mutual respect and trust.",
+      },
+    ],
+  },
+}
+
 const VisionMissionSection = () => {
   const [visionMissionData, setVisionMissionData] = useState<VisionMissionData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -41,7 +89,30 @@ const VisionMissionSection = () => {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+
+          // Process fallback data with icon URLs
+          const processedFallbackData = {
+            ...FALLBACK_DATA,
+            vision_card: {
+              ...FALLBACK_DATA.vision_card,
+              icon: getIconUrl(FALLBACK_DATA.vision_card.icon),
+            },
+            mission_card: {
+              ...FALLBACK_DATA.mission_card,
+              icon: getIconUrl(FALLBACK_DATA.mission_card.icon),
+              items: FALLBACK_DATA.mission_card.items.map((item) => ({
+                ...item,
+                icon: getIconUrl(item.icon),
+              })),
+            },
+          }
+
+          setVisionMissionData(processedFallbackData)
+          return
+        }
 
         const processedData = {
           ...data,
@@ -62,7 +133,26 @@ const VisionMissionSection = () => {
         setVisionMissionData(processedData)
       } catch (error) {
         console.error("Error fetching vision & mission data:", error)
-        setError("Failed to load vision & mission data")
+        console.log("Using fallback data due to fetch error")
+
+        // Process fallback data with icon URLs
+        const processedFallbackData = {
+          ...FALLBACK_DATA,
+          vision_card: {
+            ...FALLBACK_DATA.vision_card,
+            icon: getIconUrl(FALLBACK_DATA.vision_card.icon),
+          },
+          mission_card: {
+            ...FALLBACK_DATA.mission_card,
+            icon: getIconUrl(FALLBACK_DATA.mission_card.icon),
+            items: FALLBACK_DATA.mission_card.items.map((item) => ({
+              ...item,
+              icon: getIconUrl(item.icon),
+            })),
+          },
+        }
+
+        setVisionMissionData(processedFallbackData)
       } finally {
         setIsLoading(false)
       }
@@ -93,16 +183,10 @@ const VisionMissionSection = () => {
     )
   }
 
-  if (error || !visionMissionData) {
-    return (
-      <section 
-        className="relative py-20 bg-zinc-50 text-center text-red-500" 
-        role="alert" 
-        aria-live="assertive"
-      >
-        {error || "Failed to load vision & mission data"}
-      </section>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!visionMissionData) {
+    return null // This should never happen with fallback data
   }
 
   return (
@@ -213,3 +297,4 @@ const VisionMissionSection = () => {
 }
 
 export default VisionMissionSection
+

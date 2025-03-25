@@ -25,6 +25,59 @@ type FeaturesData = {
   }
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: FeaturesData = {
+  heading: {
+    title: "Global Trade Solutions",
+    subtitle: "Transform your international trade operations with our comprehensive solutions",
+  },
+  features: [
+    {
+      icon: "1741641763324-aocmkxv6.svg",
+      title: "Global Logistics",
+      details: ["Multimodal Transport", "Customs Clearance", "Cargo Insurance"],
+      description: "End-to-end supply chain solutions with real-time tracking",
+    },
+    {
+      icon: "1741641763327-pd4tcyw4.svg",
+      title: "Trade Compliance",
+      details: ["Export Controls", "Tariff Management", "Licensing"],
+      description: "Expert documentation and regulatory guidance",
+    },
+    {
+      icon: "1741641763327-etqhale2.svg",
+      title: "Market Strategy",
+      details: ["Competitive Analysis", "Risk Assessment", "Localization"],
+      description: "Data-driven international expansion planning",
+    },
+    {
+      icon: "1741641763327-7ze62k0r.svg",
+      title: "Warehousing",
+      details: ["Bonded Storage", "Inventory Systems", "JIT Delivery"],
+      description: "Global network of secure storage facilities",
+    },
+    {
+      icon: "1741641763327-djmxfjkd.svg",
+      title: "Trade Finance",
+      details: ["Letters of Credit", "Export Credit", "Currency Solutions"],
+      description: "Secure global transaction solutions",
+    },
+    {
+      icon: "1741641763327-pvbjiw5l.svg",
+      title: "Digital Platform",
+      details: ["Document Portal", "Analytics Dashboard", "API Integration"],
+      description: "Modern tools for trade management",
+    },
+  ],
+  cta: {
+    icon: "1741641784034-akm8a53f.svg",
+    title: "Ready to Transform Your Trade Operations?",
+    linkUrl: "/contact",
+    linkText: "Get Started",
+    subtitle: "Start your global expansion journey with our expert team and cutting-edge solutions",
+  },
+}
+
 export default function Features() {
   const elementsRef = useRef<(HTMLElement | null)[]>([])
   const [featureData, setFeatureData] = useState<FeaturesData>({
@@ -45,11 +98,18 @@ export default function Features() {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+          setFeatureData(FALLBACK_DATA)
+          return
+        }
+
         setFeatureData(data)
       } catch (err) {
         console.error("Error fetching features data:", err)
-        setError(err instanceof Error ? err.message : "Failed to load data")
+        console.log("Using fallback data due to fetch error")
+        setFeatureData(FALLBACK_DATA)
       } finally {
         setIsLoading(false)
       }
@@ -68,14 +128,14 @@ export default function Features() {
           }
         })
       },
-      { threshold: 0.1, rootMargin: "50px" }
+      { threshold: 0.1, rootMargin: "50px" },
     )
 
     const currentElements = elementsRef.current.filter(Boolean)
-    currentElements.forEach(element => element && observer.observe(element))
+    currentElements.forEach((element) => element && observer.observe(element))
 
     return () => {
-      currentElements.forEach(element => element && observer.unobserve(element))
+      currentElements.forEach((element) => element && observer.unobserve(element))
       observer.disconnect()
     }
   }, [featureData])
@@ -91,7 +151,9 @@ export default function Features() {
       )
     }
 
-    const { data: { publicUrl } } = supabase.storage.from("feature-icons").getPublicUrl(iconName)
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("feature-icons").getPublicUrl(iconName)
 
     return (
       <img
@@ -111,7 +173,7 @@ export default function Features() {
   if (isLoading) {
     return (
       <section className="w-full py-24 bg-gradient-to-b from-slate-900 to-slate-800 flex justify-center items-center">
-        <div 
+        <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
           aria-label="Loading features"
         />
@@ -119,31 +181,27 @@ export default function Features() {
     )
   }
 
-  if (error) {
-    return (
-      <section className="w-full py-24 bg-gradient-to-b from-slate-900 to-slate-800 text-center text-red-200">
-        <p role="alert">Error: {error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          aria-label="Retry loading features"
-        >
-          Retry
-        </button>
-      </section>
-    )
-  }
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
 
   const { heading, features, cta } = featureData
 
   return (
-    <section aria-labelledby="features-heading" className="w-full py-24 bg-gradient-to-b from-slate-900 to-slate-800 relative overflow-hidden font-sans">
+    <section
+      aria-labelledby="features-heading"
+      className="w-full py-24 bg-gradient-to-b from-slate-900 to-slate-800 relative overflow-hidden font-sans"
+    >
       <div className="max-w-7xl mx-auto px-4">
-        <header 
-          ref={el => { elementsRef.current[0] = el }}
+        <header
+          ref={(el) => {
+            elementsRef.current[0] = el
+          }}
           className="text-center mb-16 animate-fade-in"
         >
-          <h2 id="features-heading" className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-indigo-400 mb-4">
+          <h2
+            id="features-heading"
+            className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-indigo-400 mb-4"
+          >
             {heading.title}
           </h2>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto">{heading.subtitle}</p>
@@ -151,9 +209,11 @@ export default function Features() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {features.map((feature, index) => (
-            <article 
+            <article
               key={index}
-              ref={el => { elementsRef.current[index + 1] = el }}
+              ref={(el) => {
+                elementsRef.current[index + 1] = el
+              }}
               className="relative h-full p-6 rounded-2xl bg-slate-800/30 backdrop-blur-sm border border-slate-700 hover:border-teal-400/30 transition-all duration-300 animate-fade-in"
               aria-labelledby={`feature-${index}-title`}
             >
@@ -181,7 +241,9 @@ export default function Features() {
           ))}
 
           <aside
-            ref={el => { elementsRef.current[features.length + 1] = el }}
+            ref={(el) => {
+              elementsRef.current[features.length + 1] = el
+            }}
             className="md:col-span-2 xl:col-span-3 p-8 rounded-2xl bg-gradient-to-br from-teal-600/40 to-indigo-600/40 border border-teal-400/20 relative overflow-hidden animate-fade-in"
             aria-label="Call to action"
           >
@@ -196,7 +258,11 @@ export default function Features() {
                 rel="noopener noreferrer"
               >
                 {cta.linkText}
-                {renderIcon(cta.icon, "Call to action", "ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-all")}
+                {renderIcon(
+                  cta.icon,
+                  "Call to action",
+                  "ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-all",
+                )}
               </Link>
             </div>
           </aside>
@@ -205,3 +271,4 @@ export default function Features() {
     </section>
   )
 }
+

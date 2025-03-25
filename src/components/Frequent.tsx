@@ -18,6 +18,56 @@ interface FAQData {
   faqs: FAQ[]
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: FAQData = {
+  section: {
+    heading: "Frequently Asked",
+    highlighted: "Questions",
+    description: "Get answers to common queries about our services and operations",
+  },
+  faqs: [
+    {
+      question: "What is Salsabeel Al Janoob?",
+      answer:
+        "Salsabeel Al Janoob is a service provider with operations in the Sultanate of Oman and India, offering import-export services along with a range of other solutions like waste management, civil contracts, and consultancy services.",
+    },
+    {
+      question: "Where are your operations based?",
+      answer:
+        "Our Sultanate of Oman operations are based in Salalah and Barka, while our India operations are headquartered in Coimbatore, Tamilnadu.",
+    },
+    {
+      question: "What services do you provide?",
+      answer:
+        "We offer services such as export & import, specialized chemical waste management, civil contracts, retail consultancy, educational and career guidance, and much more. Visit our Services section for detailed information.",
+    },
+    {
+      question: "Can you manage specialized chemical waste?",
+      answer: "Yes, we specialize in chemical waste management, ensuring environmentally compliant solutions.",
+    },
+    {
+      question: "Do you offer retail consultancy?",
+      answer:
+        "Yes, we provide consultancy for setting up and managing 24x7 convenience stores, cake shops, fast food stalls, restaurants, supermarkets, and more.",
+    },
+    {
+      question: "What kind of civil contracts do you handle?",
+      answer:
+        "We handle design to construction, demolition of old buildings, landscaping, fencing, boulder laying, painting, electric works, solar panel connections, and all types of annual maintenance contracts.",
+    },
+    {
+      question: "Do you provide educational and career guidance?",
+      answer:
+        "Yes, we guide students with career counseling, foreign language learning, and provide vasthu and family counseling services.",
+    },
+    {
+      question: "How can I contact your team?",
+      answer:
+        "You can reach us via email at info@salsabeelaljanoobimpexp.com or through phone/WhatsApp. Visit our Contact section for more details.",
+    },
+  ],
+}
+
 export default function Frequent() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
   const [data, setData] = useState<FAQData | null>(null)
@@ -36,11 +86,18 @@ export default function Frequent() {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+          setData(FALLBACK_DATA)
+          return
+        }
+
         setData(faqData)
       } catch (error) {
         console.error("Error fetching FAQs:", error)
-        setError(error instanceof Error ? error.message : "Failed to load FAQs")
+        console.log("Using fallback data due to fetch error")
+        setData(FALLBACK_DATA)
       } finally {
         setLoading(false)
       }
@@ -59,14 +116,14 @@ export default function Frequent() {
           }
         })
       },
-      { threshold: 0.1, rootMargin: "50px" }
+      { threshold: 0.1, rootMargin: "50px" },
     )
 
     const currentElements = elementsRef.current.filter(Boolean)
-    currentElements.forEach(element => element && observer.observe(element))
+    currentElements.forEach((element) => element && observer.observe(element))
 
     return () => {
-      currentElements.forEach(element => element && observer.unobserve(element))
+      currentElements.forEach((element) => element && observer.unobserve(element))
       observer.disconnect()
     }
   }, [data])
@@ -94,48 +151,35 @@ export default function Frequent() {
 
   if (loading) {
     return (
-      <main className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex items-center justify-center" 
-            aria-label="Loading FAQs">
-        <div 
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"
-          aria-hidden="true"
-        />
+      <main
+        className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex items-center justify-center"
+        aria-label="Loading FAQs"
+      >
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400" aria-hidden="true" />
       </main>
     )
   }
 
-  if (error || !data) {
-    return (
-      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex items-center justify-center" 
-               role="alert" 
-               aria-label="FAQ error">
-        <article className="text-center p-8 max-w-md">
-          <h2 className="text-xl font-bold text-red-400 mb-4">Loading Error</h2>
-          <p className="text-slate-300 mb-6">{error || "Failed to load FAQ data"}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-cyan-500 text-white rounded hover:bg-cyan-600"
-            aria-label="Retry loading FAQs"
-          >
-            Try Again
-          </button>
-        </article>
-      </section>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!data) {
+    return null // This should never happen with fallback data
   }
 
   return (
-    <section aria-labelledby="faq-heading" className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 w-full py-20 lg:py-28 relative overflow-hidden font-sans">
-      <div className="absolute inset-0 opacity-20 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" 
-           aria-hidden="true">
+    <section
+      aria-labelledby="faq-heading"
+      className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 w-full py-20 lg:py-28 relative overflow-hidden font-sans"
+    >
+      <div
+        className="absolute inset-0 opacity-20 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]"
+        aria-hidden="true"
+      >
         <div className="absolute left-1/3 -top-40 h-96 w-96 rounded-full bg-gradient-to-r from-cyan-400/20 to-teal-500/20 blur-3xl" />
       </div>
 
       <div className="container max-w-7xl mx-auto px-4 relative">
-        <header 
-          ref={(el) => (elementsRef.current[0] = el)} 
-          className="pb-12 text-center animate-fade-in"
-        >
+        <header ref={(el) => (elementsRef.current[0] = el)} className="pb-12 text-center animate-fade-in">
           <h2 id="faq-heading" className="text-4xl md:text-5xl font-bold mb-4 text-white">
             {data.section.heading}{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">
@@ -147,7 +191,7 @@ export default function Frequent() {
 
         <div role="list" className="space-y-4">
           {data.faqs.map((faq, index) => (
-            <article 
+            <article
               key={index}
               ref={(el) => (elementsRef.current[index + 1] = el)}
               role="listitem"
@@ -192,8 +236,11 @@ export default function Frequent() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" 
-           aria-hidden="true" />
+      <div
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] h-px bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent"
+        aria-hidden="true"
+      />
     </section>
   )
 }
+

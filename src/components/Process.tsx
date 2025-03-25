@@ -24,6 +24,72 @@ type ProcessData = {
   steps: ProcessStep[]
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: ProcessData = {
+  section: {
+    heading: "Our Seamless Import & Export Process",
+    description: "Follow our step-by-step approach to experience hassle-free import and export services.",
+    buttonLink: "/about",
+    buttonText: "More About Us",
+  },
+  steps: [
+    {
+      title: "Consultation & Planning",
+      description: "Discuss your needs and craft a tailored trade strategy.",
+      iconSrc: "step-0-1741688888360-xbr80yttg5h.svg",
+      hoverFrom: "hover:from-purple-600",
+      hoverTo: "hover:to-purple-800",
+      iconFrom: "from-purple-500",
+      iconTo: "to-purple-700",
+    },
+    {
+      title: "Documentation & Compliance",
+      description: "We handle paperwork and ensure full regulatory compliance.",
+      iconSrc: "step-1-1741688888360-r5a9jbg34i8.svg",
+      hoverFrom: "hover:from-blue-600",
+      hoverTo: "hover:to-blue-800",
+      iconFrom: "from-blue-500",
+      iconTo: "to-blue-700",
+    },
+    {
+      title: "Logistics & Transportation",
+      description: "Efficient shipping solutions to move your goods globally.",
+      iconSrc: "step-2-1741688888360-rn0408nxcmf.svg",
+      hoverFrom: "hover:from-red-600",
+      hoverTo: "hover:to-red-800",
+      iconFrom: "from-red-500",
+      iconTo: "to-red-700",
+    },
+    {
+      title: "Customs Clearance",
+      description: "Expert management of customs procedures for smooth border crossings.",
+      iconSrc: "step-3-1741688888361-yjnmobf4it.svg",
+      hoverFrom: "hover:from-yellow-600",
+      hoverTo: "hover:to-yellow-800",
+      iconFrom: "from-yellow-500",
+      iconTo: "to-yellow-700",
+    },
+    {
+      title: "Delivery & After Service",
+      description: "Reliable delivery and dedicated support after shipment.",
+      iconSrc: "step-4-1741688888361-qllfuqt9x8.svg",
+      hoverFrom: "hover:from-green-600",
+      hoverTo: "hover:to-green-800",
+      iconFrom: "from-green-500",
+      iconTo: "to-green-700",
+    },
+    {
+      title: "After Sales Support",
+      description: "Continuous support and feedback to help your business thrive.",
+      iconSrc: "step-5-1741688888361-7imw3ek70jc.svg",
+      hoverFrom: "hover:from-orange-600",
+      hoverTo: "hover:to-orange-800",
+      iconFrom: "from-orange-500",
+      iconTo: "to-orange-700",
+    },
+  ],
+}
+
 const ProcessStepCard = ({
   title,
   description,
@@ -83,7 +149,22 @@ export default function ImportExportProcess() {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+
+          // Apply the getIconUrl function to the fallback data steps
+          const fallbackWithFullUrls = {
+            ...FALLBACK_DATA,
+            steps: FALLBACK_DATA.steps.map((step) => ({
+              ...step,
+              iconSrc: getIconUrl(step.iconSrc),
+            })),
+          }
+
+          setProcessData(fallbackWithFullUrls)
+          return
+        }
 
         const stepsWithFullUrls = data.steps.map((step: ProcessStep) => ({
           ...step,
@@ -96,7 +177,18 @@ export default function ImportExportProcess() {
         })
       } catch (error) {
         console.error("Error fetching process data:", error)
-        setError(error instanceof Error ? error.message : "Failed to load process data")
+        console.log("Using fallback data due to fetch error")
+
+        // Apply the getIconUrl function to the fallback data steps
+        const fallbackWithFullUrls = {
+          ...FALLBACK_DATA,
+          steps: FALLBACK_DATA.steps.map((step) => ({
+            ...step,
+            iconSrc: getIconUrl(step.iconSrc),
+          })),
+        }
+
+        setProcessData(fallbackWithFullUrls)
       } finally {
         setLoading(false)
       }
@@ -114,36 +206,22 @@ export default function ImportExportProcess() {
   if (loading) {
     return (
       <main className="flex justify-center items-center min-h-screen" aria-label="Loading process section">
-        <div 
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-          aria-hidden="true"
-        />
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" aria-hidden="true" />
       </main>
     )
   }
 
-  if (error || !processData) {
-    return (
-      <main className="flex justify-center items-center min-h-screen" aria-label="Process section error">
-        <article className="text-center p-8 max-w-md">
-          <h2 role="alert" className="text-xl font-bold text-red-500 mb-4">
-            Loading Error
-          </h2>
-          <p className="text-gray-600 mb-6">{error || "Failed to load process data"}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            aria-label="Retry loading process section"
-          >
-            Try Again
-          </button>
-        </article>
-      </main>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!processData) {
+    return null // This should never happen with fallback data
   }
 
   return (
-    <section aria-labelledby="process-heading" className="bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 py-24 font-sans overflow-hidden">
+    <section
+      aria-labelledby="process-heading"
+      className="bg-gradient-to-br from-purple-50 via-indigo-50 to-blue-50 py-24 font-sans overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto px-4">
         <motion.header
           initial={{ opacity: 0, y: 20 }}
@@ -152,7 +230,10 @@ export default function ImportExportProcess() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center"
         >
-          <h2 id="process-heading" className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-4">
+          <h2
+            id="process-heading"
+            className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 mb-4"
+          >
             {processData.section.heading}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">{processData.section.description}</p>
@@ -184,7 +265,7 @@ export default function ImportExportProcess() {
           <Link
             href={processData.section.buttonLink}
             className="inline-block px-6 py-3 bg-indigo-600 text-white font-semibold rounded-full hover:bg-indigo-700 transition-colors duration-300"
-            rel={processData.section.buttonLink.startsWith('http') ? "noopener noreferrer" : undefined}
+            rel={processData.section.buttonLink.startsWith("http") ? "noopener noreferrer" : undefined}
             aria-label={processData.section.buttonText}
           >
             {processData.section.buttonText}
@@ -194,3 +275,4 @@ export default function ImportExportProcess() {
     </section>
   )
 }
+

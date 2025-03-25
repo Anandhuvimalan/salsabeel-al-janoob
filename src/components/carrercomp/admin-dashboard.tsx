@@ -1,19 +1,56 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Briefcase, Users, Clock } from "lucide-react"
+import { supabase } from "@/lib/supabase"
 
-interface AdminDashboardProps {
-  jobsCount: number
-  applicationsCount: number
-  pendingApplicationsCount: number
-}
+export default function AdminDashboard() {
+  const [jobsCount, setJobsCount] = useState(0)
+  const [applicationsCount, setApplicationsCount] = useState(0)
+  const [pendingApplicationsCount, setPendingApplicationsCount] = useState(0)
+  const [loading, setLoading] = useState(true)
 
-export default function AdminDashboard({
-  jobsCount,
-  applicationsCount,
-  pendingApplicationsCount,
-}: AdminDashboardProps) {
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        // Fetch jobs count
+        const { count: jobsCount, error: jobsError } = await supabase
+          .from("jobs")
+          .select("*", { count: "exact", head: true })
+
+        if (jobsError) throw jobsError
+
+        // Fetch total applications count
+        const { count: applicationsCount, error: applicationsError } = await supabase
+          .from("applications")
+          .select("*", { count: "exact", head: true })
+
+        if (applicationsError) throw applicationsError
+
+        // Fetch pending applications count
+        const { count: pendingCount, error: pendingError } = await supabase
+          .from("applications")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "pending")
+
+        if (pendingError) throw pendingError
+
+        setJobsCount(jobsCount || 0)
+        setApplicationsCount(applicationsCount || 0)
+        setPendingApplicationsCount(pendingCount || 0)
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
+
   return (
     <div className="container px-4 py-8 md:px-6 md:py-12">
       <div className="flex flex-col gap-8">
@@ -29,7 +66,7 @@ export default function AdminDashboard({
               <Briefcase className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{jobsCount}</div>
+              <div className="text-2xl font-bold">{loading ? "..." : jobsCount}</div>
               <p className="text-xs text-muted-foreground">Active job listings</p>
             </CardContent>
           </Card>
@@ -40,7 +77,7 @@ export default function AdminDashboard({
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{applicationsCount}</div>
+              <div className="text-2xl font-bold">{loading ? "..." : applicationsCount}</div>
               <p className="text-xs text-muted-foreground">Submitted applications</p>
             </CardContent>
           </Card>
@@ -51,7 +88,7 @@ export default function AdminDashboard({
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{pendingApplicationsCount}</div>
+              <div className="text-2xl font-bold">{loading ? "..." : pendingApplicationsCount}</div>
               <p className="text-xs text-muted-foreground">Applications awaiting review</p>
             </CardContent>
           </Card>

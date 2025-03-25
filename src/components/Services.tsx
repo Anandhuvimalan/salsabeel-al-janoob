@@ -18,6 +18,83 @@ type ServicesData = {
   services: Service[]
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: ServicesData = {
+  sectionTitle: "More Than Just Import & Export",
+  services: [
+    {
+      id: 1,
+      image: "service-0-1741681438382-36k6rkkhbrv.webp",
+      title: "Chemical Waste Management",
+      gradient: "from-purple-500 to-purple-700",
+      description: "Safe and efficient management of chemical waste materials.",
+    },
+    {
+      id: 2,
+      image: "service-1-1741681438383-yvxnzi5xg2m.webp",
+      title: "All Waste Management",
+      gradient: "from-blue-500 to-blue-700",
+      description: "End-to-end waste management solutions for all types of waste.",
+    },
+    {
+      id: 3,
+      image: "service-2-1741681438383-wlor0piyztp.webp",
+      title: "Civil Contracts",
+      gradient: "from-red-500 to-red-700",
+      description: "From design to construction, landscaping, and maintenance.",
+    },
+    {
+      id: 4,
+      image: "service-3-1741681438383-qk9diqjorb.webp",
+      title: "Laundry Services",
+      gradient: "from-teal-500 to-teal-700",
+      description: "Professional laundry services for businesses and individuals.",
+    },
+    {
+      id: 5,
+      image: "service-4-1741681438383-bsr3ohini68.webp",
+      title: "Retail Consultancy",
+      gradient: "from-indigo-500 to-indigo-700",
+      description: "Expert advice for 24x7 stores, restaurants, and supermarkets.",
+    },
+    {
+      id: 6,
+      image: "service-5-1741681438383-yzizpeoapgh.webp",
+      title: "Educational & Career Guidance",
+      gradient: "from-green-500 to-green-700",
+      description: "Guiding students toward the right educational and career paths.",
+    },
+    {
+      id: 7,
+      image: "service-6-1741681438383-4ci0wiym57o.webp",
+      title: "Foreign Language Learning Centers",
+      gradient: "from-pink-500 to-pink-700",
+      description: "Learn foreign languages with expert trainers.",
+    },
+    {
+      id: 8,
+      image: "service-7-1741681438383-0xememlrgubb.webp",
+      title: "Vasthu Consultancy",
+      gradient: "from-gray-500 to-gray-700",
+      description: "Traditional Vasthu advice for your home and workspace.",
+    },
+    {
+      id: 9,
+      image: "service-8-1741681438383-zd83vy90z1c.webp",
+      title: "Marriage & Family Counselling",
+      gradient: "from-yellow-500 to-yellow-700",
+      description: "Counseling for healthy relationships and family harmony.",
+    },
+    {
+      id: 10,
+      image: "service-9-1741681438383-dmdjipyk9r9.webp",
+      title: "Drug Addiction Counseling",
+      gradient: "from-orange-500 to-orange-700",
+      description: "Helping individuals overcome addiction with professional guidance.",
+    },
+  ],
+}
+
 const CoreServices = () => {
   const [isMobile, setIsMobile] = useState(false)
   const [servicesData, setServicesData] = useState<ServicesData | null>(null)
@@ -41,7 +118,12 @@ const CoreServices = () => {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+          setServicesData(FALLBACK_DATA)
+          return
+        }
 
         setServicesData({
           sectionTitle: data.section_title,
@@ -49,7 +131,8 @@ const CoreServices = () => {
         })
       } catch (error) {
         console.error("Error fetching services:", error)
-        setError(error instanceof Error ? error.message : "Failed to load services")
+        console.log("Using fallback data due to fetch error")
+        setServicesData(FALLBACK_DATA)
       } finally {
         setLoading(false)
       }
@@ -66,38 +149,27 @@ const CoreServices = () => {
   if (loading) {
     return (
       <section className="flex justify-center items-center min-h-screen" aria-label="Loading services">
-        <div 
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-          aria-hidden="true"
-        />
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" aria-hidden="true" />
       </section>
     )
   }
 
-  if (error || !servicesData) {
-    return (
-      <section className="flex justify-center items-center min-h-screen" aria-label="Services error">
-        <article className="text-center p-8 max-w-md">
-          <h2 role="alert" className="text-xl font-bold text-red-500 mb-4">
-            Loading Error
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">{error || "Failed to load services"}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            aria-label="Retry loading services"
-          >
-            Try Again
-          </button>
-        </article>
-      </section>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!servicesData) {
+    return null // This should never happen with fallback data
   }
 
   return (
-    <section aria-labelledby="services-heading" className="bg-gray-900 text-gray-300 py-12 sm:py-16 md:py-20 w-full overflow-hidden">
+    <section
+      aria-labelledby="services-heading"
+      className="bg-gray-900 text-gray-300 py-12 sm:py-16 md:py-20 w-full overflow-hidden"
+    >
       <div className="mx-auto px-6 lg:px-10">
-        <h2 id="services-heading" className="text-4xl md:text-5xl font-bold mb-16 md:mb-24 text-center text-gray-100 leading-snug md:leading-relaxed">
+        <h2
+          id="services-heading"
+          className="text-4xl md:text-5xl font-bold mb-16 md:mb-24 text-center text-gray-100 leading-snug md:leading-relaxed"
+        >
           {servicesData.sectionTitle}
         </h2>
 
@@ -116,7 +188,7 @@ const CoreServices = () => {
                       <div className="w-1/4 flex justify-end items-center">
                         <div className={`relative w-16 h-16 rounded-lg bg-gradient-to-br ${service.gradient}`}>
                           <Image
-                            src={getImageUrl(service.image)}
+                            src={getImageUrl(service.image) || "/placeholder.svg"}
                             alt={service.title}
                             fill
                             className="object-cover rounded-lg"
@@ -148,9 +220,9 @@ const CoreServices = () => {
                         className={`absolute inset-0 bg-gradient-to-b ${service.gradient} rounded-md pointer-events-none z-0`}
                         variants={{
                           rest: { scaleY: 0 },
-                          hover: { 
-                            scaleY: 1, 
-                            transition: { duration: 0.5, ease: "easeOut" } 
+                          hover: {
+                            scaleY: 1,
+                            transition: { duration: 0.5, ease: "easeOut" },
                           },
                         }}
                         style={{ originY: "bottom" }}
@@ -164,9 +236,9 @@ const CoreServices = () => {
                             <motion.div
                               variants={{
                                 rest: { y: 0 },
-                                hover: { 
-                                  y: -24, 
-                                  transition: { duration: 0.3, ease: "easeInOut" } 
+                                hover: {
+                                  y: -24,
+                                  transition: { duration: 0.3, ease: "easeInOut" },
                                 },
                               }}
                             >
@@ -178,12 +250,12 @@ const CoreServices = () => {
 
                         <motion.div
                           className="w-2/4 text-left pl-8"
-                          variants={{ 
-                            rest: { x: 0 }, 
-                            hover: { 
-                              x: 20, 
-                              transition: { duration: 0.5 } 
-                            } 
+                          variants={{
+                            rest: { x: 0 },
+                            hover: {
+                              x: 20,
+                              transition: { duration: 0.5 },
+                            },
                           }}
                         >
                           <h3 id={`service-${service.id}-title`} className="text-lg font-bold text-gray-200">
@@ -193,12 +265,12 @@ const CoreServices = () => {
 
                         <motion.div
                           className="w-2/4 text-left"
-                          variants={{ 
-                            rest: { x: 0 }, 
-                            hover: { 
-                              x: 20, 
-                              transition: { duration: 0.5 } 
-                            } 
+                          variants={{
+                            rest: { x: 0 },
+                            hover: {
+                              x: 20,
+                              transition: { duration: 0.5 },
+                            },
                           }}
                         >
                           <p className="text-sm text-gray-300">{service.description}</p>
@@ -206,29 +278,31 @@ const CoreServices = () => {
 
                         <motion.div
                           className="w-1/4 flex justify-end"
-                          variants={{ 
-                            rest: { x: 0 }, 
-                            hover: { 
-                              x: -10, 
-                              transition: { duration: 0.5 } 
-                            } 
+                          variants={{
+                            rest: { x: 0 },
+                            hover: {
+                              x: -10,
+                              transition: { duration: 0.5 },
+                            },
                           }}
                         >
-                          <div className={`relative w-16 h-16 overflow-hidden rounded-lg border border-gray-700 bg-gradient-to-br ${service.gradient}`}>
+                          <div
+                            className={`relative w-16 h-16 overflow-hidden rounded-lg border border-gray-700 bg-gradient-to-br ${service.gradient}`}
+                          >
                             <motion.div
                               className="absolute inset-0 flex flex-col"
                               variants={{
                                 rest: { y: 0 },
-                                hover: { 
-                                  y: -64, 
-                                  transition: { duration: 0.5 } 
+                                hover: {
+                                  y: -64,
+                                  transition: { duration: 0.5 },
                                 },
                               }}
                               style={{ height: "128px" }}
                             >
                               <div className="relative w-full h-16">
                                 <Image
-                                  src={getImageUrl(service.image)}
+                                  src={getImageUrl(service.image) || "/placeholder.svg"}
                                   alt={service.title}
                                   fill
                                   className="object-cover"
@@ -237,7 +311,7 @@ const CoreServices = () => {
                               </div>
                               <div className="relative w-full h-16">
                                 <Image
-                                  src={getImageUrl(service.image)}
+                                  src={getImageUrl(service.image) || "/placeholder.svg"}
                                   alt=""
                                   aria-hidden="true"
                                   fill
@@ -261,3 +335,4 @@ const CoreServices = () => {
 }
 
 export default CoreServices
+

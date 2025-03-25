@@ -26,6 +26,93 @@ interface TestimonialsData {
   }
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: TestimonialsData = {
+  header: {
+    title: "Voices of Success",
+    banner: "Trusted Across Industries",
+    subheading: "Testimonials from valued partners and clients worldwide",
+  },
+  columns: {
+    column1: [
+      {
+        alt: "Ahmed Ali",
+        img: "testimonial-column1-0-1741732944922-xphpxfkjjum.webp",
+        name: "Ahamed Ali",
+        role: "International Trade Partner",
+        text: "Salsabeel Al Janoob demonstrates expertise in chemical specialization and waste management, ensuring innovative, safe, and reliable solutions for all challenges.",
+      },
+      {
+        alt: "Karthik K",
+        img: "testimonial-column1-1-1741732944924-fm35p9v0hol.webp",
+        name: "Karthik K",
+        role: "Construction Project Manager",
+        text: "Karthik K's project management expertise accelerated our infrastructure development through innovative planning, execution, and exceptional attention to detail throughout projects.",
+      },
+      {
+        alt: "Fatima K khan",
+        img: "testimonial-column1-2-1741732944924-7vga9ujuang.webp",
+        name: "Fatima k khan",
+        role: "Waste Management Director",
+        text: "Fatima K khan commends the outstanding efficiency and innovative approach in waste management that consistently delivers sustainable, environmentally responsible outcomes.",
+      },
+    ],
+    column2: [
+      {
+        alt: "Priya S Nair",
+        img: "testimonial-column2-0-1741732944924-7i4e4pcg94e.webp",
+        name: "Priya S Nair",
+        role: "Retail Chain Owner",
+        text: "Our retail consultancy revitalized our business model, boosting engagement and significantly increasing profitability.",
+      },
+      {
+        alt: "Arshita Aaron",
+        img: "testimonial-column2-1-1741732944924-ubg9z18quz.webp",
+        name: "Arshita Aaron",
+        role: "Corporate Trainer",
+        text: "Corporate training programs empowered our workforce, driving productivity improvements and enhancing essential skills.",
+      },
+      {
+        alt: "Roshan S",
+        img: "testimonial-column2-2-1741732944924-dt6rurtn81b.webp",
+        name: "Roshan S",
+        role: "Global Trade CEO",
+        text: "Roshan S provides a global vision with exceptional leadership, steering strategic market growth.",
+      },
+    ],
+    column3: [
+      {
+        alt: "Sujith S Sudharsan",
+        img: "testimonial-column3-0-1741732944925-800z4lljr29.webp",
+        name: "Sujith S Sudharsan",
+        role: "Government Contracts",
+        text: "Exceptional business partnership",
+      },
+      {
+        alt: "Aaliya Aleem",
+        img: "testimonial-column3-1-1741732944925-ml3sj90314h.webp",
+        name: "Aaliya Aleem",
+        role: "Career Counseling Client",
+        text: "Innovative logistics solutions",
+      },
+      {
+        alt: "Mohammed Shan",
+        img: "testimonial-column3-2-1741732944925-8sxgzucoz55.webp",
+        name: "Mohammed Shan",
+        role: "Educational Partner",
+        text: "Exemplary educational partnership",
+      },
+      {
+        alt: "Thasni Thanseer",
+        img: "testimonial-column3-3-1741732944925-vz7e1pfp5f.webp",
+        name: "Thasni Thanseer",
+        role: "Logistics Partner",
+        text: "Seamless global logistics",
+      },
+    ],
+  },
+}
+
 const Testimonials = () => {
   const [testimonialsData, setTestimonialsData] = useState<TestimonialsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -41,7 +128,23 @@ const Testimonials = () => {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+
+          // Process fallback data with image URLs
+          const processedFallbackData = {
+            ...FALLBACK_DATA,
+            columns: {
+              column1: processTestimonialImages(FALLBACK_DATA.columns.column1),
+              column2: processTestimonialImages(FALLBACK_DATA.columns.column2),
+              column3: processTestimonialImages(FALLBACK_DATA.columns.column3),
+            },
+          }
+
+          setTestimonialsData(processedFallbackData)
+          return
+        }
 
         const processedData = {
           ...data,
@@ -55,7 +158,19 @@ const Testimonials = () => {
         setTestimonialsData(processedData)
       } catch (error) {
         console.error("Error fetching testimonials:", error)
-        setError("Failed to load testimonials data")
+        console.log("Using fallback data due to fetch error")
+
+        // Process fallback data with image URLs
+        const processedFallbackData = {
+          ...FALLBACK_DATA,
+          columns: {
+            column1: processTestimonialImages(FALLBACK_DATA.columns.column1),
+            column2: processTestimonialImages(FALLBACK_DATA.columns.column2),
+            column3: processTestimonialImages(FALLBACK_DATA.columns.column3),
+          },
+        }
+
+        setTestimonialsData(processedFallbackData)
       } finally {
         setIsLoading(false)
       }
@@ -86,7 +201,7 @@ const Testimonials = () => {
       role="listitem"
     >
       <article className="relative group">
-        <div 
+        <div
           className="absolute transition rounded-lg opacity-25 -inset-1 bg-gradient-to-r from-amber-300 to-amber-600 blur duration-400 group-hover:opacity-100 group-hover:duration-200"
           aria-hidden="true"
         />
@@ -132,16 +247,10 @@ const Testimonials = () => {
     )
   }
 
-  if (error || !testimonialsData) {
-    return (
-      <section 
-        className="relative py-20 bg-zinc-50 text-center text-red-500"
-        role="alert"
-        aria-live="assertive"
-      >
-        {error || "Failed to load testimonials data"}
-      </section>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!testimonialsData) {
+    return null // This should never happen with fallback data
   }
 
   return (
@@ -158,9 +267,7 @@ const Testimonials = () => {
           <span className="inline-block px-4 py-2 text-sm font-semibold text-amber-600 bg-amber-100 rounded-full">
             {testimonialsData.header.banner}
           </span>
-          <h2 className="mb-5 text-3xl font-bold text-zinc-800 md:text-4xl">
-            {testimonialsData.header.title}
-          </h2>
+          <h2 className="mb-5 text-3xl font-bold text-zinc-800 md:text-4xl">{testimonialsData.header.title}</h2>
           <p className="text-lg text-zinc-600 md:text-xl">{testimonialsData.header.subheading}</p>
         </motion.header>
 
@@ -193,3 +300,4 @@ const Testimonials = () => {
 }
 
 export default Testimonials
+

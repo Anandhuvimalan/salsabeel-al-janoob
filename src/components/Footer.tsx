@@ -1,5 +1,7 @@
 "use client"
 import { Fragment, useState, useEffect } from "react"
+import type React from "react"
+
 import Link from "next/link"
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
@@ -33,6 +35,67 @@ interface FooterData {
   }
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: FooterData = {
+  company_info: {
+    logoSrc: "footer-company_info-logoSrc-1741719946352-aomd14ginj.svg",
+    heading: "Salsabeel Al Janoob Group",
+    description: "Trusted import-export solutions since 1975, committed to excellence in India and Oman.",
+  },
+  quick_links: [
+    { name: "Home", link: "/" },
+    { name: "About", link: "/about" },
+    { name: "Contact", link: "/contact" },
+  ],
+  newsletter: {
+    heading: "Newsletter",
+    placeholder: "Your email",
+    buttonText: "Subscribe",
+    buttonIcon: "footer-newsletter-buttonIcon-1741719946353-qqapepvaee.svg",
+  },
+  social_media: [
+    {
+      iconSrc: "footer-social_media-0-iconSrc-1741719946353-7uzmele7j9.svg",
+      name: "Instagram",
+      link: "https://instagram.com",
+    },
+    {
+      iconSrc: "footer-social_media-1-iconSrc-1741719946353-h70304r0884.svg",
+      name: "LinkedIn",
+      link: "https://linkedin.com",
+    },
+    {
+      iconSrc: "footer-social_media-2-iconSrc-1741719946353-8r97pj0mw49.svg",
+      name: "facebook",
+      link: "https://linkedin.com",
+    },
+  ],
+  company_locations: [
+    {
+      name: "Salsabeel Al Janoob ImpExp",
+      operation: "Indian Operation",
+      address: "Jwala Complex, Marappalam, PO Madukarai 641105, Coimbatore, Tamilnadu",
+      phoneNumbers: ["0422-4547438", "+91 93494 74746", "+91 7550350680"],
+      mapSrc:
+        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3912.6876352401074!2d76.9376869!3d10.901638!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080a289e1ac9f5%3A0x3a0d5bbdd4e3e8b9!2s10%C2%B054%2705.9%22N%2076%C2%B056%2724.9%22E!5e0!3m2!1sen!2sus!4v1690035458611!5m2!1sen!2sus",
+    },
+    {
+      name: "Salsabeel Al Janoob Trad & Cont. Est",
+      operation: "Oman Operation",
+      address: "Post Box no : 730, postal code : 111, Dhofar-Salala, sultanate of oman",
+      phoneNumbers: ["+968 9171 8606", "+96899779771"],
+      mapSrc:
+        "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3550.2799402184333!2d57.5234353!3d23.734253!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3f7e47c7d52f1d6f%3A0x8d1f2a7fa76c8e0c!2s23%C2%B044'03.3%22N%2057%C2%B031'33.6%22E!5e0!3m2!1sen!2s!4v1690035458611!5m2!1sen!2s",
+    },
+  ],
+  legal: {
+    terms: "/terms",
+    privacy: "/privacy-policy",
+    copyright: "© {year} Salsabeel Al Janoob Group. All rights reserved.",
+    chevronIcon: "footer-legal-chevronIcon-1741719946353-yjp0a69bdb.svg",
+  },
+}
+
 const SocialLink = ({
   href,
   iconSrc,
@@ -49,12 +112,7 @@ const SocialLink = ({
     rel="noopener noreferrer"
     aria-label={`Visit our ${label} profile`}
   >
-    <img 
-      src={getImageUrl(iconSrc) || "/placeholder.svg"} 
-      alt="" 
-      className="w-6 h-6"
-      aria-hidden="true"
-    />
+    <img src={getImageUrl(iconSrc) || "/placeholder.svg"} alt="" className="w-6 h-6" aria-hidden="true" />
     <span className="ml-2 sr-only">{label}</span>
   </a>
 )
@@ -138,7 +196,35 @@ const Footer = () => {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+
+          // Process fallback data with image URLs
+          const transformedFallbackData = {
+            company_info: {
+              ...FALLBACK_DATA.company_info,
+              logoSrc: getImageUrl(FALLBACK_DATA.company_info.logoSrc),
+            },
+            quick_links: FALLBACK_DATA.quick_links,
+            newsletter: {
+              ...FALLBACK_DATA.newsletter,
+              buttonIcon: getImageUrl(FALLBACK_DATA.newsletter.buttonIcon),
+            },
+            social_media: FALLBACK_DATA.social_media.map((item) => ({
+              ...item,
+              iconSrc: getImageUrl(item.iconSrc),
+            })),
+            company_locations: FALLBACK_DATA.company_locations,
+            legal: {
+              ...FALLBACK_DATA.legal,
+              chevronIcon: getImageUrl(FALLBACK_DATA.legal.chevronIcon),
+            },
+          }
+
+          setData(transformedFallbackData)
+          return
+        }
 
         const transformedData = {
           company_info: {
@@ -164,7 +250,31 @@ const Footer = () => {
         setData(transformedData)
       } catch (err) {
         console.error("Error fetching footer data:", err)
-        setError(err instanceof Error ? err.message : "Failed to load footer data")
+        console.log("Using fallback data due to fetch error")
+
+        // Process fallback data with image URLs
+        const transformedFallbackData = {
+          company_info: {
+            ...FALLBACK_DATA.company_info,
+            logoSrc: getImageUrl(FALLBACK_DATA.company_info.logoSrc),
+          },
+          quick_links: FALLBACK_DATA.quick_links,
+          newsletter: {
+            ...FALLBACK_DATA.newsletter,
+            buttonIcon: getImageUrl(FALLBACK_DATA.newsletter.buttonIcon),
+          },
+          social_media: FALLBACK_DATA.social_media.map((item) => ({
+            ...item,
+            iconSrc: getImageUrl(item.iconSrc),
+          })),
+          company_locations: FALLBACK_DATA.company_locations,
+          legal: {
+            ...FALLBACK_DATA.legal,
+            chevronIcon: getImageUrl(FALLBACK_DATA.legal.chevronIcon),
+          },
+        }
+
+        setData(transformedFallbackData)
       } finally {
         setLoading(false)
       }
@@ -213,8 +323,11 @@ const Footer = () => {
 
   if (loading) {
     return (
-      <main aria-label="Loading footer" className="bg-gradient-to-b from-gray-900 to-black min-h-[500px] flex items-center justify-center">
-        <div 
+      <main
+        aria-label="Loading footer"
+        className="bg-gradient-to-b from-gray-900 to-black min-h-[500px] flex items-center justify-center"
+      >
+        <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400"
           aria-hidden="true"
         />
@@ -222,25 +335,11 @@ const Footer = () => {
     )
   }
 
-  if (error) {
-    return (
-      <section role="alert" aria-label="Footer error" className="bg-gradient-to-b from-gray-900 to-black text-red-400 text-center py-20">
-        <article className="max-w-md mx-auto p-4">
-          <h2 className="text-xl font-bold mb-4">Loading Error</h2>
-          <p className="mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-500"
-            aria-label="Retry loading footer"
-          >
-            Try Again
-          </button>
-        </article>
-      </section>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!data) {
+    return null // This should never happen with fallback data
   }
-
-  if (!data) return null
 
   const {
     company_info: companyInfo,
@@ -258,7 +357,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-6 lg:col-span-2">
             <Image
-              src={companyInfo.logoSrc}
+              src={companyInfo.logoSrc || "/placeholder.svg"}
               alt={`${companyInfo.heading} logo`}
               width={120}
               height={120}
@@ -280,10 +379,10 @@ const Footer = () => {
                       href={link.link}
                       className="text-gray-300 hover:text-white transition-colors duration-300 flex items-center"
                     >
-                      <img 
-                        src={legal.chevronIcon} 
-                        alt="" 
-                        className="w-4 h-4 mr-2" 
+                      <img
+                        src={legal.chevronIcon || "/placeholder.svg"}
+                        alt=""
+                        className="w-4 h-4 mr-2"
                         aria-hidden="true"
                       />
                       <span>{link.name}</span>
@@ -299,7 +398,9 @@ const Footer = () => {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-purple-400">{newsletter.heading}</h3>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+                <label htmlFor="newsletter-email" className="sr-only">
+                  Email address
+                </label>
                 <input
                   id="newsletter-email"
                   type="email"
@@ -315,7 +416,12 @@ const Footer = () => {
                   aria-label="Subscribe to newsletter"
                 >
                   {newsletter.buttonText}
-                  <img src={newsletter.buttonIcon} alt="" className="w-4 h-4" aria-hidden="true" />
+                  <img
+                    src={newsletter.buttonIcon || "/placeholder.svg"}
+                    alt=""
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                  />
                 </button>
 
                 {subscriptionStatus && (
@@ -358,10 +464,16 @@ const Footer = () => {
           </p>
           <nav aria-label="Legal links">
             <div className="flex space-x-4 mt-4 md:mt-0">
-              <Link href={legal.terms} className="text-gray-400 hover:text-white text-sm transition-colors duration-300">
+              <Link
+                href={legal.terms}
+                className="text-gray-400 hover:text-white text-sm transition-colors duration-300"
+              >
                 Terms of Service
               </Link>
-              <Link href={legal.privacy} className="text-gray-400 hover:text-white text-sm transition-colors duration-300">
+              <Link
+                href={legal.privacy}
+                className="text-gray-400 hover:text-white text-sm transition-colors duration-300"
+              >
                 Privacy Policy
               </Link>
             </div>
@@ -373,3 +485,4 @@ const Footer = () => {
 }
 
 export default Footer
+

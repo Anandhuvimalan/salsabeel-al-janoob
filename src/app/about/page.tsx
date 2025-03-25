@@ -17,21 +17,7 @@ export const metadata: Metadata = {
     template: "%s | Salsabeel Al Janoob ImpExp",
   },
   description:
-    "Discover our legacy in international trade, waste management, and import-export services. Oman-based company expanding operations to India with 45+ years of expertise in global logistics, freight forwarding, and trade consultancy.",
-  keywords: [
-    "global trade company",
-    "waste management experts",
-    "Oman import export",
-    "India business expansion",
-    "international trade history",
-    "global logistics",
-    "freight forwarding",
-    "trade consultancy",
-    "customs clearance",
-    "supply chain management",
-    "international business",
-    "trade solutions",
-  ],
+    "Witness our rapid ascent from local waste specialists to international trade architects – delivering Be'ah-approved solutions across continents.",
   openGraph: {
     type: "website",
     locale: "en_IN",

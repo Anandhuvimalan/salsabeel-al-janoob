@@ -46,6 +46,62 @@ interface CompanyAboutData {
   }
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: CompanyAboutData = {
+  left_column: {
+    intro: {
+      title: "Building Trust Since 1975",
+      description:
+        "Salsabeel Al Janoob's story began in 1975 in Oman, with a vision to connect local businesses with global markets through exceptional import and export services.",
+    },
+    founder: {
+      title: "Founder's Vision",
+      descriptionBefore: "Founder and Chairman,",
+      founderName: "Khalfan Abdullah Khalfan Al Mandary",
+      descriptionAfter:
+        "instilled a commitment to integrity and customer focus, building a foundation for long-term growth.",
+    },
+    growth: {
+      title: "Strategic Growth & Diversification",
+      description:
+        "Recognizing evolving market needs, we strategically diversified into waste management, retail consultancy, and more. This diversification leveraged our international network and market insights gained through our core trade business.",
+    },
+    timeline: [
+      {
+        label: "ESTABLISHED",
+        value: "1975",
+      },
+      {
+        label: "FOUNDED BY",
+        title: "Khalfan Abdullah Khalfan Al Mandhari",
+        subtitle: "Founder and Chairman",
+      },
+      {
+        label: "PRESENCE",
+        value: "Oman & India",
+      },
+    ],
+  },
+  right_column: {
+    globalExpansion: {
+      title: "Global Expansion",
+      description:
+        "Our recent expansion into India further strengthens our global reach, creating new opportunities for international collaboration and trade excellence.",
+    },
+    imageBlock: {
+      image: {
+        src: "company-about-1741727550108-hfibwegdziv.webp",
+        alt: "Salsabeel Al Janoob company image",
+      },
+    },
+    legacy: {
+      title: "Continuing the Legacy",
+      description:
+        "Guided by our leadership team's expertise, we remain dedicated to innovation and sustainable growth, continuing to connect opportunities for clients worldwide while maintaining our core values of integrity and excellence.",
+    },
+  },
+}
+
 const CompanyAbout = () => {
   const [data, setData] = useState<CompanyAboutData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -61,22 +117,57 @@ const CompanyAbout = () => {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
 
+          // Process fallback data with image URL
+          const processedFallbackData = {
+            ...FALLBACK_DATA,
+            right_column: {
+              ...FALLBACK_DATA.right_column,
+              imageBlock: {
+                image: {
+                  ...FALLBACK_DATA.right_column.imageBlock.image,
+                  src: processImageUrl(FALLBACK_DATA.right_column.imageBlock.image.src),
+                },
+              },
+            },
+          }
+
+          setData(processedFallbackData)
+          return
+        }
+
+        // Process fetched data
         if (
           companyData.right_column.imageBlock.image.src &&
           !companyData.right_column.imageBlock.image.src.startsWith("http") &&
           !companyData.right_column.imageBlock.image.src.startsWith("/")
         ) {
-          companyData.right_column.imageBlock.image.src = supabase.storage
-            .from("aboutpage-company-images")
-            .getPublicUrl(companyData.right_column.imageBlock.image.src).data.publicUrl
+          companyData.right_column.imageBlock.image.src = processImageUrl(companyData.right_column.imageBlock.image.src)
         }
 
         setData(companyData)
       } catch (err) {
-        setError("Failed to load company information")
         console.error("Fetch error:", err)
+        console.log("Using fallback data due to fetch error")
+
+        // Process fallback data with image URL
+        const processedFallbackData = {
+          ...FALLBACK_DATA,
+          right_column: {
+            ...FALLBACK_DATA.right_column,
+            imageBlock: {
+              image: {
+                ...FALLBACK_DATA.right_column.imageBlock.image,
+                src: processImageUrl(FALLBACK_DATA.right_column.imageBlock.image.src),
+              },
+            },
+          },
+        }
+
+        setData(processedFallbackData)
       } finally {
         setLoading(false)
       }
@@ -84,6 +175,13 @@ const CompanyAbout = () => {
 
     fetchData()
   }, [])
+
+  // Helper function to process image URLs
+  const processImageUrl = (imagePath: string) => {
+    if (!imagePath) return "/placeholder.svg"
+    if (imagePath.startsWith("http") || imagePath.startsWith("/")) return imagePath
+    return supabase.storage.from("aboutpage-company-images").getPublicUrl(imagePath).data.publicUrl
+  }
 
   if (loading) {
     return (
@@ -102,12 +200,10 @@ const CompanyAbout = () => {
     )
   }
 
-  if (error || !data) {
-    return (
-      <section className="relative py-20 bg-white text-center text-red-500" role="alert" aria-live="assertive">
-        {error || "Failed to load company information"}
-      </section>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!data) {
+    return null // This should never happen with fallback data
   }
 
   const leftColumn = data.left_column
@@ -255,3 +351,4 @@ const CompanyAbout = () => {
 }
 
 export default CompanyAbout
+

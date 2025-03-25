@@ -23,6 +23,56 @@ interface LeadershipData {
   profiles: Profile[]
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: LeadershipData = {
+  banner: "Meet Our Leaders",
+  heading: "Our Leadership",
+  profiles: [
+    {
+      name: "Khalfan Abdullah Khalfan Al Mandhari",
+      role: "Chairman",
+      image: {
+        alt: "Khalfan Abdullah Khalfan Al Mandary",
+        src: "5037665b-eda4-44c5-98b5-0eb79fef1027-1741731724029.jpg",
+      },
+      contacts: {
+        email: "khalfan@salsabeelaljanoobimpexp.com",
+        phone: ["+968 99779771"],
+      },
+      description:
+        "Visionary leader with decades of experience driving business growth and development at Salsabeel Al Janoob.",
+    },
+    {
+      name: "Pramod Haridasan",
+      role: "Managing Director & General Manager",
+      image: {
+        alt: "Pramod Haridasan",
+        src: "0cde920c-00c6-4422-8e27-495e500a3d83-1741731725679.jpg",
+      },
+      contacts: {
+        email: "pramodsh@salsabeelaljanoobimpexp.com",
+        phone: ["+968 91718606", "+91 9349474746"],
+      },
+      description:
+        "Seasoned professional with extensive expertise in international trade and strategic business management.",
+    },
+    {
+      name: "Sasidharan Kunnath",
+      role: "Director, Business Enhance",
+      image: {
+        alt: "Sasidharan Kunnath",
+        src: "05d865dc-e816-4af1-9886-85c1ccd15822-1741731727280.png",
+      },
+      contacts: {
+        email: "s.kunnath@salsabeelaljanoobimpexp.com",
+        phone: ["+91 7550350680"],
+      },
+      description:
+        "Expert in business optimization and process improvement with a track record of driving operational excellence.",
+    },
+  ],
+}
+
 const LeadershipSection = () => {
   const [leadershipData, setLeadershipData] = useState<LeadershipData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -38,7 +88,25 @@ const LeadershipSection = () => {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+
+          // Process fallback data with image URLs
+          const processedFallbackData = {
+            ...FALLBACK_DATA,
+            profiles: FALLBACK_DATA.profiles.map((profile) => ({
+              ...profile,
+              image: {
+                ...profile.image,
+                src: getImageUrl(profile.image.src),
+              },
+            })),
+          }
+
+          setLeadershipData(processedFallbackData)
+          return
+        }
 
         const processedData = {
           ...data,
@@ -54,7 +122,21 @@ const LeadershipSection = () => {
         setLeadershipData(processedData)
       } catch (error) {
         console.error("Error fetching leadership data:", error)
-        setError("Failed to load leadership data")
+        console.log("Using fallback data due to fetch error")
+
+        // Process fallback data with image URLs
+        const processedFallbackData = {
+          ...FALLBACK_DATA,
+          profiles: FALLBACK_DATA.profiles.map((profile) => ({
+            ...profile,
+            image: {
+              ...profile.image,
+              src: getImageUrl(profile.image.src),
+            },
+          })),
+        }
+
+        setLeadershipData(processedFallbackData)
       } finally {
         setIsLoading(false)
       }
@@ -100,16 +182,10 @@ const LeadershipSection = () => {
     )
   }
 
-  if (error || !leadershipData) {
-    return (
-      <section 
-        className="relative py-20 bg-zinc-50 text-center text-red-500"
-        role="alert"
-        aria-live="assertive"
-      >
-        {error || "Failed to load leadership data"}
-      </section>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!leadershipData) {
+    return null // This should never happen with fallback data
   }
 
   return (
@@ -213,3 +289,4 @@ const LeadershipSection = () => {
 }
 
 export default LeadershipSection
+

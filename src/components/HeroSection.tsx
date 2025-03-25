@@ -24,6 +24,37 @@ type HeroSectionData = {
   }[]
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: HeroSectionData = {
+  id: "fallback-id",
+  tag: "GLOBAL SOLUTIONS",
+  title: "Your Gateway to the",
+  highlighted_title: "INTERNATIONAL MARKET",
+  description:
+    "Our specialized import and export solutions connect your business with global opportunities. Experience seamless trade and unparalleled service.",
+  button_name: "Get in Touch",
+  button_link: "/contact",
+  animation_settings: {
+    cycleDuration: 5000,
+    animationDuration: 1500,
+    initialRevealDelay: 1000,
+  },
+  images: [
+    {
+      src: "https://hrrfjlbkbjmzkyihcufw.supabase.co/storage/v1/object/public/hero-images/elb2mitjzim.webp",
+      alt: "Import & Export Services",
+    },
+    {
+      src: "https://hrrfjlbkbjmzkyihcufw.supabase.co/storage/v1/object/public/hero-images/b2u0dla21u.webp",
+      alt: "Chemical Waste Management",
+    },
+    {
+      src: "https://hrrfjlbkbjmzkyihcufw.supabase.co/storage/v1/object/public/hero-images/zm5rsoaw5s.webp",
+      alt: "Salsabeel Al Janoob Import Export",
+    },
+  ],
+}
+
 export default function HeroSection() {
   const [data, setData] = useState<HeroSectionData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -52,11 +83,14 @@ export default function HeroSection() {
 
         if (error) {
           console.error("Supabase error:", error)
-          throw error
+          console.log("Using fallback data due to Supabase error")
+          setData(FALLBACK_DATA)
+          return
         }
 
         if (!heroSections || heroSections.length === 0) {
-          setError("No hero section data found")
+          console.log("No hero section data found, using fallback data")
+          setData(FALLBACK_DATA)
           return
         }
 
@@ -66,14 +100,16 @@ export default function HeroSection() {
         }
 
         if (processedData.images.length === 0) {
-          setError("No hero images found")
+          console.log("No hero images found, using fallback data")
+          setData(FALLBACK_DATA)
           return
         }
 
         setData(processedData)
       } catch (error) {
         console.error("Error fetching hero data:", error)
-        setError("Failed to load hero section data")
+        console.log("Using fallback data due to fetch error")
+        setData(FALLBACK_DATA)
       } finally {
         dataFetchedRef.current = true
         setIsLoading(false)
@@ -149,7 +185,11 @@ export default function HeroSection() {
 
   if (isLoading) {
     return (
-      <div className="fixed top-0 left-0 right-0 bottom-0 z-[10000] overflow-hidden flex items-center justify-center bg-zinc-900" role="status" aria-label="Loading hero section">
+      <div
+        className="fixed top-0 left-0 right-0 bottom-0 z-[10000] overflow-hidden flex items-center justify-center bg-zinc-900"
+        role="status"
+        aria-label="Loading hero section"
+      >
         <div className="flex flex-col items-center">
           <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
           <div className="text-white text-2xl mt-4">Loading...</div>
@@ -158,32 +198,38 @@ export default function HeroSection() {
     )
   }
 
-  if (error || !data) {
-    return (
-      <div className="fixed top-0 left-0 right-0 bottom-0 z-[10000] overflow-hidden flex items-center justify-center bg-zinc-900" role="alert">
-        <div className="flex flex-col items-center text-center px-4">
-          <div className="text-white text-2xl mb-4">Something went wrong</div>
-          <div className="text-white/70 mb-6">Unable to load hero section data</div>
-          <button onClick={() => window.location.reload()} className="px-4 py-2 bg-white text-zinc-900 rounded-md hover:bg-white/90 transition-colors">
-            Refresh Page
-          </button>
-        </div>
-      </div>
-    )
+  if (error) {
+    console.error("Error state detected but using fallback data")
+    // We'll use the fallback data instead of showing an error
+    // This code won't execute if we properly set fallback data in the fetchData function
+  }
+
+  if (!data) {
+    return null // Or a suitable fallback UI
   }
 
   return (
     <section className="relative h-screen overflow-hidden" aria-label="Hero section showcasing global trade services">
       <AnimatePresence>
         {!initialRevealComplete && (
-          <motion.div className="absolute inset-0 z-50 bg-black" variants={initialCurtainVariants} initial="initial" animate="animate" transition={{ duration: 2.8 }} />
+          <motion.div
+            className="absolute inset-0 z-50 bg-black"
+            variants={initialCurtainVariants}
+            initial="initial"
+            animate="animate"
+            transition={{ duration: 2.8 }}
+          />
         )}
       </AnimatePresence>
       <div className="absolute inset-0">
         {data.images.length > 0 && (
           <>
             <div className="absolute inset-0 z-0">
-              <img src={data.images[nextImageIndex]?.src || ""} alt={data.images[nextImageIndex]?.alt || ""} className="object-cover w-full h-full" />
+              <img
+                src={data.images[nextImageIndex]?.src || ""}
+                alt={data.images[nextImageIndex]?.alt || ""}
+                className="object-cover w-full h-full"
+              />
             </div>
             <AnimatePresence initial={false}>
               <motion.div
@@ -195,15 +241,25 @@ export default function HeroSection() {
                     ? "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)"
                     : "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
                 }}
-                transition={{ duration: data.animation_settings.animationDuration / 1000, ease: [0.645, 0.045, 0.355, 1] }}
+                transition={{
+                  duration: data.animation_settings.animationDuration / 1000,
+                  ease: [0.645, 0.045, 0.355, 1],
+                }}
               >
-                <img src={data.images[currentImageIndex]?.src || ""} alt={data.images[currentImageIndex]?.alt || ""} className="object-cover w-full h-full" />
+                <img
+                  src={data.images[currentImageIndex]?.src || ""}
+                  alt={data.images[currentImageIndex]?.alt || ""}
+                  className="object-cover w-full h-full"
+                />
               </motion.div>
             </AnimatePresence>
           </>
         )}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30 z-10" aria-hidden="true" />
+      <div
+        className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30 z-10"
+        aria-hidden="true"
+      />
       <div className="relative z-20 flex flex-col justify-center items-center h-full px-4 text-center max-w-7xl mx-auto">
         <motion.span
           variants={textAnimationVariants}
@@ -249,13 +305,22 @@ export default function HeroSection() {
             onMouseLeave={() => setIsHovering(false)}
             aria-label={data.button_name}
           >
-            <div className="absolute inset-0 scale-0 bg-white/10 opacity-0 transition-all duration-300 group-hover:scale-100 group-hover:opacity-100 transform-gpu" aria-hidden="true" />
+            <div
+              className="absolute inset-0 scale-0 bg-white/10 opacity-0 transition-all duration-300 group-hover:scale-100 group-hover:opacity-100 transform-gpu"
+              aria-hidden="true"
+            />
             <span className="relative z-20 font-medium tracking-wide">{data.button_name}</span>
             {!isHovering && (
               <motion.div
                 initial={false}
                 animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.3, 0] }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatType: "loop", times: [0, 0.5, 1], ease: "easeInOut" }}
+                transition={{
+                  duration: 2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatType: "loop",
+                  times: [0, 0.5, 1],
+                  ease: "easeInOut",
+                }}
                 className="absolute inset-0 z-10 rounded-full bg-white/20"
                 aria-hidden="true"
               />
@@ -298,3 +363,4 @@ export default function HeroSection() {
     </section>
   )
 }
+

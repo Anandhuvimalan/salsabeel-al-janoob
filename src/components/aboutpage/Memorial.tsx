@@ -17,6 +17,21 @@ interface MemorialData {
   }
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: MemorialData = {
+  full_message:
+    "Mother, you are my inspiring and guiding light. With that thought and inspiration, we deliver our Best!",
+  title: "In Loving Memory Of",
+  name: "Syamala Devi",
+  years: "1959 - 2019",
+  image: {
+    alt: "In Memory of Our Beloved Syamala Devi",
+    src: "memorial-1741733334459-g2l1e6td1vp.webp",
+    width: 240,
+    height: 320,
+  },
+}
+
 export default function MemorialSection() {
   const [memorialData, setMemorialData] = useState<MemorialData | null>(null)
   const [displayText, setDisplayText] = useState("")
@@ -35,17 +50,43 @@ export default function MemorialSection() {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
 
+          // Process fallback data with image URL
+          const processedFallbackData = {
+            ...FALLBACK_DATA,
+            image: {
+              ...FALLBACK_DATA.image,
+              src: getImageUrl(FALLBACK_DATA.image.src),
+            },
+          }
+
+          setMemorialData(processedFallbackData)
+          return
+        }
+
+        // Process fetched data
         if (data.image.src && !data.image.src.startsWith("http") && !data.image.src.startsWith("/")) {
-          data.image.src = supabase.storage
-            .from("aboutpage-memorial-images")
-            .getPublicUrl(data.image.src).data.publicUrl
+          data.image.src = getImageUrl(data.image.src)
         }
 
         setMemorialData(data)
       } catch (error) {
-        setError("Failed to load memorial data")
+        console.error("Error fetching memorial data:", error)
+        console.log("Using fallback data due to fetch error")
+
+        // Process fallback data with image URL
+        const processedFallbackData = {
+          ...FALLBACK_DATA,
+          image: {
+            ...FALLBACK_DATA.image,
+            src: getImageUrl(FALLBACK_DATA.image.src),
+          },
+        }
+
+        setMemorialData(processedFallbackData)
       } finally {
         setIsLoading(false)
       }
@@ -53,12 +94,19 @@ export default function MemorialSection() {
     fetchMemorialData()
   }, [])
 
+  // Helper function to process image URLs
+  const getImageUrl = (path: string) => {
+    if (!path) return "/placeholder.svg"
+    if (path.startsWith("http") || path.startsWith("/")) return path
+    return supabase.storage.from("aboutpage-memorial-images").getPublicUrl(path).data.publicUrl
+  }
+
   useEffect(() => {
     if (!memorialData) return
     if (currentIndex < memorialData.full_message.length) {
       const timer = setTimeout(() => {
-        setDisplayText(prev => prev + memorialData.full_message[currentIndex])
-        setCurrentIndex(prev => prev + 1)
+        setDisplayText((prev) => prev + memorialData.full_message[currentIndex])
+        setCurrentIndex((prev) => prev + 1)
       }, 100)
       return () => clearTimeout(timer)
     } else {
@@ -78,9 +126,9 @@ export default function MemorialSection() {
 
   if (isLoading) {
     return (
-      <section 
-        aria-label="Loading memorial section" 
-        role="region" 
+      <section
+        aria-label="Loading memorial section"
+        role="region"
         className="relative flex flex-col items-center justify-center py-16 px-4 min-h-[80vh] bg-gradient-to-b from-gray-50 to-white"
       >
         <div role="status" aria-live="polite" className="animate-pulse space-y-8 flex flex-col items-center">
@@ -94,34 +142,31 @@ export default function MemorialSection() {
     )
   }
 
-  if (error || !memorialData) {
-    return (
-      <section 
-        className="relative flex flex-col items-center justify-center py-16 px-4 min-h-[80vh] bg-gradient-to-b from-gray-50 to-white" 
-        role="alert"
-        aria-live="assertive"
-      >
-        <div className="text-red-500 text-center">{error || "Failed to load memorial data"}</div>
-      </section>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!memorialData) {
+    return null // This should never happen with fallback data
   }
 
   return (
-    <section 
-      aria-label="Memorial tribute" 
+    <section
+      aria-label="Memorial tribute"
       className="relative flex flex-col items-center justify-center py-16 px-4 min-h-[80vh] bg-gradient-to-b from-gray-50 to-white"
     >
-      <div 
-        className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" 
-        aria-hidden="true" 
+      <div
+        className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"
+        aria-hidden="true"
       />
-      <div 
-        className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" 
-        aria-hidden="true" 
+      <div
+        className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"
+        aria-hidden="true"
       />
 
       <article className="relative mb-8">
-        <div className="absolute inset-[-4px] bg-gradient-to-r from-gray-200 via-white to-gray-200 rounded-lg" aria-hidden="true" />
+        <div
+          className="absolute inset-[-4px] bg-gradient-to-r from-gray-200 via-white to-gray-200 rounded-lg"
+          aria-hidden="true"
+        />
         <figure className="relative">
           <Image
             src={memorialData.image.src || "/placeholder.svg"}
@@ -141,18 +186,21 @@ export default function MemorialSection() {
       </header>
 
       <div className="relative w-full max-w-3xl min-h-[6rem] flex items-center justify-center">
-        <div 
-          ref={containerRef} 
+        <div
+          ref={containerRef}
           className="text-center p-4 bg-white overflow-hidden"
           aria-live="polite"
           aria-atomic="true"
         >
           <blockquote className="text-xl md:text-2xl text-gray-700 font-serif">
             {displayText}
-            <span className="animate-pulse" aria-hidden="true">|</span>
+            <span className="animate-pulse" aria-hidden="true">
+              |
+            </span>
           </blockquote>
         </div>
       </div>
     </section>
   )
 }
+

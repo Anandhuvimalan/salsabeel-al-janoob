@@ -4,7 +4,6 @@ import type React from "react"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
-import Link from "next/link"
 
 interface ServiceCardProps {
   title: string
@@ -14,11 +13,57 @@ interface ServiceCardProps {
   arrowIcon: string
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA = {
+  section: {
+    badge: "Our Services",
+    heading: "What We Do For Our Clients",
+    description:
+      "We deliver comprehensive solutions tailored to your needs. Explore our range of specialized services designed to empower your success.",
+    accentColor: "#EF4444",
+    icons: {
+      arrowRight: "arrowIcon-1741690040750-mbdgkfl5uj.svg",
+    },
+  },
+  services: [
+    {
+      title: "Comprehensive Civil Solutions",
+      iconSrc: "service-0-1741690291831-w5m9zry0yt.svg",
+      description:
+        "Our expert team delivers complete project management, innovative design, efficient demolition, expert landscaping, and precision installations.",
+      features: ["Full-cycle project planning", "Innovative construction design", "Sustainable & energy-efficient"],
+    },
+    {
+      title: "State-of-the-Art Laundry Operations",
+      iconSrc: "service-1-1741690291831-1kyf0r0rmc7.svg",
+      description:
+        "Leveraging cutting-edge machinery and advanced technology, we offer high-quality, reliable laundry services for commercial and residential needs.",
+      features: ["Advanced cleaning technology", "Tailored service packages", "Rapid turnaround times"],
+    },
+    {
+      title: "Global Retail & Trade Expertise",
+      iconSrc: "service-2-1741690291831-mu8m5ftua6e.svg",
+      description:
+        "We streamline international commerce with seamless export-import services, strategic market insights, and innovative retail solutions.",
+      features: ["International market insights", "Strategic retail partnerships", "Innovative trade solutions"],
+    },
+    {
+      title: "Holistic Consultancy & Counseling",
+      iconSrc: "service-3-1741690291831-eb2tgpuovy.svg",
+      description:
+        "Our comprehensive advisory services thoroughly and effectively cover career strategies, HR consulting, language training, and empathetic counseling.",
+      features: ["Personalized career planning", "Expert HR consulting", "Counseling support"],
+    },
+  ],
+}
+
 const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, features, iconSrc, arrowIcon }) => {
   return (
     <GlareCard className="group flex flex-col p-6 sm:p-8 w-full max-w-sm hover:scale-105 transition-all duration-300 ease-in-out h-full relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 bg-white/10 rounded-full blur-2xl transform group-hover:scale-150 transition-transform duration-700 ease-in-out" 
-           aria-hidden="true" />
+      <div
+        className="absolute top-0 right-0 w-32 h-32 -mr-16 -mt-16 bg-white/10 rounded-full blur-2xl transform group-hover:scale-150 transition-transform duration-700 ease-in-out"
+        aria-hidden="true"
+      />
 
       <motion.div
         className="flex-1 relative z-10"
@@ -27,10 +72,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, features,
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <div className="mb-6">
-          <img 
-            src={iconSrc || "/placeholder.svg"} 
-            alt={`${title} icon`} 
-            className="w-8 h-8 text-white/80 mb-4" 
+          <img
+            src={iconSrc || "/placeholder.svg"}
+            alt={`${title} icon`}
+            className="w-8 h-8 text-white/80 mb-4"
             loading="lazy"
           />
           <h2 className="text-xl font-semibold text-white mb-3 leading-tight">{title}</h2>
@@ -70,7 +115,28 @@ export function GlareCardDemo() {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+
+          // Process fallback data with icon URLs
+          const processedFallbackData = {
+            section: {
+              ...FALLBACK_DATA.section,
+              icons: {
+                ...FALLBACK_DATA.section.icons,
+                arrowRight: getIconUrl(FALLBACK_DATA.section.icons.arrowRight),
+              },
+            },
+            services: FALLBACK_DATA.services.map((service: any) => ({
+              ...service,
+              iconSrc: getIconUrl(service.iconSrc),
+            })),
+          }
+
+          setData(processedFallbackData)
+          return
+        }
 
         const processedData = {
           section: {
@@ -89,7 +155,24 @@ export function GlareCardDemo() {
         setData(processedData)
       } catch (err) {
         console.error("Error fetching what we do data:", err)
-        setError(err instanceof Error ? err.message : "Failed to fetch data")
+        console.log("Using fallback data due to fetch error")
+
+        // Process fallback data with icon URLs
+        const processedFallbackData = {
+          section: {
+            ...FALLBACK_DATA.section,
+            icons: {
+              ...FALLBACK_DATA.section.icons,
+              arrowRight: getIconUrl(FALLBACK_DATA.section.icons.arrowRight),
+            },
+          },
+          services: FALLBACK_DATA.services.map((service: any) => ({
+            ...service,
+            iconSrc: getIconUrl(service.iconSrc),
+          })),
+        }
+
+        setData(processedFallbackData)
       } finally {
         setLoading(false)
       }
@@ -106,35 +189,16 @@ export function GlareCardDemo() {
   if (loading) {
     return (
       <main className="flex justify-center items-center min-h-screen" aria-label="Loading services">
-        <div 
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-          aria-hidden="true"
-        />
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" aria-hidden="true" />
       </main>
     )
   }
 
-  if (error) {
-    return (
-      <main className="flex justify-center items-center min-h-screen" aria-label="Services error">
-        <article className="text-center p-8 max-w-md">
-          <h2 role="alert" className="text-xl font-bold text-red-500 mb-4">
-            Loading Error
-          </h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            aria-label="Retry loading services"
-          >
-            Try Again
-          </button>
-        </article>
-      </main>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!data) {
+    return null // This should never happen with fallback data
   }
-
-  if (!data) return null
 
   return (
     <section aria-labelledby="services-heading" className="py-16 md:py-24 bg-white font-sans overflow-hidden">
@@ -154,9 +218,7 @@ export function GlareCardDemo() {
           <h2 id="services-heading" className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">
             {data.section.heading}
           </h2>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            {data.section.description}
-          </p>
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{data.section.description}</p>
         </motion.header>
 
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-4">
@@ -179,3 +241,4 @@ export function GlareCardDemo() {
 }
 
 export default GlareCardDemo
+

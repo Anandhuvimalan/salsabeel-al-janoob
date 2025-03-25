@@ -17,42 +17,41 @@ export const metadata: Metadata = {
     template: "%s | Salsabeel Al Janoob ImpExp",
   },
   description:
-    "Leading Oman-India cross-border trade experts offering end-to-end import-export solutions, customs clearance, and logistics management between Gulf countries and South Asia.",
+    "Be'ah & PDO-certified specialists in industrial waste management and global trade solutions. Your first-call partner for complex projects and cross-border operational excellence.",
   keywords: [
-    // Geo-Specific Keywords
-    "Oman India import export company",
-    "Muscat to Coimbatore trade services",
-    "Gulf-India logistics solutions",
-    "Sohar port shipping services",
-    "Chennai maritime logistics",
+    // Certifications & Approvals
+    "Be'ah approved waste management",
+    "PDO certified services",
+    "Oman government approved",
+    "chemical waste specialists",
     
-    // Service Keywords
-    "customs brokerage Oman India",
-    "freight forwarding Muscat to Mumbai",
-    "FTA benefits Oman India trade",
-    "cross-border documentation experts",
-    "cold chain logistics Gulf region",
+    // Core Services
+    "Oman-India import export",
+    "waste oil purification",
+    "MEP civil works Oman",
+    "hazardous waste disposal",
+    "international trade compliance",
 
     // Industry Terms
-    "international trade consultancy Oman",
-    "global shipping solutions India",
-    "air sea cargo consolidation",
-    "project cargo handling specialists",
-    "trade compliance advisory",
+    "cross-border logistics solutions",
+    "specialty waste conversion",
+    "construction project management",
+    "petroleum waste handling",
+    "global trade consultancy",
 
-    // Product Keywords
-    "general cargo services",
-    "perishables logistics Oman",
-    "construction materials shipping",
-    "textile export specialists India",
-    "petrochemicals transportation",
+    // Geographic Focus
+    "Sultanate of Oman trade",
+    "Indian market entry",
+    "Gulf-India corridor",
+    "Middle East waste solutions",
+    "South Asia logistics",
 
-    // Long-Tail Keywords
-    "best import export company in Oman",
-    "how to export from India to GCC",
-    "reliable freight forwarders Muscat",
-    "customs clearance agents Coimbatore",
-    "Oman India trade agreement experts"
+    // Value Propositions
+    "first-call trade experts",
+    "end-to-end waste management",
+    "certified conversion services",
+    "government-approved contractors",
+    "specialized market entry"
   ],
   authors: [{ name: "Salsabeel Al Janoob ImpExp" }],
   creator: "Salsabeel Al Janoob ImpExp",

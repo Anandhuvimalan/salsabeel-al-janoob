@@ -44,6 +44,80 @@ type AboutData = {
   }
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: AboutData = {
+  hero: {
+    title: {
+      highlight: "Salsabeel Al Janoob",
+      subtitle: "Pioneering Global Trade Since 1975",
+    },
+    description: [
+      "Established in 1975 in Oman, Salsabeel Al Janoob combines five decades of trading excellence with official approvals from Be'ah, PDO, and key ministries. Our expertise connects Oman to global markets while providing superior local services.",
+      "Our foundation of proven industry expertise combined with our commitment to cutting-edge technology sets us apart. Through our digital-first approach, we've revolutionized cross-border trade with efficient, secure, and transparent solutions. Now, we're proud to announce our expansion into the Indian market, extending our legacy of excellence to one of the world's most dynamic economies while maintaining our deep roots in Oman.",
+    ],
+    button: {
+      text: "Explore Our Network",
+    },
+    image: {
+      src: "1741697957449-1q84ovd4657.webp",
+      alt: "Importing-&-Exporting-Trade",
+    },
+    imageOverlay: {
+      text: "48 Countries Connected",
+      icon: "1741650400829-20ws43sxopb.svg",
+    },
+  },
+  achievements: [
+    {
+      value: 49,
+      suffix: "+",
+      label: "Years in Global Trade",
+      color: "text-blue-600",
+    },
+    {
+      value: 1500,
+      suffix: "+",
+      label: "Successful Shipments",
+      color: "text-teal-600",
+    },
+    {
+      value: 95,
+      suffix: "%",
+      label: "On-Time Delivery Rate",
+      color: "text-purple-600",
+    },
+    {
+      value: 50,
+      suffix: "+",
+      label: "Global Partnerships",
+      color: "text-orange-600",
+    },
+  ],
+  values: {
+    title: "Our Evolving Expertise",
+    items: [
+      {
+        icon: "1741650400830-64dm7qo400y.svg",
+        title: "Global Retail Consultancy",
+        description:
+          "Leveraging our deep-rooted expertise in global trade, our retail consultancy services empower businesses with strategic market insights and proven methodologies. We provide tailored guidance that enables retailers to navigate international markets confidently, ensuring they capitalize on emerging trends and global opportunities.",
+        iconColor: "text-blue-600",
+      },
+      {
+        icon: "1741650400829-auhyegrjajf.svg",
+        title: "Comprehensive Civil Construction & Community Development",
+        description:
+          "Our civil services cover the complete spectrum—from innovative design and full-scale construction to advanced solar and electrical installations, along with efficient waste recycling solutions. Complementing our technical expertise, we are committed to community enrichment through educational programs, career development initiatives, and comprehensive well-being support, driving sustainable progress across the region.",
+        iconColor: "text-teal-600",
+      },
+    ],
+    image: {
+      src: "1741650466278-ddlungj3jlk.webp",
+      alt: "Global-Trade-Logistics",
+    },
+  },
+}
+
 const AboutSection = () => {
   const [aboutData, setAboutData] = useState<AboutData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -59,11 +133,18 @@ const AboutSection = () => {
           .limit(1)
           .single()
 
-        if (error) throw error
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+          setAboutData(FALLBACK_DATA)
+          return
+        }
+
         setAboutData(data)
       } catch (err) {
         console.error("Failed to fetch about data:", err)
-        setError(err instanceof Error ? err.message : "Failed to load data")
+        console.log("Using fallback data due to fetch error")
+        setAboutData(FALLBACK_DATA)
       } finally {
         setIsLoading(false)
       }
@@ -81,7 +162,7 @@ const AboutSection = () => {
   if (isLoading) {
     return (
       <main className="flex justify-center items-center min-h-screen">
-        <div 
+        <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
           aria-label="Loading about section"
         />
@@ -89,26 +170,10 @@ const AboutSection = () => {
     )
   }
 
-  if (error || !aboutData) {
-    return (
-      <main className="flex justify-center items-center min-h-screen">
-        <article className="text-center p-8 max-w-md">
-          <h2 role="alert" className="text-xl font-bold text-red-500 mb-4">
-            Error Loading Data
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {error || "Failed to load about section data"}
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            aria-label="Retry loading about section"
-          >
-            Try Again
-          </button>
-        </article>
-      </main>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!aboutData) {
+    return null // This should never happen with fallback data
   }
 
   return (
@@ -128,9 +193,7 @@ const AboutSection = () => {
                 {aboutData.hero.title.highlight}
               </span>
               <br />
-              <span className="text-slate-700 dark:text-slate-300 font-medium">
-                {aboutData.hero.title.subtitle}
-              </span>
+              <span className="text-slate-700 dark:text-slate-300 font-medium">{aboutData.hero.title.subtitle}</span>
             </h2>
 
             <div className="space-y-6 text-lg text-slate-600 dark:text-slate-400">
@@ -157,17 +220,20 @@ const AboutSection = () => {
             className="flex-1 relative h-[500px] rounded-3xl overflow-hidden shadow-2xl"
           >
             <img
-              src={getImageUrl(aboutData.hero.image.src)}
+              src={getImageUrl(aboutData.hero.image.src) || "/placeholder.svg"}
               alt={aboutData.hero.image.alt}
               className="w-full h-full object-cover"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60" aria-hidden="true" />
+            <div
+              className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60"
+              aria-hidden="true"
+            />
             <figcaption className="absolute bottom-0 left-0 right-0 p-8 text-white">
               <div className="flex items-center gap-4">
                 {aboutData.hero.imageOverlay.icon && (
                   <img
-                    src={getImageUrl(aboutData.hero.imageOverlay.icon)}
+                    src={getImageUrl(aboutData.hero.imageOverlay.icon) || "/placeholder.svg"}
                     alt=""
                     aria-hidden="true"
                     className="h-8 w-8 text-teal-400"
@@ -182,7 +248,9 @@ const AboutSection = () => {
 
       {/* Achievements Section */}
       <section aria-labelledby="achievements-heading" className="py-24 px-6">
-        <h2 id="achievements-heading" className="sr-only">Company Achievements</h2>
+        <h2 id="achievements-heading" className="sr-only">
+          Company Achievements
+        </h2>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {aboutData.achievements.map((achievement, index) => (
             <motion.article
@@ -211,7 +279,10 @@ const AboutSection = () => {
       </section>
 
       {/* Values Section */}
-      <section aria-labelledby="values-heading" className="py-24 px-6 bg-gradient-to-r from-blue-50 to-teal-50 dark:from-slate-900 dark:to-slate-800">
+      <section
+        aria-labelledby="values-heading"
+        className="py-24 px-6 bg-gradient-to-r from-blue-50 to-teal-50 dark:from-slate-900 dark:to-slate-800"
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -232,7 +303,7 @@ const AboutSection = () => {
                   <li key={index} className="flex items-start gap-6">
                     {item.icon && (
                       <img
-                        src={getImageUrl(item.icon)}
+                        src={getImageUrl(item.icon) || "/placeholder.svg"}
                         alt=""
                         aria-hidden="true"
                         className={`h-8 w-8 ${item.iconColor} flex-shrink-0`}
@@ -249,12 +320,15 @@ const AboutSection = () => {
 
             <figure className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
               <img
-                src={getImageUrl(aboutData.values.image.src)}
+                src={getImageUrl(aboutData.values.image.src) || "/placeholder.svg"}
                 alt={aboutData.values.image.alt}
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60" aria-hidden="true" />
+              <div
+                className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-900/60"
+                aria-hidden="true"
+              />
             </figure>
           </motion.div>
         </div>
@@ -264,3 +338,4 @@ const AboutSection = () => {
 }
 
 export default AboutSection
+

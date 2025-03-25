@@ -12,6 +12,14 @@ interface CallToActionData {
   button_link: string
 }
 
+// Fallback data to use when Supabase fetch fails
+const FALLBACK_DATA: CallToActionData = {
+  heading: "Ready to Elevate Your Business?",
+  subheading: "Join us today and unlock unparalleled growth opportunities.",
+  button_text: "Get Started",
+  button_link: "/contact",
+}
+
 const CallToAction = () => {
   const [callToActionData, setCallToActionData] = useState<CallToActionData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -23,35 +31,30 @@ const CallToAction = () => {
         setIsLoading(true)
         setError(null)
 
-        const { count, error: countError } = await supabase
-          .from("aboutpage_calltoaction")
-          .select("*", { count: "exact", head: true })
-
-        if (countError) throw new Error("Failed to check data existence")
-
-        if (count === 0) {
-          const defaultData = {
-            heading: "Ready to Elevate Your Business?",
-            subheading: "Join us today and unlock unparalleled growth opportunities.",
-            button_text: "Get Started",
-            button_link: "/contact",
-          }
-
-          const { error: insertError } = await supabase.from("aboutpage_calltoaction").insert(defaultData)
-          if (insertError) throw new Error("Failed to initialize data")
-        }
-
         const { data, error } = await supabase
           .from("aboutpage_calltoaction")
           .select("*")
           .order("id", { ascending: true })
           .limit(1)
 
-        if (error || !data?.length) throw new Error("Data not found")
+        if (error) {
+          console.error("Supabase error:", error)
+          console.log("Using fallback data due to Supabase error")
+          setCallToActionData(FALLBACK_DATA)
+          return
+        }
+
+        if (!data?.length) {
+          console.log("No data found, using fallback data")
+          setCallToActionData(FALLBACK_DATA)
+          return
+        }
 
         setCallToActionData(data[0])
       } catch (err) {
-        setError("Failed to load call to action data. Please refresh the page.")
+        console.error("Error fetching call to action data:", err)
+        console.log("Using fallback data due to fetch error")
+        setCallToActionData(FALLBACK_DATA)
       } finally {
         setIsLoading(false)
       }
@@ -76,17 +79,11 @@ const CallToAction = () => {
     )
   }
 
-  if (error) {
-    return (
-      <section className="py-16 bg-amber-600" role="alert" aria-live="assertive">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-white">{error}</p>
-        </div>
-      </section>
-    )
+  // We no longer need to show an error state since we're using fallback data
+  // But we'll keep the error state in the component state for logging purposes
+  if (!callToActionData) {
+    return null // This should never happen with fallback data
   }
-
-  if (!callToActionData) return null
 
   return (
     <section aria-label="Call to action" className="py-16 bg-amber-600">
@@ -115,3 +112,4 @@ const CallToAction = () => {
 }
 
 export default CallToAction
+
