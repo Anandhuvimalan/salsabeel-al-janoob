@@ -71,10 +71,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/civil-contracts",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/civil-contracts",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/civil-contracts",
-    },
   },
   category: "Construction",
   manifest: "/site.webmanifest",

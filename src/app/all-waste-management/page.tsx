@@ -72,10 +72,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/all-waste-management",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/all-waste-management",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/all-waste-management",
-    },
   },
   category: "Waste Management",
   manifest: "/site.webmanifest",

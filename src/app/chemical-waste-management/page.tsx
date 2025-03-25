@@ -71,10 +71,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/chemical-waste-management",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/chemical-waste-management",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/chemical-waste-management",
-    },
   },
   category: "EnvironmentalService",
   manifest: "/site.webmanifest",

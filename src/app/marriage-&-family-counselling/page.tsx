@@ -71,10 +71,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/marriage-&-family-counseling",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/marriage-&-family-counseling",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/marriage-&-family-counseling",
-    },
   },
   category: "Counseling",
   manifest: "/site.webmanifest",

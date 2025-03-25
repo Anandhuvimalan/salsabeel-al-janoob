@@ -74,10 +74,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/educational-&-career-guidance",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/educational-&-career-guidance",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/educational-&-career-guidance",
-    },
   },
   category: "Education",
   manifest: "/site.webmanifest",

@@ -74,10 +74,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/foreign-language-learning-centers",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/foreign-language-learning-centers",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/foreign-language-learning-centers",
-    },
   },
   category: "Education",
   manifest: "/site.webmanifest",

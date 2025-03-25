@@ -52,10 +52,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/privacy-policy",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/privacy-policy",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/privacy-policy",
-    },
   },
   category: "Legal",
   manifest: "/site.webmanifest",

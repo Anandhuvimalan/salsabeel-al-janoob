@@ -61,10 +61,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/contact",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/contact",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/contact",
-    },
   },
   category: "CustomerSupport",
   manifest: "/site.webmanifest",

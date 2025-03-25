@@ -71,10 +71,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/drug-addiction-counseling",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/drug-addiction-counseling",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/drug-addiction-counseling",
-    },
   },
   category: "Counseling",
   manifest: "/site.webmanifest",

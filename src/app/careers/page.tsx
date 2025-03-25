@@ -62,10 +62,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/careers",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/careers",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/careers",
-    },
   },
   category: "Employment",
   manifest: "/site.webmanifest",

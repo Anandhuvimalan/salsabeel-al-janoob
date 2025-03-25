@@ -72,10 +72,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/laundry-services",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/laundry-services",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/laundry-services",
-    },
   },
   category: "HouseholdServices",
   manifest: "/site.webmanifest",

@@ -72,10 +72,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/about",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/about",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/about",
-    },
   },
   category: "Corporate",
   manifest: "/site.webmanifest",

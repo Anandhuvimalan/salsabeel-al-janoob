@@ -71,10 +71,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/vasthu-consultancy",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/vasthu-consultancy",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/vasthu-consultancy",
-    },
   },
   category: "ProfessionalService",
   manifest: "/site.webmanifest",

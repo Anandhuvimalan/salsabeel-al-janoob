@@ -71,10 +71,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/retail-consultancy",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/retail-consultancy",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/retail-consultancy",
-    },
   },
   category: "HouseholdServices",
   manifest: "/site.webmanifest",

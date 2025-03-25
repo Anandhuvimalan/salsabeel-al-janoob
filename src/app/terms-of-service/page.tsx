@@ -50,10 +50,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/terms-of-service",
-    languages: {
-      en: "https://salsabeelaljanoobimpexp.com/terms-of-service",
-      ar: "https://salsabeelaljanoobimpexp.com/ar/terms-of-service",
-    },
   },
   category: "Legal",
   manifest: "/site.webmanifest",
