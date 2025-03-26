@@ -13,11 +13,11 @@ import MemorialSection from "@/components/aboutpage/Memorial";
 export const metadata: Metadata = {
   metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
   title: {
-    default: "About Salsabeel Al Janoob ImpExp | Global Trade Leaders Since 1975",
+    default: "About Salsabeel Al Janoob Imp Exp | Trade Experts Since 1975",
     template: "%s | Salsabeel Al Janoob ImpExp",
   },
   description:
-    "Witness our rapid ascent from local waste specialists to international trade architects – delivering Be'ah-approved solutions across continents.",
+    "BE'AH, PDO-certified industrial experts with 49 years experience. Specializing in chemical waste management, civil works, and import/export across countries.",
   openGraph: {
     type: "website",
     locale: "en_IN",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: "Salsabeel Al Janoob ImpExp",
     title: "Our Legacy | Salsabeel Al Janoob ImpExp",
     description:
-      "Pioneers in global commerce since 1975, now bringing expertise in international trade, logistics, and freight forwarding to India's market",
+      "Pioneers in global commerce since 1975, delivering comprehensive global trade solutions, expert logistics, and reliable freight forwarding.",
     images: [
       {
         url: "/about-og.webp",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Our Legacy | Salsabeel Al Janoob ImpExp",
     description:
-      "Pioneers in global commerce since 1975, delivering excellence in international trade, logistics, and freight forwarding.",
+      "Pioneers in global commerce since 1975, delivering excellence in international trade, logistics, and global trade solutions.",
     images: ["/about-og.webp"],
     creator: "@salsabeelaljanoob",
     site: "@salsabeelaljanoob",
@@ -93,6 +93,51 @@ export default function AboutPage() {
         })}
       </script>
       <HeroSection />
+      <div className="sr-only" aria-hidden="true">
+        <h1>Salsabeel Al Janoob Imp Exp - Industrial Solutions Since 1975</h1>
+        
+        <h2>49-Year Operational Legacy</h2>
+        <p>
+          Founded in 1975 by Khalfan Abdullah Khalfan Al Mandhari, our services include:
+        </p>
+        <ul>
+          <li>BE'AH-certified chemical waste management</li>
+          <li>PDO-approved petroleum industry solutions</li>
+          <li>Government-recognized import/export operations</li>
+          <li>Sustainable civil construction & MEP works</li>
+        </ul>
+
+        <h2>Key Operational Milestones</h2>
+        <h3>Oman Foundation</h3>
+        <ul>
+          <li>1975: Established in Muscat</li>
+          <li>1500+ completed industrial projects</li>
+          <li>95% client retention rate</li>
+          <li>Specialized waste oil conversion systems</li>
+        </ul>
+
+        <h3>Global Presence</h3>
+        <ul>
+          <li>Expanding our network across multiple countries</li>
+          <li>Local and international recycling solutions</li>
+          <li>Robust service infrastructure</li>
+        </ul>
+
+        <h2>Certifications & Compliance</h2>
+        <ul>
+          <li>Omani Ministry of Commerce Approved</li>
+          <li>BE'AH Environmental Certification</li>
+          <li>PDO Certified</li>
+          <li>ISO 9001:2015 Quality Standard</li>
+        </ul>
+
+        <h2>Core Service Divisions</h2>
+        <ol>
+          <li>International Trade Compliance</li>
+          <li>Industrial Waste Management</li>
+          <li>Civil Infrastructure Development</li>
+        </ol>
+      </div>
       <CompanyAbout />
       <ValuesSection />
       <VisionMissionSection />

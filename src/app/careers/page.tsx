@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: "%s | Salsabeel Al Janoob ImpExp",
   },
   description:
-    "Join our team and be part of our mission to provide exceptional services across multiple industries. Discover career opportunities, growth, and a dynamic work environment.",
+    "Join our team and be part of our mission to provide exceptional services across multiple industries. Discover our career opportunities",
   keywords: [
     "careers",
     "jobs",

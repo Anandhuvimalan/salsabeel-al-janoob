@@ -40,19 +40,28 @@ export default function RootLayout({
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            name: "Salsabeel Al Janoob ImpExp",
-            url: "https://salsabeelaljanoobimpexp.com",
-            logo: "https://salsabeelaljanoobimpexp.com/logo.svg",
-            sameAs: ["https://facebook.com/yourpage", "https://linkedin.com/company/yourcompany"],
+            name: "Salsabeel Al Janoob Trd Est.",
+            url: "https://salsabeelaljanoob.com",
+            logo: "https://salsabeelaljanoob.com/logo.svg",
+            sameAs: [
+              "https://facebook.com/salsabeelaljanoob", 
+              "https://linkedin.com/company/salsabeelaljanoob"
+            ],
             contactPoint: {
               "@type": "ContactPoint",
               telephone: "+968-9171-8606",
-              contactType: "Customer Service",
-              availableLanguage: "English"
+              contactType: "Customer Service"
             },
             foundingDate: "1975-01-01",
-            description: "Specialists in Oman-India trade solutions with 45+ years experience in cross-border logistics",
-            keywords: "Oman-India trade, GCC logistics, customs clearance, freight forwarding, export documentation"
+            description: "Specialists in Oman-India trade solutions with expertise in import & export, waste management, and civil works. Serving markets in Oman and India with world-class services.",
+            keywords: [
+              "Oman-India trade", 
+              "Waste management", 
+              "Chemical waste collection", 
+              "Waste oil purification", 
+              "Civil and MEP works", 
+              "Import export services"
+            ]
           })}
         </script>
 
