@@ -7,17 +7,12 @@ const ScrollDownIndicator = () => {
 
   // Add scroll event listener to hide the indicator when user scrolls
   useEffect(() => {
-    const handleScroll = () => {
-      // Hide the indicator when scroll position is more than 50px from top
-      if (window.scrollY > 50) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-    };
+    // Hide the indicator when scroll position is more than 50px from top.
+    // React skips the re-render when the value is unchanged.
+    const handleScroll = () => setIsVisible(window.scrollY <= 50);
 
     // Add event listener
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     // Clean up event listener
     return () => {

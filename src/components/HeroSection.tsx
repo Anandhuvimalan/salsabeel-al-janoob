@@ -1,7 +1,7 @@
 "use client"
-import { useEffect, useState, useRef, useMemo, useCallback } from "react"
+import { useEffect, useState, useRef, useCallback } from "react"
 import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { supabase } from "@/lib/supabaseClient"
 import { BrandLoader } from "@/components/ui/brand-loader"
 import ScrollDownIndicator from "./ScrollDownIndicator"
@@ -74,12 +74,12 @@ function normalizeHeroData(row: any): HeroSectionData {
 export default function HeroSection({ initialData }: { initialData?: any }) {
   const [data, setData] = useState<HeroSectionData | null>(() => (initialData ? normalizeHeroData(initialData) : null))
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isAnimating, setIsAnimating] = useState(false)
+  // Slide being wiped away on top of the current one (null when idle)
+  const [leavingImageIndex, setLeavingImageIndex] = useState<number | null>(null)
   const [firstImageLoaded, setFirstImageLoaded] = useState(false)
   const [revealed, setRevealed] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
-  const cycleTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const animationTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const leaveTimerRef = useRef<NodeJS.Timeout | null>(null)
   const mountedAtRef = useRef(Date.now())
 
   // Only fetch on the client when the server didn't provide data
@@ -121,37 +121,36 @@ export default function HeroSection({ initialData }: { initialData?: any }) {
 
   const handleFirstImageLoad = useCallback(() => setFirstImageLoaded(true), [])
 
-  // Calculate the next image index
-  const nextImageIndex = useMemo(() => {
-    if (!data?.images?.length) return 0
-    return (currentImageIndex + 1) % data.images.length
-  }, [currentImageIndex, data?.images?.length])
+  const imageCount = data?.images.length ?? 0
+  const animationDuration = data?.animation_settings.animationDuration ?? 1500
+  const cycleDuration = data?.animation_settings.cycleDuration ?? 5000
 
-  // Handle image cycling and curtain effect
+  // Switch slides: the current slide becomes the "leaving" layer that wipes away
+  // on top while the target (already loaded and painted) sits underneath.
+  const currentIndexRef = useRef(0)
+  const goToSlide = useCallback(
+    (target: number) => {
+      const current = currentIndexRef.current
+      if (target === current) return
+      currentIndexRef.current = target
+      setLeavingImageIndex(current)
+      setCurrentImageIndex(target)
+      if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current)
+      leaveTimerRef.current = setTimeout(() => setLeavingImageIndex(null), animationDuration)
+    },
+    [animationDuration],
+  )
+
+  // Auto-advance; restarts whenever the slide changes (including manual clicks)
   useEffect(() => {
-    if (!revealed || !data?.images || data.images.length <= 1) return
+    if (!revealed || imageCount <= 1) return
+    const timer = setTimeout(() => goToSlide((currentImageIndex + 1) % imageCount), cycleDuration)
+    return () => clearTimeout(timer)
+  }, [revealed, imageCount, currentImageIndex, cycleDuration, goToSlide])
 
-    if (cycleTimerRef.current) clearTimeout(cycleTimerRef.current)
-    if (animationTimerRef.current) clearTimeout(animationTimerRef.current)
-
-    const { cycleDuration, animationDuration } = data.animation_settings
-
-    const cycleImages = () => {
-      setIsAnimating(true)
-      animationTimerRef.current = setTimeout(() => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % data.images.length)
-        setIsAnimating(false)
-        cycleTimerRef.current = setTimeout(cycleImages, cycleDuration - animationDuration)
-      }, animationDuration)
-    }
-
-    cycleTimerRef.current = setTimeout(cycleImages, cycleDuration)
-
-    return () => {
-      if (cycleTimerRef.current) clearTimeout(cycleTimerRef.current)
-      if (animationTimerRef.current) clearTimeout(animationTimerRef.current)
-    }
-  }, [revealed, data])
+  useEffect(() => () => {
+    if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current)
+  }, [])
 
   const textAnimationVariants = {
     hidden: { opacity: 0, y: 24 },
@@ -174,57 +173,32 @@ export default function HeroSection({ initialData }: { initialData?: any }) {
   return (
     <section className="relative h-screen overflow-hidden bg-zinc-950" aria-label="Hero section showcasing global trade services">
       <BrandLoader exiting={revealed} label="Loading hero section" />
-      <div className="absolute inset-0">
-        {data.images.length > 0 && (
-          <>
-            {data.images.length > 1 && (
-              <div className="absolute inset-0 z-0">
-                <Image
-                  src={data.images[nextImageIndex]?.src}
-                  alt={data.images[nextImageIndex]?.alt || ""}
-                  fill
-                  sizes="100vw"
-                  quality={80}
-                  className="object-cover"
-                />
-              </div>
-            )}
-            <AnimatePresence initial={false}>
-              <motion.div
-                key={currentImageIndex}
-                className="absolute inset-0 z-1"
-                initial={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
-                animate={{
-                  clipPath: isAnimating
-                    ? "polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)"
-                    : "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-                }}
-                transition={{
-                  duration: data.animation_settings.animationDuration / 1000,
-                  ease: [0.645, 0.045, 0.355, 1],
-                }}
-              >
-                <motion.div
-                  className="absolute inset-0"
-                  initial={{ scale: 1.08 }}
-                  animate={{ scale: revealed ? 1 : 1.08 }}
-                  transition={{ duration: 6, ease: "easeOut" }}
-                >
-                  <Image
-                    src={data.images[currentImageIndex]?.src}
-                    alt={data.images[currentImageIndex]?.alt || ""}
-                    fill
-                    sizes="100vw"
-                    quality={80}
-                    priority={currentImageIndex === 0}
-                    onLoad={currentImageIndex === 0 ? handleFirstImageLoad : undefined}
-                    className="object-cover"
-                  />
-                </motion.div>
-              </motion.div>
-            </AnimatePresence>
-          </>
-        )}
+      {/* All slides stay mounted (and loaded); only their layer state changes. See .hero-slide in globals.css */}
+      <div className="absolute inset-0" style={{ ["--hero-wipe-ms" as string]: `${animationDuration}ms` }}>
+        {data.images.map((image, index) => {
+          const isCurrent = index === currentImageIndex
+          const isLeaving = index === leavingImageIndex
+          return (
+            <div
+              key={`${index}-${image.src}`}
+              className={`hero-slide${isCurrent && revealed ? " is-active" : ""}${isLeaving ? " is-leaving" : ""}${isCurrent || isLeaving ? " is-shown" : ""}`}
+              style={{ zIndex: isLeaving ? 2 : isCurrent ? 1 : 0 }}
+              aria-hidden={!isCurrent}
+            >
+              <Image
+                src={image.src}
+                alt={isCurrent ? image.alt || "" : ""}
+                fill
+                sizes="100vw"
+                quality={80}
+                priority={index === 0}
+                loading={index === 0 ? undefined : "eager"}
+                onLoad={index === 0 ? handleFirstImageLoad : undefined}
+                className="hero-slide__img object-cover"
+              />
+            </div>
+          )
+        })}
       </div>
       <div
         className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-black/30 z-10"
@@ -313,15 +287,7 @@ export default function HeroSection({ initialData }: { initialData?: any }) {
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
                   index === currentImageIndex ? "bg-white w-6" : "bg-white/40 hover:bg-white/60"
                 }`}
-                onClick={() => {
-                  setCurrentImageIndex(index)
-                  setIsAnimating(true)
-                  if (cycleTimerRef.current) clearTimeout(cycleTimerRef.current)
-                  if (animationTimerRef.current) clearTimeout(animationTimerRef.current)
-                  animationTimerRef.current = setTimeout(() => {
-                    setIsAnimating(false)
-                  }, data.animation_settings.animationDuration)
-                }}
+                onClick={() => goToSlide(index)}
                 aria-label={`View image ${index + 1}`}
                 aria-current={index === currentImageIndex ? "true" : "false"}
               />

@@ -48,6 +48,46 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Home hero slideshow (components/HeroSection.tsx).
+   Every slide stays mounted; the leaving slide wipes away on top of the current one. */
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  contain: paint;
+}
+.hero-slide.is-shown {
+  visibility: visible;
+}
+.hero-slide__img {
+  transform: scale(1.06);
+  backface-visibility: hidden;
+}
+.hero-slide.is-active .hero-slide__img,
+.hero-slide.is-leaving .hero-slide__img {
+  transform: scale(1);
+  transition: transform 7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-slide.is-leaving {
+  will-change: clip-path;
+  animation: heroWipe var(--hero-wipe-ms, 1500ms) cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
+}
+@keyframes heroWipe {
+  from { clip-path: inset(0 0 0 0); }
+  to { clip-path: inset(0 100% 0 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide__img,
+  .hero-slide.is-active .hero-slide__img,
+  .hero-slide.is-leaving .hero-slide__img {
+    transform: none;
+    transition: none;
+  }
+  .hero-slide.is-leaving {
+    animation-duration: 1ms;
+  }
+}
+
 /* Brand loader (components/ui/brand-loader.tsx) */
 .brand-loader__ring {
   stroke-dasharray: 289;

@@ -8,6 +8,7 @@ import { ChevronDown, Mail } from "lucide-react"
 import NavbarMobile from "@/components/NavBar/NavbarMobile"
 import { supabase } from "@/lib/supabaseClient"
 import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { useScrollNav } from "@/hooks/use-scroll-nav"
 
 const NavbarDesktop = () => {
   const prefetched = usePrefetchedSection("services_section")
@@ -26,9 +27,8 @@ const NavbarDesktop = () => {
   const [isServicesOpen, setIsServicesOpen] = useState(false)
   const [hoveredServiceIndex, setHoveredServiceIndex] = useState(0)
   const [preloadedImages, setPreloadedImages] = useState<Record<number, string>>({})
-  const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [isScrolled, setIsScrolled] = useState(false)
+  const { hidden, scrolled: isScrolled } = useScrollNav()
+  const isVisible = !hidden || isServicesOpen
   const [isNavHovered, setIsNavHovered] = useState(false)
 
   useEffect(() => {
@@ -44,18 +44,6 @@ const NavbarDesktop = () => {
       preload()
     }
   }, [services])
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY
-      setIsVisible(currentScrollY < lastScrollY || currentScrollY < 50)
-      setIsScrolled(currentScrollY > 50)
-      setLastScrollY(currentScrollY)
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [lastScrollY])
 
   useEffect(() => {
     if (prefetched) return
@@ -141,7 +129,7 @@ const NavbarDesktop = () => {
       aria-label="Main navigation"
       onMouseEnter={() => setIsNavHovered(true)}
       onMouseLeave={() => setIsNavHovered(false)}
-      className={`hidden lg:block fixed top-0 left-0 w-full z-[100] py-4 transition-all duration-300 ${
+      className={`hidden lg:block fixed top-0 left-0 w-full z-[100] py-4 transition-[transform,background-color,box-shadow] duration-300 will-change-transform ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       } ${hasBackground ? "bg-gray-900/95 backdrop-blur-sm text-white shadow-lg" : "bg-transparent text-white"}`}
     >

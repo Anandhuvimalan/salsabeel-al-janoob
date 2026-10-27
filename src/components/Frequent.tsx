@@ -194,7 +194,7 @@ export default function Frequent() {
               key={index}
               ref={(el) => (elementsRef.current[index + 1] = el)}
               role="listitem"
-              className="rounded-xl bg-slate-800/40 backdrop-blur-lg border border-slate-700/50 hover:border-cyan-400/50 transition-all duration-300 shadow-xl shadow-slate-900/20 animate-fade-in"
+              className="rounded-xl bg-slate-800/40 border border-slate-700/50 hover:border-cyan-400/50 transition-colors duration-300 shadow-xl shadow-slate-900/20 animate-fade-in"
             >
               <button
                 onClick={() => toggleFAQ(index)}

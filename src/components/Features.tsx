@@ -214,7 +214,7 @@ export default function Features() {
               ref={(el) => {
                 elementsRef.current[index + 1] = el
               }}
-              className="relative h-full p-6 rounded-2xl bg-slate-800/30 backdrop-blur-sm border border-slate-700 hover:border-teal-400/30 transition-all duration-300 animate-fade-in"
+              className="relative h-full p-6 rounded-2xl bg-slate-800/30 border border-slate-700 hover:border-teal-400/30 transition-colors duration-300 animate-fade-in"
               aria-labelledby={`feature-${index}-title`}
             >
               <div className="flex flex-col h-full">

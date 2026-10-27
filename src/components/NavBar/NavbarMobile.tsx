@@ -6,6 +6,7 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { supabase } from "@/lib/supabaseClient"
 import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { useScrollNav } from "@/hooks/use-scroll-nav"
 
 const menuVariants = {
   hidden: {
@@ -84,9 +85,8 @@ const NavbarMobile = () => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isServicesOpen, setIsServicesOpen] = useState(false)
-  const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [scrolled, setScrolled] = useState(false)
+  const { hidden, scrolled } = useScrollNav({ topOffset: 10 })
+  const isVisible = !hidden || isMenuOpen
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -99,22 +99,6 @@ const NavbarMobile = () => {
       document.body.style.overflow = "auto"
     }
   }, [isMenuOpen])
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        setIsVisible(false)
-      } else {
-        setIsVisible(true)
-      }
-      setScrolled(currentScrollY > 10)
-      setLastScrollY(currentScrollY)
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [lastScrollY])
 
   useEffect(() => {
     if (prefetched) return
@@ -147,7 +131,7 @@ const NavbarMobile = () => {
 
   return (
     <nav
-      className={`block md:block lg:hidden text-white w-full fixed z-[100] transition-all duration-500 ease-in-out ${
+      className={`block md:block lg:hidden text-white w-full fixed z-[100] transition-[transform,background-color,box-shadow] duration-500 ease-in-out will-change-transform ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       } ${scrolled || isMenuOpen ? "bg-gray-900/95 backdrop-blur-md shadow-lg" : "bg-transparent"}`}
       aria-label="Mobile navigation"
