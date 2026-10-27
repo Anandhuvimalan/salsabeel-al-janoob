@@ -136,7 +136,7 @@ const NavbarMobile = () => {
       } ${scrolled || isMenuOpen ? "bg-gray-900/95 backdrop-blur-md shadow-lg" : "bg-transparent"}`}
       aria-label="Mobile navigation"
     >
-      <div className="top-0 left-0 w-full flex items-center justify-between px-6 py-4">
+      <div className="top-0 left-0 w-full flex items-center justify-between px-4 py-4">
         <Link href="/" className="flex items-center space-x-2 z-50" aria-label="Home">
           <Image 
             src="/logo.svg" 

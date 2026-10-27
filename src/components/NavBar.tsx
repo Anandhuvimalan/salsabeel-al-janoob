@@ -82,7 +82,7 @@ const NavbarDesktop = () => {
         aria-label="Main navigation loading" 
         className="hidden lg:block fixed top-0 left-0 w-full z-[100] py-4 bg-gray-900/95 backdrop-blur-sm text-white shadow-lg"
       >
-        <div className="container mx-auto px-6 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
           <Link href="/" className="flex items-center" aria-label="Home">
             <Image 
               src="/logo.svg" 
@@ -117,7 +117,7 @@ const NavbarDesktop = () => {
         aria-label="Navigation error" 
         className="hidden lg:block fixed top-0 left-0 w-full z-[100] py-4 bg-red-900/80 backdrop-blur-sm text-white shadow-lg"
       >
-        <div className="container mx-auto px-6 text-center">
+        <div className="max-w-7xl mx-auto px-4 text-center">
           Error loading navigation: {error}
         </div>
       </nav>
@@ -133,7 +133,7 @@ const NavbarDesktop = () => {
         isVisible ? "translate-y-0" : "-translate-y-full"
       } ${hasBackground ? "bg-gray-900/95 backdrop-blur-sm text-white shadow-lg" : "bg-transparent text-white"}`}
     >
-      <div className="container mx-auto px-6 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
       <Link href="/" className="flex items-center" aria-label="Home">
         <Image 
           src="/logo.svg" 
@@ -191,7 +191,7 @@ const NavbarDesktop = () => {
                   transition={{ duration: 0.4, ease: "easeOut" }}
                   className="fixed left-0 right-0 w-full bg-gray-900/95 backdrop-blur-md text-white z-40 shadow-2xl border-t border-gray-800 mt-2"
                 >
-                  <div className="container mx-auto px-6 py-8">
+                  <div className="max-w-7xl mx-auto px-4 py-8">
                     <div className="grid grid-cols-12 gap-8">
                       <div className="col-span-5">
                         <div className="relative h-[65vh] w-full rounded-lg overflow-hidden">

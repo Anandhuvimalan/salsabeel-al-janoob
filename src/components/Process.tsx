@@ -268,7 +268,7 @@ function ProcessRoute({ data }: { data: ProcessData }) {
         className="pointer-events-none absolute inset-0 opacity-[0.5] [background-image:radial-gradient(rgba(15,23,42,0.08)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:linear-gradient(to_bottom,transparent,black_15%,black_85%,transparent)]"
       />
 
-      <div className="relative mx-auto grid max-w-7xl gap-14 px-4 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20 lg:px-8">
+      <div className="relative mx-auto grid max-w-7xl gap-14 px-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20">
         <motion.header
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
