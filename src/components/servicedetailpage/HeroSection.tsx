@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 interface HeroSectionProps {
   backgroundImage: string;
@@ -26,7 +27,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.06,
       },
     },
   };
@@ -36,17 +37,29 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     hidden: { height: "100%" },
     visible: {
       height: "0%",
-      transition: { duration: 0.8, ease: [0.645, 0.045, 0.355, 1] },
+      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] },
     },
   };
 
   return (
     <section className="relative h-screen overflow-hidden">
       {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      />
+      <motion.div
+        className="absolute inset-0"
+        initial={{ scale: 1.08 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 2.4, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <Image
+          src={backgroundImage}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          quality={80}
+          className="object-cover"
+        />
+      </motion.div>
 
       {/* Curtain Reveal Effect with Staggered Shutters */}
       <motion.div
@@ -77,7 +90,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.7 }}
+            transition={{ duration: 0.6, delay: 0.55 }}
             className="inline-block px-4 py-1.5 mb-6 text-sm font-medium tracking-wider text-white/90 rounded-full bg-white/10 backdrop-blur-sm border border-white/10"
           >
             {serviceType}
@@ -87,7 +100,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.9 }}
+          transition={{ duration: 0.6, delay: 0.65 }}
           className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight"
         >
           {title}{" "}
@@ -97,7 +110,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
               <motion.span
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 0.8, delay: 2.3 }}
+                transition={{ duration: 0.8, delay: 1.2 }}
                 className="absolute bottom-0 left-0 h-0.5 bg-white/30"
               />
             </span>
@@ -107,7 +120,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 2.1 }}
+          transition={{ duration: 0.6, delay: 0.75 }}
           className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed"
         >
           {description}
@@ -116,7 +129,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 2.3 }}
+          transition={{ duration: 0.6, delay: 0.85 }}
         >
           <Link
             href={buttonLink}

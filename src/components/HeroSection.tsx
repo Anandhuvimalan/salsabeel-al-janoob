@@ -1,11 +1,13 @@
 "use client"
-import { useEffect, useState, useRef, useMemo } from "react"
+import { useEffect, useState, useRef, useMemo, useCallback } from "react"
+import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { supabase } from "@/lib/supabaseClient"
+import { BrandLoader } from "@/components/ui/brand-loader"
 import ScrollDownIndicator from "./ScrollDownIndicator"
 
 // Define the expected structure of the hero data
-type HeroSectionData = {
+export type HeroSectionData = {
   id: string
   tag: string
   title: string
@@ -41,40 +43,51 @@ const FALLBACK_DATA: HeroSectionData = {
   },
   images: [
     {
-      src: "https://hrrfjlbkbjmzkyihcufw.supabase.co/storage/v1/object/public/hero-images/elb2mitjzim.webp",
+      src: "https://tnaxeecfbmgcxgnlclji.supabase.co/storage/v1/object/public/hero-images/elb2mitjzim.webp",
       alt: "Import & Export Services",
     },
     {
-      src: "https://hrrfjlbkbjmzkyihcufw.supabase.co/storage/v1/object/public/hero-images/b2u0dla21u.webp",
+      src: "https://tnaxeecfbmgcxgnlclji.supabase.co/storage/v1/object/public/hero-images/b2u0dla21u.webp",
       alt: "Chemical Waste Management",
     },
     {
-      src: "https://hrrfjlbkbjmzkyihcufw.supabase.co/storage/v1/object/public/hero-images/zm5rsoaw5s.webp",
+      src: "https://tnaxeecfbmgcxgnlclji.supabase.co/storage/v1/object/public/hero-images/zm5rsoaw5s.webp",
       alt: "Salsabeel Al Janoob Import Export",
     },
   ],
 }
 
-export default function HeroSection() {
-  const [data, setData] = useState<HeroSectionData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+// Keep the loader up at least this long so it doesn't flash, and never longer than the max
+const LOADER_MIN_MS = 600
+const LOADER_MAX_MS = 2500
+
+function normalizeHeroData(row: any): HeroSectionData {
+  const images = Array.isArray(row?.images) ? row.images.filter((image: any) => image?.src) : []
+  if (!row || images.length === 0) return FALLBACK_DATA
+  return {
+    ...row,
+    images,
+    animation_settings: { ...FALLBACK_DATA.animation_settings, ...(row.animation_settings || {}) },
+  }
+}
+
+export default function HeroSection({ initialData }: { initialData?: any }) {
+  const [data, setData] = useState<HeroSectionData | null>(() => (initialData ? normalizeHeroData(initialData) : null))
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-  const [initialRevealComplete, setInitialRevealComplete] = useState(false)
+  const [firstImageLoaded, setFirstImageLoaded] = useState(false)
+  const [revealed, setRevealed] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const cycleTimerRef = useRef<NodeJS.Timeout | null>(null)
   const animationTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const dataFetchedRef = useRef(false)
+  const mountedAtRef = useRef(Date.now())
 
-  // Fetch hero data from Supabase - only once
+  // Only fetch on the client when the server didn't provide data
   useEffect(() => {
-    if (dataFetchedRef.current) return
+    if (data) return
 
     async function fetchData() {
       try {
-        console.log("Fetching hero section data from Supabase...")
-
         const { data: heroSections, error } = await supabase
           .from("hero_sections")
           .select("*")
@@ -83,41 +96,30 @@ export default function HeroSection() {
 
         if (error) {
           console.error("Supabase error:", error)
-          console.log("Using fallback data due to Supabase error")
           setData(FALLBACK_DATA)
           return
         }
 
-        if (!heroSections || heroSections.length === 0) {
-          console.log("No hero section data found, using fallback data")
-          setData(FALLBACK_DATA)
-          return
-        }
-
-        const processedData: HeroSectionData = {
-          ...heroSections[0],
-          images: Array.isArray(heroSections[0].images) ? heroSections[0].images : [],
-        }
-
-        if (processedData.images.length === 0) {
-          console.log("No hero images found, using fallback data")
-          setData(FALLBACK_DATA)
-          return
-        }
-
-        setData(processedData)
+        setData(normalizeHeroData(heroSections?.[0]))
       } catch (error) {
         console.error("Error fetching hero data:", error)
-        console.log("Using fallback data due to fetch error")
         setData(FALLBACK_DATA)
-      } finally {
-        dataFetchedRef.current = true
-        setIsLoading(false)
       }
     }
 
     fetchData()
-  }, [])
+  }, [data])
+
+  // Lift the loader once the first slide is ready (bounded by min/max durations)
+  useEffect(() => {
+    if (revealed) return
+    const elapsed = Date.now() - mountedAtRef.current
+    const delay = firstImageLoaded ? Math.max(0, LOADER_MIN_MS - elapsed) : Math.max(0, LOADER_MAX_MS - elapsed)
+    const timer = setTimeout(() => setRevealed(true), delay)
+    return () => clearTimeout(timer)
+  }, [firstImageLoaded, revealed])
+
+  const handleFirstImageLoad = useCallback(() => setFirstImageLoaded(true), [])
 
   // Calculate the next image index
   const nextImageIndex = useMemo(() => {
@@ -127,7 +129,7 @@ export default function HeroSection() {
 
   // Handle image cycling and curtain effect
   useEffect(() => {
-    if (!initialRevealComplete || !data?.images || data.images.length <= 1) return
+    if (!revealed || !data?.images || data.images.length <= 1) return
 
     if (cycleTimerRef.current) clearTimeout(cycleTimerRef.current)
     if (animationTimerRef.current) clearTimeout(animationTimerRef.current)
@@ -143,94 +145,50 @@ export default function HeroSection() {
       }, animationDuration)
     }
 
-    cycleTimerRef.current = setTimeout(cycleImages, 1000)
+    cycleTimerRef.current = setTimeout(cycleImages, cycleDuration)
 
     return () => {
       if (cycleTimerRef.current) clearTimeout(cycleTimerRef.current)
       if (animationTimerRef.current) clearTimeout(animationTimerRef.current)
     }
-  }, [initialRevealComplete, data])
-
-  // Handle initial reveal delay
-  useEffect(() => {
-    if (!data) return
-    const initialTimer = setTimeout(() => {
-      setInitialRevealComplete(true)
-    }, data.animation_settings.initialRevealDelay + 3000)
-    return () => clearTimeout(initialTimer)
-  }, [data])
+  }, [revealed, data])
 
   const textAnimationVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 24 },
     visible: (delay: number) => ({
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, delay: delay + 2 },
+      transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] },
     }),
   }
+  const textState = revealed ? "visible" : "hidden"
 
-  const initialCurtainVariants = {
-    initial: {
-      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-    },
-    animate: {
-      clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
-      transition: {
-        duration: 2.8,
-        ease: [0.25, 0.1, 0.25, 1],
-        delay: 1,
-      },
-    },
-  }
-
-  if (isLoading) {
+  if (!data) {
     return (
-      <div
-        className="fixed top-0 left-0 right-0 bottom-0 z-[10000] overflow-hidden flex items-center justify-center bg-zinc-900"
-        role="status"
-        aria-label="Loading hero section"
-      >
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
-          <div className="text-white text-2xl mt-4">Loading...</div>
-        </div>
-      </div>
+      <section className="relative h-screen overflow-hidden bg-zinc-950" aria-label="Hero section">
+        <BrandLoader label="Loading hero section" />
+      </section>
     )
   }
 
-  if (error) {
-    console.error("Error state detected but using fallback data")
-    // We'll use the fallback data instead of showing an error
-    // This code won't execute if we properly set fallback data in the fetchData function
-  }
-
-  if (!data) {
-    return null // Or a suitable fallback UI
-  }
-
   return (
-    <section className="relative h-screen overflow-hidden" aria-label="Hero section showcasing global trade services">
-      <AnimatePresence>
-        {!initialRevealComplete && (
-          <motion.div
-            className="absolute inset-0 z-50 bg-black"
-            variants={initialCurtainVariants}
-            initial="initial"
-            animate="animate"
-            transition={{ duration: 2.8 }}
-          />
-        )}
-      </AnimatePresence>
+    <section className="relative h-screen overflow-hidden bg-zinc-950" aria-label="Hero section showcasing global trade services">
+      <BrandLoader exiting={revealed} label="Loading hero section" />
       <div className="absolute inset-0">
         {data.images.length > 0 && (
           <>
-            <div className="absolute inset-0 z-0">
-              <img
-                src={data.images[nextImageIndex]?.src || ""}
-                alt={data.images[nextImageIndex]?.alt || ""}
-                className="object-cover w-full h-full"
-              />
-            </div>
+            {data.images.length > 1 && (
+              <div className="absolute inset-0 z-0">
+                <Image
+                  src={data.images[nextImageIndex]?.src}
+                  alt={data.images[nextImageIndex]?.alt || ""}
+                  fill
+                  sizes="100vw"
+                  quality={80}
+                  className="object-cover"
+                />
+              </div>
+            )}
             <AnimatePresence initial={false}>
               <motion.div
                 key={currentImageIndex}
@@ -246,11 +204,23 @@ export default function HeroSection() {
                   ease: [0.645, 0.045, 0.355, 1],
                 }}
               >
-                <img
-                  src={data.images[currentImageIndex]?.src || ""}
-                  alt={data.images[currentImageIndex]?.alt || ""}
-                  className="object-cover w-full h-full"
-                />
+                <motion.div
+                  className="absolute inset-0"
+                  initial={{ scale: 1.08 }}
+                  animate={{ scale: revealed ? 1 : 1.08 }}
+                  transition={{ duration: 6, ease: "easeOut" }}
+                >
+                  <Image
+                    src={data.images[currentImageIndex]?.src}
+                    alt={data.images[currentImageIndex]?.alt || ""}
+                    fill
+                    sizes="100vw"
+                    quality={80}
+                    priority={currentImageIndex === 0}
+                    onLoad={currentImageIndex === 0 ? handleFirstImageLoad : undefined}
+                    className="object-cover"
+                  />
+                </motion.div>
               </motion.div>
             </AnimatePresence>
           </>
@@ -263,18 +233,18 @@ export default function HeroSection() {
       <div className="relative z-20 flex flex-col justify-center items-center h-full px-4 text-center max-w-7xl mx-auto">
         <motion.span
           variants={textAnimationVariants}
-          custom={1.7}
+          custom={0.35}
           initial="hidden"
-          animate="visible"
+          animate={textState}
           className="inline-block px-4 py-1.5 mb-6 text-sm font-medium tracking-wider text-white/90 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 transition-all duration-300 hover:bg-white/15"
         >
           {data.tag}
         </motion.span>
         <motion.h1
           variants={textAnimationVariants}
-          custom={1.9}
+          custom={0.5}
           initial="hidden"
-          animate="visible"
+          animate={textState}
           className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight"
         >
           {data.title}{" "}
@@ -282,22 +252,22 @@ export default function HeroSection() {
             {data.highlighted_title}
             <motion.span
               initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 0.8, delay: 4.3 }}
+              animate={{ width: revealed ? "100%" : "0%" }}
+              transition={{ duration: 0.8, delay: revealed ? 1.1 : 0 }}
               className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-white/10 via-white/60 to-white/10"
             />
           </span>
         </motion.h1>
         <motion.p
           variants={textAnimationVariants}
-          custom={2.1}
+          custom={0.65}
           initial="hidden"
-          animate="visible"
+          animate={textState}
           className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl leading-relaxed"
         >
           {data.description}
         </motion.p>
-        <motion.div variants={textAnimationVariants} custom={2.3} initial="hidden" animate="visible">
+        <motion.div variants={textAnimationVariants} custom={0.8} initial="hidden" animate={textState}>
           <a
             href={data.button_link}
             className="group relative inline-flex items-center justify-center px-8 py-3 overflow-hidden rounded-full bg-white text-zinc-950 transition-all duration-300 ease-out hover:bg-white/95 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
@@ -330,9 +300,9 @@ export default function HeroSection() {
         {data.images.length > 1 && (
           <motion.div
             variants={textAnimationVariants}
-            custom={2.5}
+            custom={1}
             initial="hidden"
-            animate="visible"
+            animate={textState}
             className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 z-30"
             role="tablist"
             aria-label="Hero image navigation"
@@ -363,4 +333,3 @@ export default function HeroSection() {
     </section>
   )
 }
-

@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { SectionSkeleton } from "@/components/ui/section-skeleton"
 
 type Feature = {
   title: string
@@ -80,15 +82,20 @@ const FALLBACK_DATA: FeaturesData = {
 
 export default function Features() {
   const elementsRef = useRef<(HTMLElement | null)[]>([])
-  const [featureData, setFeatureData] = useState<FeaturesData>({
-    heading: { title: "", subtitle: "" },
-    features: [],
-    cta: { title: "", subtitle: "", linkText: "", linkUrl: "", icon: "" },
-  })
-  const [isLoading, setIsLoading] = useState(true)
+  const prefetched = usePrefetchedSection<FeaturesData>("features_section")
+  const [featureData, setFeatureData] = useState<FeaturesData>(
+    () =>
+      prefetched ?? {
+        heading: { title: "", subtitle: "" },
+        features: [],
+        cta: { title: "", subtitle: "", linkText: "", linkUrl: "", icon: "" },
+      },
+  )
+  const [isLoading, setIsLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (prefetched) return
     const fetchData = async () => {
       try {
         const { data, error } = await supabase
@@ -171,14 +178,7 @@ export default function Features() {
   }
 
   if (isLoading) {
-    return (
-      <section className="w-full py-24 bg-gradient-to-b from-slate-900 to-slate-800 flex justify-center items-center">
-        <div
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-          aria-label="Loading features"
-        />
-      </section>
-    )
+    return <SectionSkeleton dark label="Loading features" className="bg-gradient-to-b from-slate-900 to-slate-800" />
   }
 
   // We no longer need to show an error state since we're using fallback data

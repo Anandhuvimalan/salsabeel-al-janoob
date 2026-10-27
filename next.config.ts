@@ -10,17 +10,23 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: [
-      "images.unsplash.com",
-      "hrrfjlbkbjmzkyihcufw.supabase.co"
-    ],
+    formats: ["image/avif", "image/webp"],
+    // Optimized images are keyed by URL and uploads always get new file names, so cache for a long time
+    minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "hrrfjlbkbjmzkyihcufw.supabase.co",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "tnaxeecfbmgcxgnlclji.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
     ],
+  },
+  experimental: {
+    optimizePackageImports: ["framer-motion", "lucide-react", "@tabler/icons-react", "react-icons"],
   },
   async headers() {
     return [

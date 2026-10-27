@@ -3,6 +3,8 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { SectionSkeleton } from "@/components/ui/section-skeleton"
 
 type ProcessStep = {
   title: string
@@ -134,12 +136,27 @@ const ProcessStepCard = ({
   )
 }
 
+const getIconUrl = (path: string) => {
+  if (!path) return "/placeholder.svg"
+  if (path.startsWith("http") || path.startsWith("/")) return path
+  return supabase.storage.from("process-icons").getPublicUrl(path).data.publicUrl
+}
+
 export default function ImportExportProcess() {
-  const [processData, setProcessData] = useState<ProcessData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const prefetched = usePrefetchedSection("process_section")
+  const [processData, setProcessData] = useState<ProcessData | null>(() =>
+    prefetched
+      ? {
+          section: prefetched.section,
+          steps: prefetched.steps.map((step: ProcessStep) => ({ ...step, iconSrc: getIconUrl(step.iconSrc) })),
+        }
+      : null,
+  )
+  const [loading, setLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (prefetched) return
     const fetchProcessData = async () => {
       try {
         const { data, error } = await supabase
@@ -197,18 +214,8 @@ export default function ImportExportProcess() {
     fetchProcessData()
   }, [])
 
-  const getIconUrl = (path: string) => {
-    if (!path) return "/placeholder.svg"
-    if (path.startsWith("http") || path.startsWith("/")) return path
-    return supabase.storage.from("process-icons").getPublicUrl(path).data.publicUrl
-  }
-
   if (loading) {
-    return (
-      <main className="flex justify-center items-center min-h-screen" aria-label="Loading process section">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" aria-hidden="true" />
-      </main>
-    )
+    return <SectionSkeleton label="Loading process section" />
   }
 
   // We no longer need to show an error state since we're using fallback data

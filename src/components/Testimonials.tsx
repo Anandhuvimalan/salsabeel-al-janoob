@@ -5,6 +5,8 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { SectionSkeleton } from "@/components/ui/section-skeleton"
 
 interface TestimonialItem {
   name: string
@@ -54,12 +56,30 @@ const FALLBACK_DATA: TestimonialData = {
   ],
 }
 
+const getImageUrl = (path: string) => {
+  if (!path) return "/placeholder.svg"
+  if (path.startsWith("http") || path.startsWith("/")) return path
+  return supabase.storage.from("testimonial-images").getPublicUrl(path).data.publicUrl
+}
+
 const Testimonial: React.FC = () => {
-  const [data, setData] = useState<TestimonialData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const prefetched = usePrefetchedSection("testimonials_section")
+  const [data, setData] = useState<TestimonialData | null>(() =>
+    prefetched
+      ? {
+          section: prefetched.section,
+          testimonials: prefetched.testimonials.map((testimonial: TestimonialItem) => ({
+            ...testimonial,
+            image: getImageUrl(testimonial.image),
+          })),
+        }
+      : null,
+  )
+  const [loading, setLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (prefetched) return
     const fetchData = async () => {
       try {
         const { data: testimonialData, error } = await supabase
@@ -117,18 +137,8 @@ const Testimonial: React.FC = () => {
     fetchData()
   }, [])
 
-  const getImageUrl = (path: string) => {
-    if (!path) return "/placeholder.svg"
-    if (path.startsWith("http") || path.startsWith("/")) return path
-    return supabase.storage.from("testimonial-images").getPublicUrl(path).data.publicUrl
-  }
-
   if (loading) {
-    return (
-      <main className="flex justify-center items-center min-h-screen bg-gray-100" aria-label="Loading testimonials">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" aria-hidden="true" />
-      </main>
-    )
+    return <SectionSkeleton label="Loading testimonials" className="bg-gray-100" />
   }
 
   // We no longer need to show an error state since we're using fallback data

@@ -4,6 +4,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { SectionSkeleton } from "@/components/ui/section-skeleton"
 
 type Service = {
   id: number
@@ -97,8 +99,11 @@ const FALLBACK_DATA: ServicesData = {
 
 const CoreServices = () => {
   const [isMobile, setIsMobile] = useState(false)
-  const [servicesData, setServicesData] = useState<ServicesData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const prefetched = usePrefetchedSection("services_section")
+  const [servicesData, setServicesData] = useState<ServicesData | null>(
+    prefetched ? { sectionTitle: prefetched.section_title, services: prefetched.services } : null,
+  )
+  const [loading, setLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -109,6 +114,7 @@ const CoreServices = () => {
   }, [])
 
   useEffect(() => {
+    if (prefetched) return
     const fetchServices = async () => {
       try {
         const { data, error } = await supabase
@@ -147,11 +153,7 @@ const CoreServices = () => {
   }
 
   if (loading) {
-    return (
-      <section className="flex justify-center items-center min-h-screen" aria-label="Loading services">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" aria-hidden="true" />
-      </section>
-    )
+    return <SectionSkeleton dark label="Loading services" />
   }
 
   // We no longer need to show an error state since we're using fallback data

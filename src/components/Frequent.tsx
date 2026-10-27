@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { SectionSkeleton } from "@/components/ui/section-skeleton"
 
 type FAQ = {
   question: string
@@ -70,13 +72,15 @@ const FALLBACK_DATA: FAQData = {
 
 export default function Frequent() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
-  const [data, setData] = useState<FAQData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const prefetched = usePrefetchedSection<FAQData>("faqs_section")
+  const [data, setData] = useState<FAQData | null>(prefetched ?? null)
+  const [loading, setLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
   const elementsRef = useRef<(HTMLElement | null)[]>([])
   const answerRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
+    if (prefetched) return
     const fetchData = async () => {
       try {
         const { data: faqData, error } = await supabase
@@ -151,12 +155,7 @@ export default function Frequent() {
 
   if (loading) {
     return (
-      <main
-        className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex items-center justify-center"
-        aria-label="Loading FAQs"
-      >
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400" aria-hidden="true" />
-      </main>
+      <SectionSkeleton dark label="Loading FAQs" className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
     )
   }
 

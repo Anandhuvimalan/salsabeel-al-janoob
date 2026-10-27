@@ -10,6 +10,22 @@ import CoreServices from "@/components/Services"
 import Testimonial from "@/components/Testimonials"
 import Frequent from "@/components/Frequent"
 import type { Metadata } from "next"
+import { getSections, type SectionTable } from "@/lib/sections"
+import { SectionDataProvider } from "@/components/SectionDataProvider"
+
+export const revalidate = 60
+
+const HOME_SECTIONS: SectionTable[] = [
+  "hero_sections",
+  "features_section",
+  "about_section",
+  "services_section",
+  "process_section",
+  "whatwedo_section",
+  "testimonials_section",
+  "faqs_section",
+  "footer_section",
+]
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
@@ -112,11 +128,13 @@ export const metadata: Metadata = {
   },
 }
 
-const Page: React.FC = () => {
+const Page = async () => {
+  const sections = await getSections(HOME_SECTIONS)
+
   return (
-    <>
+    <SectionDataProvider data={sections}>
       <Navbar />
-      <HeroSection />
+      <HeroSection initialData={sections.hero_sections} />
       {/* Screen Reader Only Content - Enhanced for SEO with links */}
       <div className="sr-only">
         <h1>Salsabeel Al Janoob Imp Exp | Import, Export & Waste Solutions</h1>
@@ -328,7 +346,7 @@ const Page: React.FC = () => {
       <Testimonial />
       <Frequent />
       <Footer />
-    </>
+    </SectionDataProvider>
   )
 }
 

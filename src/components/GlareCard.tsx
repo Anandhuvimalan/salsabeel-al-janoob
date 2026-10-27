@@ -4,6 +4,8 @@ import type React from "react"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { SectionSkeleton } from "@/components/ui/section-skeleton"
 
 interface ServiceCardProps {
   title: string
@@ -100,12 +102,36 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ title, description, features,
   )
 }
 
+const getIconUrl = (path: string) => {
+  if (!path) return "/placeholder.svg"
+  if (path.startsWith("http") || path.startsWith("/")) return path
+  return supabase.storage.from("whatwedo-icons").getPublicUrl(path).data.publicUrl
+}
+
+const processWhatWeDo = (row: any) => ({
+  section: {
+    ...row.section,
+    icons: {
+      ...row.section.icons,
+      arrowRight: getIconUrl(row.section.icons.arrowRight),
+    },
+  },
+  services: row.services.map((service: any) => ({
+    ...service,
+    iconSrc: getIconUrl(service.iconSrc),
+  })),
+})
+
 export function GlareCardDemo() {
-  const [data, setData] = useState<{ section: any; services: any[] } | null>(null)
-  const [loading, setLoading] = useState(true)
+  const prefetched = usePrefetchedSection("whatwedo_section")
+  const [data, setData] = useState<{ section: any; services: any[] } | null>(() =>
+    prefetched ? processWhatWeDo(prefetched) : null,
+  )
+  const [loading, setLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (prefetched) return
     const fetchData = async () => {
       try {
         const { data: whatWeDoData, error } = await supabase
@@ -180,18 +206,8 @@ export function GlareCardDemo() {
     fetchData()
   }, [])
 
-  const getIconUrl = (path: string) => {
-    if (!path) return "/placeholder.svg"
-    if (path.startsWith("http") || path.startsWith("/")) return path
-    return supabase.storage.from("whatwedo-icons").getPublicUrl(path).data.publicUrl
-  }
-
   if (loading) {
-    return (
-      <main className="flex justify-center items-center min-h-screen" aria-label="Loading services">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" aria-hidden="true" />
-      </main>
-    )
+    return <SectionSkeleton dark label="Loading services" />
   }
 
   // We no longer need to show an error state since we're using fallback data

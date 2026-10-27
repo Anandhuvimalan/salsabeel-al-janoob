@@ -3,6 +3,8 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import CountUp from "react-countup"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { SectionSkeleton } from "@/components/ui/section-skeleton"
 
 type AboutData = {
   hero: {
@@ -119,11 +121,13 @@ const FALLBACK_DATA: AboutData = {
 }
 
 const AboutSection = () => {
-  const [aboutData, setAboutData] = useState<AboutData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const prefetched = usePrefetchedSection<AboutData>("about_section")
+  const [aboutData, setAboutData] = useState<AboutData | null>(prefetched ?? null)
+  const [isLoading, setIsLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (prefetched) return
     const fetchAboutData = async () => {
       try {
         const { data, error } = await supabase
@@ -160,14 +164,7 @@ const AboutSection = () => {
   }
 
   if (isLoading) {
-    return (
-      <main className="flex justify-center items-center min-h-screen">
-        <div
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-          aria-label="Loading about section"
-        />
-      </main>
-    )
+    return <SectionSkeleton label="Loading about section" />
   }
 
   // We no longer need to show an error state since we're using fallback data

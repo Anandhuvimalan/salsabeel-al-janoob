@@ -5,6 +5,8 @@ import type React from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
+import { SectionSkeleton } from "@/components/ui/section-skeleton"
 
 interface FooterData {
   company_info: {
@@ -178,15 +180,38 @@ const getImageUrl = (path: string) => {
   return supabase.storage.from("footer-images").getPublicUrl(path).data.publicUrl
 }
 
+const processFooter = (row: any): FooterData => ({
+  company_info: {
+    ...row.company_info,
+    logoSrc: getImageUrl(row.company_info.logoSrc),
+  },
+  quick_links: row.quick_links,
+  newsletter: {
+    ...row.newsletter,
+    buttonIcon: getImageUrl(row.newsletter.buttonIcon),
+  },
+  social_media: row.social_media.map((item: any) => ({
+    ...item,
+    iconSrc: getImageUrl(item.iconSrc),
+  })),
+  company_locations: row.company_locations,
+  legal: {
+    ...row.legal,
+    chevronIcon: getImageUrl(row.legal.chevronIcon),
+  },
+})
+
 const Footer = () => {
+  const prefetched = usePrefetchedSection("footer_section")
   const [email, setEmail] = useState("")
-  const [data, setData] = useState<FooterData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<FooterData | null>(() => (prefetched ? processFooter(prefetched) : null))
+  const [loading, setLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
   const [subscriptionStatus, setSubscriptionStatus] = useState<"success" | "error" | null>(null)
   const [subscriptionMessage, setSubscriptionMessage] = useState<string>("")
 
   useEffect(() => {
+    if (prefetched) return
     const fetchFooterData = async () => {
       try {
         const { data: footerData, error } = await supabase
@@ -323,15 +348,11 @@ const Footer = () => {
 
   if (loading) {
     return (
-      <main
+      <footer
+        role="status"
         aria-label="Loading footer"
-        className="bg-gradient-to-b from-gray-900 to-black min-h-[500px] flex items-center justify-center"
-      >
-        <div
-          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400"
-          aria-hidden="true"
-        />
-      </main>
+        className="bg-gradient-to-b from-gray-900 to-black min-h-[500px] animate-pulse"
+      />
     )
   }
 

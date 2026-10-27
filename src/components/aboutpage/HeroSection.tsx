@@ -2,8 +2,10 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
+import Image from "next/image"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
+import { BrandLoader } from "@/components/ui/brand-loader"
 
 interface HeroData {
   background: {
@@ -116,8 +118,8 @@ const HeroSection = () => {
 
   if (loading) {
     return (
-      <div className="relative h-screen overflow-hidden flex items-center justify-center">
-        <div className="animate-pulse bg-gray-200/50 w-full h-full" />
+      <div className="relative h-screen overflow-hidden bg-zinc-950">
+        <BrandLoader label="Loading about page" />
       </div>
     )
   }
@@ -131,11 +133,14 @@ const HeroSection = () => {
   return (
     <header className="relative h-screen overflow-hidden" aria-live="polite" role="banner">
       {/* Background Image with accessibility features */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${heroData.background.image || "/placeholder.svg"})` }}
-        role="img"
-        aria-label={heroData.background.alt}
+      <Image
+        src={heroData.background.image || "/placeholder.svg"}
+        alt={heroData.background.alt || ""}
+        fill
+        priority
+        sizes="100vw"
+        quality={80}
+        className="object-cover"
       />
 
       {/* Curtain Reveal Effect */}

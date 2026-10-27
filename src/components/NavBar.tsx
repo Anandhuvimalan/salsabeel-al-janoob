@@ -7,8 +7,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, Mail } from "lucide-react"
 import NavbarMobile from "@/components/NavBar/NavbarMobile"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
 
 const NavbarDesktop = () => {
+  const prefetched = usePrefetchedSection("services_section")
   const [services, setServices] = useState<
     Array<{
       id: number
@@ -17,8 +19,8 @@ const NavbarDesktop = () => {
       description: string
       gradient: string
     }>
-  >([])
-  const [loading, setLoading] = useState(true)
+  >(prefetched?.services ?? [])
+  const [loading, setLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
 
   const [isServicesOpen, setIsServicesOpen] = useState(false)
@@ -56,6 +58,7 @@ const NavbarDesktop = () => {
   }, [lastScrollY])
 
   useEffect(() => {
+    if (prefetched) return
     const fetchServices = async () => {
       try {
         const { data, error } = await supabase

@@ -11,7 +11,7 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
@@ -259,7 +259,7 @@ export default async function Page() {
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
           name: "Salsabeel Al Janoob ImpExp Laundry Services",
-          image: "/laundry-services-og.jpg",
+          image: "/laundry-services-og.webp",
           priceRange: "$$",
           address: {
             "@type": "PostalAddress",

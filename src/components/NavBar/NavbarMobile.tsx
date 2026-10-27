@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { supabase } from "@/lib/supabaseClient"
+import { usePrefetchedSection } from "@/components/SectionDataProvider"
 
 const menuVariants = {
   hidden: {
@@ -68,6 +69,7 @@ const serviceItemVariants = {
 }
 
 const NavbarMobile = () => {
+  const prefetched = usePrefetchedSection("services_section")
   const [services, setServices] = useState<
     Array<{
       id: number
@@ -76,8 +78,8 @@ const NavbarMobile = () => {
       description: string
       gradient: string
     }>
-  >([])
-  const [loading, setLoading] = useState(true)
+  >(prefetched?.services ?? [])
+  const [loading, setLoading] = useState(!prefetched)
   const [error, setError] = useState<string | null>(null)
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -115,6 +117,7 @@ const NavbarMobile = () => {
   }, [lastScrollY])
 
   useEffect(() => {
+    if (prefetched) return
     const fetchServices = async () => {
       try {
         const { data, error } = await supabase

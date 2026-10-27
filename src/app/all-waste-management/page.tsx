@@ -11,7 +11,7 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 
 export const metadata: Metadata = {

@@ -11,7 +11,7 @@ import ProjectsCarousel from "@/components/servicedetailpage/apple-cards-carouse
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://salsabeelaljanoobimpexp.com"),
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
       "Traditional Vasthu consultations with modern implementation techniques for holistic living spaces",
     images: [
       {
-        url: "/vastu-consultancy-og.webp",
+        url: "/vasthu-consultancy-og.webp",
         width: 1200,
         height: 630,
         alt: "Vastu Consultation Process",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: "Vastu Shastra Experts | Salsabeel Al Janoob ImpExp",
     description:
       "Traditional Vasthu consultations with modern techniques to harmonize your home and office environments.",
-    images: ["/vastu-consultancy-og.webp"],
+    images: ["/vasthu-consultancy-og.webp"],
     creator: "@salsabeelaljanoob",
     site: "@salsabeelaljanoob",
   },
